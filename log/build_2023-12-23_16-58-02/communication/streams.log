@@ -1,0 +1,35 @@
+[1.078s] Invoking command in '/home/jivankesan/watdig2024/src/communication': PYTHONPATH=/home/jivankesan/watdig2024/build/communication/prefix_override:/home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/communication build --build-base /home/jivankesan/watdig2024/build/communication/build install --record /home/jivankesan/watdig2024/build/communication/install.log --single-version-externally-managed
+[1.182s] running egg_info
+[1.182s] creating ../../build/communication/communication.egg-info
+[1.182s] writing ../../build/communication/communication.egg-info/PKG-INFO
+[1.183s] writing dependency_links to ../../build/communication/communication.egg-info/dependency_links.txt
+[1.183s] writing entry points to ../../build/communication/communication.egg-info/entry_points.txt
+[1.183s] writing requirements to ../../build/communication/communication.egg-info/requires.txt
+[1.183s] writing top-level names to ../../build/communication/communication.egg-info/top_level.txt
+[1.183s] writing manifest file '../../build/communication/communication.egg-info/SOURCES.txt'
+[1.184s] reading manifest file '../../build/communication/communication.egg-info/SOURCES.txt'
+[1.184s] writing manifest file '../../build/communication/communication.egg-info/SOURCES.txt'
+[1.184s] running build
+[1.184s] running build_py
+[1.184s] creating /home/jivankesan/watdig2024/build/communication/build
+[1.185s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.185s]   warnings.warn(
+[1.185s] creating /home/jivankesan/watdig2024/build/communication/build/lib
+[1.185s] creating /home/jivankesan/watdig2024/build/communication/build/lib/communication
+[1.185s] copying communication/__init__.py -> /home/jivankesan/watdig2024/build/communication/build/lib/communication
+[1.185s] running install
+[1.185s] running install_lib
+[1.185s] creating /home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages/communication
+[1.185s] copying /home/jivankesan/watdig2024/build/communication/build/lib/communication/__init__.py -> /home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages/communication
+[1.186s] byte-compiling /home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages/communication/__init__.py to __init__.cpython-310.pyc
+[1.186s] running install_data
+[1.186s] creating /home/jivankesan/watdig2024/install/communication/share/ament_index
+[1.187s] creating /home/jivankesan/watdig2024/install/communication/share/ament_index/resource_index
+[1.187s] creating /home/jivankesan/watdig2024/install/communication/share/ament_index/resource_index/packages
+[1.187s] copying resource/communication -> /home/jivankesan/watdig2024/install/communication/share/ament_index/resource_index/packages
+[1.187s] copying package.xml -> /home/jivankesan/watdig2024/install/communication/share/communication
+[1.187s] running install_egg_info
+[1.188s] Copying ../../build/communication/communication.egg-info to /home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages/communication-0.0.0-py3.10.egg-info
+[1.188s] running install_scripts
+[1.200s] writing list of installed files to '/home/jivankesan/watdig2024/build/communication/install.log'
+[1.241s] Invoked command in '/home/jivankesan/watdig2024/src/communication' returned '0': PYTHONPATH=/home/jivankesan/watdig2024/build/communication/prefix_override:/home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/communication build --build-base /home/jivankesan/watdig2024/build/communication/build install --record /home/jivankesan/watdig2024/build/communication/install.log --single-version-externally-managed

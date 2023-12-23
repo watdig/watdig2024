@@ -1,0 +1,35 @@
+[0.972s] Invoking command in '/home/jivankesan/watdig2024/src/navigation': PYTHONPATH=/home/jivankesan/watdig2024/build/navigation/prefix_override:/home/jivankesan/watdig2024/install/navigation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/navigation build --build-base /home/jivankesan/watdig2024/build/navigation/build install --record /home/jivankesan/watdig2024/build/navigation/install.log --single-version-externally-managed
+[1.069s] running egg_info
+[1.077s] creating ../../build/navigation/navigation.egg-info
+[1.077s] writing ../../build/navigation/navigation.egg-info/PKG-INFO
+[1.077s] writing dependency_links to ../../build/navigation/navigation.egg-info/dependency_links.txt
+[1.077s] writing entry points to ../../build/navigation/navigation.egg-info/entry_points.txt
+[1.077s] writing requirements to ../../build/navigation/navigation.egg-info/requires.txt
+[1.077s] writing top-level names to ../../build/navigation/navigation.egg-info/top_level.txt
+[1.077s] writing manifest file '../../build/navigation/navigation.egg-info/SOURCES.txt'
+[1.077s] reading manifest file '../../build/navigation/navigation.egg-info/SOURCES.txt'
+[1.078s] writing manifest file '../../build/navigation/navigation.egg-info/SOURCES.txt'
+[1.078s] running build
+[1.078s] running build_py
+[1.078s] creating /home/jivankesan/watdig2024/build/navigation/build
+[1.078s] creating /home/jivankesan/watdig2024/build/navigation/build/lib
+[1.078s] creating /home/jivankesan/watdig2024/build/navigation/build/lib/navigation
+[1.078s] copying navigation/__init__.py -> /home/jivankesan/watdig2024/build/navigation/build/lib/navigation
+[1.078s] running install
+[1.078s] running install_lib
+[1.078s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.078s]   warnings.warn(
+[1.078s] creating /home/jivankesan/watdig2024/install/navigation/lib/python3.10/site-packages/navigation
+[1.078s] copying /home/jivankesan/watdig2024/build/navigation/build/lib/navigation/__init__.py -> /home/jivankesan/watdig2024/install/navigation/lib/python3.10/site-packages/navigation
+[1.078s] byte-compiling /home/jivankesan/watdig2024/install/navigation/lib/python3.10/site-packages/navigation/__init__.py to __init__.cpython-310.pyc
+[1.078s] running install_data
+[1.078s] creating /home/jivankesan/watdig2024/install/navigation/share/ament_index
+[1.078s] creating /home/jivankesan/watdig2024/install/navigation/share/ament_index/resource_index
+[1.078s] creating /home/jivankesan/watdig2024/install/navigation/share/ament_index/resource_index/packages
+[1.078s] copying resource/navigation -> /home/jivankesan/watdig2024/install/navigation/share/ament_index/resource_index/packages
+[1.078s] copying package.xml -> /home/jivankesan/watdig2024/install/navigation/share/navigation
+[1.079s] running install_egg_info
+[1.079s] Copying ../../build/navigation/navigation.egg-info to /home/jivankesan/watdig2024/install/navigation/lib/python3.10/site-packages/navigation-0.0.0-py3.10.egg-info
+[1.079s] running install_scripts
+[1.085s] writing list of installed files to '/home/jivankesan/watdig2024/build/navigation/install.log'
+[1.183s] Invoked command in '/home/jivankesan/watdig2024/src/navigation' returned '0': PYTHONPATH=/home/jivankesan/watdig2024/build/navigation/prefix_override:/home/jivankesan/watdig2024/install/navigation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/navigation build --build-base /home/jivankesan/watdig2024/build/navigation/build install --record /home/jivankesan/watdig2024/build/navigation/install.log --single-version-externally-managed

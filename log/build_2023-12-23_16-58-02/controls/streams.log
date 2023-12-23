@@ -1,0 +1,35 @@
+[1.029s] Invoking command in '/home/jivankesan/watdig2024/src/controls': PYTHONPATH=/home/jivankesan/watdig2024/build/controls/prefix_override:/home/jivankesan/watdig2024/install/controls/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/controls build --build-base /home/jivankesan/watdig2024/build/controls/build install --record /home/jivankesan/watdig2024/build/controls/install.log --single-version-externally-managed
+[1.134s] running egg_info
+[1.134s] creating ../../build/controls/controls.egg-info
+[1.134s] writing ../../build/controls/controls.egg-info/PKG-INFO
+[1.134s] writing dependency_links to ../../build/controls/controls.egg-info/dependency_links.txt
+[1.134s] writing entry points to ../../build/controls/controls.egg-info/entry_points.txt
+[1.134s] writing requirements to ../../build/controls/controls.egg-info/requires.txt
+[1.138s] writing top-level names to ../../build/controls/controls.egg-info/top_level.txt
+[1.141s] writing manifest file '../../build/controls/controls.egg-info/SOURCES.txt'
+[1.141s] reading manifest file '../../build/controls/controls.egg-info/SOURCES.txt'
+[1.143s] writing manifest file '../../build/controls/controls.egg-info/SOURCES.txt'
+[1.143s] running build
+[1.143s] running build_py
+[1.143s] creating /home/jivankesan/watdig2024/build/controls/build
+[1.143s] creating /home/jivankesan/watdig2024/build/controls/build/lib
+[1.143s] creating /home/jivankesan/watdig2024/build/controls/build/lib/controls
+[1.143s] copying controls/__init__.py -> /home/jivankesan/watdig2024/build/controls/build/lib/controls
+[1.143s] running install
+[1.143s] running install_lib
+[1.143s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.143s]   warnings.warn(
+[1.144s] creating /home/jivankesan/watdig2024/install/controls/lib/python3.10/site-packages/controls
+[1.144s] copying /home/jivankesan/watdig2024/build/controls/build/lib/controls/__init__.py -> /home/jivankesan/watdig2024/install/controls/lib/python3.10/site-packages/controls
+[1.144s] byte-compiling /home/jivankesan/watdig2024/install/controls/lib/python3.10/site-packages/controls/__init__.py to __init__.cpython-310.pyc
+[1.144s] running install_data
+[1.144s] creating /home/jivankesan/watdig2024/install/controls/share/ament_index
+[1.144s] creating /home/jivankesan/watdig2024/install/controls/share/ament_index/resource_index
+[1.144s] creating /home/jivankesan/watdig2024/install/controls/share/ament_index/resource_index/packages
+[1.144s] copying resource/controls -> /home/jivankesan/watdig2024/install/controls/share/ament_index/resource_index/packages
+[1.144s] copying package.xml -> /home/jivankesan/watdig2024/install/controls/share/controls
+[1.144s] running install_egg_info
+[1.144s] Copying ../../build/controls/controls.egg-info to /home/jivankesan/watdig2024/install/controls/lib/python3.10/site-packages/controls-0.0.0-py3.10.egg-info
+[1.144s] running install_scripts
+[1.151s] writing list of installed files to '/home/jivankesan/watdig2024/build/controls/install.log'
+[1.270s] Invoked command in '/home/jivankesan/watdig2024/src/controls' returned '0': PYTHONPATH=/home/jivankesan/watdig2024/build/controls/prefix_override:/home/jivankesan/watdig2024/install/controls/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/controls build --build-base /home/jivankesan/watdig2024/build/controls/build install --record /home/jivankesan/watdig2024/build/controls/install.log --single-version-externally-managed

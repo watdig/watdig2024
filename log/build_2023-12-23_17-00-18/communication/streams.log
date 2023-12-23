@@ -1,0 +1,20 @@
+[1.100s] Invoking command in '/home/jivankesan/watdig2024/src/communication': PYTHONPATH=/home/jivankesan/watdig2024/build/communication/prefix_override:/home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/communication build --build-base /home/jivankesan/watdig2024/build/communication/build install --record /home/jivankesan/watdig2024/build/communication/install.log --single-version-externally-managed
+[1.218s] running egg_info
+[1.218s] writing ../../build/communication/communication.egg-info/PKG-INFO
+[1.218s] writing dependency_links to ../../build/communication/communication.egg-info/dependency_links.txt
+[1.218s] writing entry points to ../../build/communication/communication.egg-info/entry_points.txt
+[1.219s] writing requirements to ../../build/communication/communication.egg-info/requires.txt
+[1.219s] writing top-level names to ../../build/communication/communication.egg-info/top_level.txt
+[1.220s] reading manifest file '../../build/communication/communication.egg-info/SOURCES.txt'
+[1.220s] writing manifest file '../../build/communication/communication.egg-info/SOURCES.txt'
+[1.220s] running build
+[1.220s] running build_py
+[1.221s] running install
+[1.221s] running install_lib
+[1.221s] running install_data
+[1.222s] running install_egg_info
+[1.222s] removing '/home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages/communication-0.0.0-py3.10.egg-info' (and everything under it)
+[1.222s] Copying ../../build/communication/communication.egg-info to /home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages/communication-0.0.0-py3.10.egg-info
+[1.223s] running install_scripts
+[1.233s] writing list of installed files to '/home/jivankesan/watdig2024/build/communication/install.log'
+[1.285s] Invoked command in '/home/jivankesan/watdig2024/src/communication' returned '0': PYTHONPATH=/home/jivankesan/watdig2024/build/communication/prefix_override:/home/jivankesan/watdig2024/install/communication/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/communication build --build-base /home/jivankesan/watdig2024/build/communication/build install --record /home/jivankesan/watdig2024/build/communication/install.log --single-version-externally-managed

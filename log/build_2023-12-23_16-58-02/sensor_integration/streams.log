@@ -1,0 +1,35 @@
+[0.924s] Invoking command in '/home/jivankesan/watdig2024/src/sensor_integration': PYTHONPATH=/home/jivankesan/watdig2024/build/sensor_integration/prefix_override:/home/jivankesan/watdig2024/install/sensor_integration/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/sensor_integration build --build-base /home/jivankesan/watdig2024/build/sensor_integration/build install --record /home/jivankesan/watdig2024/build/sensor_integration/install.log --single-version-externally-managed
+[1.035s] running egg_info
+[1.039s] creating ../../build/sensor_integration/sensor_integration.egg-info
+[1.039s] writing ../../build/sensor_integration/sensor_integration.egg-info/PKG-INFO
+[1.039s] writing dependency_links to ../../build/sensor_integration/sensor_integration.egg-info/dependency_links.txt
+[1.039s] writing entry points to ../../build/sensor_integration/sensor_integration.egg-info/entry_points.txt
+[1.039s] writing requirements to ../../build/sensor_integration/sensor_integration.egg-info/requires.txt
+[1.039s] writing top-level names to ../../build/sensor_integration/sensor_integration.egg-info/top_level.txt
+[1.041s] writing manifest file '../../build/sensor_integration/sensor_integration.egg-info/SOURCES.txt'
+[1.041s] reading manifest file '../../build/sensor_integration/sensor_integration.egg-info/SOURCES.txt'
+[1.041s] writing manifest file '../../build/sensor_integration/sensor_integration.egg-info/SOURCES.txt'
+[1.041s] running build
+[1.041s] running build_py
+[1.041s] creating /home/jivankesan/watdig2024/build/sensor_integration/build
+[1.041s] creating /home/jivankesan/watdig2024/build/sensor_integration/build/lib
+[1.041s] creating /home/jivankesan/watdig2024/build/sensor_integration/build/lib/sensor_integration
+[1.041s] copying sensor_integration/__init__.py -> /home/jivankesan/watdig2024/build/sensor_integration/build/lib/sensor_integration
+[1.042s] running install
+[1.042s] running install_lib
+[1.044s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[1.044s]   warnings.warn(
+[1.045s] creating /home/jivankesan/watdig2024/install/sensor_integration/lib/python3.10/site-packages/sensor_integration
+[1.045s] copying /home/jivankesan/watdig2024/build/sensor_integration/build/lib/sensor_integration/__init__.py -> /home/jivankesan/watdig2024/install/sensor_integration/lib/python3.10/site-packages/sensor_integration
+[1.045s] byte-compiling /home/jivankesan/watdig2024/install/sensor_integration/lib/python3.10/site-packages/sensor_integration/__init__.py to __init__.cpython-310.pyc
+[1.045s] running install_data
+[1.045s] creating /home/jivankesan/watdig2024/install/sensor_integration/share/ament_index
+[1.045s] creating /home/jivankesan/watdig2024/install/sensor_integration/share/ament_index/resource_index
+[1.045s] creating /home/jivankesan/watdig2024/install/sensor_integration/share/ament_index/resource_index/packages
+[1.045s] copying resource/sensor_integration -> /home/jivankesan/watdig2024/install/sensor_integration/share/ament_index/resource_index/packages
+[1.045s] copying package.xml -> /home/jivankesan/watdig2024/install/sensor_integration/share/sensor_integration
+[1.045s] running install_egg_info
+[1.045s] Copying ../../build/sensor_integration/sensor_integration.egg-info to /home/jivankesan/watdig2024/install/sensor_integration/lib/python3.10/site-packages/sensor_integration-0.0.0-py3.10.egg-info
+[1.045s] running install_scripts
+[1.052s] writing list of installed files to '/home/jivankesan/watdig2024/build/sensor_integration/install.log'
+[1.071s] Invoked command in '/home/jivankesan/watdig2024/src/sensor_integration' returned '0': PYTHONPATH=/home/jivankesan/watdig2024/build/sensor_integration/prefix_override:/home/jivankesan/watdig2024/install/sensor_integration/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/sensor_integration build --build-base /home/jivankesan/watdig2024/build/sensor_integration/build install --record /home/jivankesan/watdig2024/build/sensor_integration/install.log --single-version-externally-managed
