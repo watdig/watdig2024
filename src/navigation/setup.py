@@ -19,7 +19,8 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
+        'console_scripts': [\
+            "navigator_node = navigation.navigator_node:main"
         ],
     },
 )
