@@ -13,6 +13,9 @@ class NavigatorNode(Node):
     def timer_callback(self):
         self.get_logger().info("hello" + str(self.counter_))
         self.counter_ +=1
+    
+    def add(self, x, y):
+        return x+y
 
 def main(args=None):
     rclpy.init(args=args)
