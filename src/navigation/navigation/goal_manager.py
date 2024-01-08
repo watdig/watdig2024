@@ -3,7 +3,7 @@ class GoalManager():
         #initialize with no goal
         self.current_goal = None
 
-    
+
     def set_goal(self, x: float, y:float) -> None:
         '''
         sets a new goal

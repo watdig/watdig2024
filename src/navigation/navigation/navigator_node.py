@@ -2,10 +2,10 @@
 import rclpy
 from rclpy.node import Node
 
-class MyNode(Node):
+class NavigatorNode(Node):
 
     def __init__(self):
-        super().__init__("first_node")
+        super().__init__("navigator_node")
         self.counter_ = 0
         self.create_timer(1.0, self.timer_callback)
 
