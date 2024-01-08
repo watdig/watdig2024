@@ -16,7 +16,7 @@ class NavigatorNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = MyNode()
+    node = NavigatorNode()
     rclpy.spin(node)
     rclpy.shutdown()
 
