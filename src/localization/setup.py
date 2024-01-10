@@ -1,5 +1,5 @@
 """
-Setup file for Controls Package.
+Setup file for Localiation Package.
 """
 
 from setuptools import find_packages, setup
