@@ -1,48 +1,48 @@
-class GoalManager():
+"""
+Manages goals for the navigation package.
+"""
+class GoalManager:
+    """
+    Initialization with no goal.
+    """
     def __init__(self):
-        #initialize with no goal
+        # Initialize with no goal.
         self.current_goal = None
 
-
-    def set_goal(self, x: float, y:float) -> None:
+    def set_goal(self, float_one: float, float_two: float) -> None:
         '''
-        sets a new goal
+        Sets a new goal.
         '''
-        self.current_goal = (x, y)
-        print(f"current goal set:  {self.current_goal}")
+        self.current_goal = (float_one, float_two)
+        print(f"Current goal set: {self.current_goal}")
 
-    def update_goal(self, x:float, y:float) -> None:
+    def update_goal(self, float_one: float, float_two: float) -> None:
         """
-        updates current goal
+        Updates the current goal.
         """
         if self.current_goal is not None:
-            self.current_goal = (x, y)
+            self.current_goal = (float_one, float_two)
         else:
             print("No current goal, please use set_goal method first")
 
-    def is_goal_reached(self, current_position: tuple[float,float]) -> bool:
+    def is_goal_reached(self, current_position: tuple[float, float]) -> bool:
         """
-        checks if goal has been reached
-        """   
-        #todo: add tolerances  
+        Checks if the goal has been reached.
+        """
         if self.current_goal is None:
-            print("no current goal set")
+            print("No current goal set")
             return False
-        
+
         if self.current_goal == current_position:
-            print(f"target {self.current_goal} reached")
+            print(f"Target {self.current_goal} reached")
             return True
-        
-        else:
-            return False
-    
+
+        return False
+
     def get_current_goal(self) -> tuple[float, float]:
         '''
-        returns current goal 
+        Returns the current goal.
         '''
         if self.current_goal is None:
-            print('no goal set')
-        return self.current_goal            
-
-        
-        
+            print('No goal set')
+        return self.current_goal
