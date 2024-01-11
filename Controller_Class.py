@@ -42,7 +42,6 @@ key_dict = {
     "s" : "backwards",
     "a" : "left",
     "d" : "right",
-    "e" : "encoder",
     "l" : "lidar"
 }
 lidar_power = False
