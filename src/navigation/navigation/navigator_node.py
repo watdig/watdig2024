@@ -4,6 +4,7 @@ Navigator main node.
 import rclpy
 from rclpy.node import Node
 
+
 class NavigatorNode(Node):
     """
     Navigator main class.
@@ -19,13 +20,14 @@ class NavigatorNode(Node):
         Counter.
         """
         self.get_logger().info("hello" + str(self.counter_))
-        self.counter_ +=1
+        self.counter_ += 1
 
     def add(self, float_one, float_two):
         """
         Adds.
         """
         return float_one + float_two
+
 
 def main(args=None):
     """
@@ -35,6 +37,7 @@ def main(args=None):
     node = NavigatorNode()
     rclpy.spin(node)
     rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
