@@ -24,8 +24,9 @@ class PathPlanner:
         """
         reached_goal = self.is_in_range(current_position=self.current_position)
         if reached_goal:
-            # identify next goal based on prm
-            # update goal manager
+            new_goal = (0, 1)  # identify next goal based on prm
+            target_pos.update_goal(new_goal)
+
             # calculate angle of rotation
             # get distance to travel
 
@@ -42,7 +43,7 @@ class PathPlanner:
     def update_current_position(self, position: tuple(float, float)) -> None:
         self.current_position = position
 
-    def calculate_distance(
+    def calculate_distance_between_points(
         self, coordinate1: tuple[float, float], coordinate2: tuple[float, float]
     ) -> float:
         """
@@ -61,6 +62,19 @@ class PathPlanner:
         )
 
         return distance
+
+    def calculate_angle_between_points(
+        self, position: tuple[float, float], target: tuple[float, float]
+    ) -> float:
+        dx = target[0] - position[0]
+        dy = target[1] - position[1]
+
+        angle_radians = math.atan2(dy, dx)
+        angle_degrees = math.degrees(angle_radians)
+
+        # modify by 90 degrees right or left/add absolute value depending on 0 axis
+
+        return angle_degrees
 
     def global_prm(
         self,
