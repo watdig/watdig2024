@@ -44,7 +44,7 @@ class PathPlanner:
         self.current_position = position
 
     def calculate_distance_between_points(
-        self, coordinate1: tuple[float, float], coordinate2: tuple[float, float]
+        self, coordinate1: tuple(float, float), coordinate2: tuple(float, float)
     ) -> float:
         """
         calculates distance between two points
@@ -64,7 +64,7 @@ class PathPlanner:
         return distance
 
     def calculate_angle_between_points(
-        self, position: tuple[float, float], target: tuple[float, float]
+        self, position: tuple(float, float), target: tuple(float, float)
     ) -> float:
         dx = target[0] - position[0]
         dy = target[1] - position[1]
