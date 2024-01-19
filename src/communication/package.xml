@@ -4,11 +4,13 @@
   <name>communication</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="jkesan28@gmail.com">jivankesan</maintainer>
+  <maintainer email="arjun.b.s.m@gmail.com">arjunmandair</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
-
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
