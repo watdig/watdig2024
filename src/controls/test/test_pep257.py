@@ -1,3 +1,7 @@
+"""
+Ament Test for Controls Package.
+"""
+
 # Copyright 2015 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,5 +23,8 @@ import pytest
 @pytest.mark.linter
 @pytest.mark.pep257
 def test_pep257():
+    """
+    Test the code style using pep.
+    """
     rc = main(argv=['.', 'test'])
     assert rc == 0, 'Found code style errors / warnings'
