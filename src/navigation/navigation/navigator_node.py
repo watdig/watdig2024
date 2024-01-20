@@ -4,10 +4,7 @@ Navigator main node.
 import rclpy
 from rclpy.node import Node
 
-<<<<<<< HEAD
 from interfaces.msg import Num
-=======
->>>>>>> 518daa0abce6eb4cb70b60618bb77f0e0a6db5a1
 
 class NavigatorNode(Node):
     """
