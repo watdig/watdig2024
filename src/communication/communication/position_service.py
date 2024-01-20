@@ -1,8 +1,7 @@
 import rclpy
 from rclpy.node import Node
 
-from communication.srv import Position
-from communication.msg import Position
+from interfaces.srv import Position
 
 class PositionPublisher(Node):
 

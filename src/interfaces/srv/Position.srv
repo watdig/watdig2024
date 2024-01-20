@@ -1,3 +1,6 @@
+int64 b
+int64 a
+---
 string team
 uint32 timestamp
 bool running
