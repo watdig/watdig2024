@@ -4,8 +4,6 @@ Navigator main node.
 import rclpy
 from rclpy.node import Node
 
-from interfaces.msg import Num
-
 class NavigatorNode(Node):
     """
     Navigator main class.

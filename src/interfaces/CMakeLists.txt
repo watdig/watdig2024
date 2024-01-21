@@ -12,9 +12,7 @@ find_package(rosidl_default_generators REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-rosidl_generate_interfaces(watdig2024
-"msg/Num.msg"
-"srv/AddThreeInts.srv"
+rosidl_generate_interfaces(${PROJECT_NAME}
 "srv/Position.srv"
 )
 
