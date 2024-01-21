@@ -1,3 +1,5 @@
+import pygame 
+import os
 
 class robot_action():
     def __init__(self):
@@ -12,9 +14,10 @@ class robot_action():
         self.axis_data = False
         self.button_data = False
         self.hat_data = False       
-        
-        print('Pygame init complete')
-
+    
+    def turn_left(self, degree: float) -> None:
+        self.front_left = self.back_left
+    
     def listen(self):
         """Listen for events to happen"""
         
@@ -42,19 +45,4 @@ class robot_action():
                 self.hat_data[event.hat] = event.value
                 
         return self.button_data, self.axis_data, self.hat_data
-
-            # Insert your code on what you would like to happen for each event here!
-            # In the current setup, I have the state simply printing out to the screen.
-            
-            #os.system('clear')
-            #pprint.pprint(self.button_data)
-            #pprint.pprint(self.axis_data)
-            #pprint.pprint(self.hat_data)
-
-
-if __name__ == "__main__":
-    ps4 = PS4Controller()
-    ps4.init()
-    ps4.listen()
-    
     
