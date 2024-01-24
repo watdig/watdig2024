@@ -13,7 +13,7 @@ find_package(rosidl_default_generators REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-"srv/Position.srv"
+"msg/Position.msg"
 "msg/Environment.msg"
 "msg/Obstacles.msg"
 "msg/Checkpoints.msg"

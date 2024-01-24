@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [ 
-            'position_client = communication.position_client:main',
+            'position_subscriber = communication.position_subscriber:main',
             'csv_parse = communication.csv_parse:main'
         ],
     },
