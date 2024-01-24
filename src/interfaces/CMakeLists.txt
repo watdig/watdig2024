@@ -14,6 +14,9 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
 "srv/Position.srv"
+"msg/Environment.msg"
+"msg/Obstacles.msg"
+"msg/Checkpoints.msg"
 )
 
 

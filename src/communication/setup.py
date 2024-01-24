@@ -11,9 +11,9 @@ setup(
     version='0.0.0',
     packages=find_packages(exclude=['test']),
     data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + PACKAGE_NAME]),
+        ('share/ament_index/resource_index/packages', ['resource/' + PACKAGE_NAME]),
         ('share/' + PACKAGE_NAME, ['package.xml']),
+        ('share/' + PACKAGE_NAME + '/resource', ['resource/checkpoints.csv', 'resource/environment.csv', 'resource/obstacles.csv']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [ 
             'position_client = communication.position_client:main',
-            ],
+            'csv_parse = communication.csv_parse:main'
+        ],
     },
 )
