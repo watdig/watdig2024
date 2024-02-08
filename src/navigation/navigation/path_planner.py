@@ -9,31 +9,36 @@ from shapely.geometry import Point, LineString, Polygon
 class PathPlanner:
     def __init__(self):
         self.target_pos = goal_manager.GoalManager()
-        self.current_position = []
+        self.environment = {}
         self.checkpoints = []
         self.obstacles = []
-        self.start = []
-        self.finish = []
         self.targets = []
+        self.index = 0
+        self.maxlen = 0
         self.angle = 0
+        self.distance = 0
 
     def get_next_checkpoint(
         self,
         current_position: tuple(float, float),
-        target_pos: goal_manager.GoalManager,
-    ) -> tuple(bool, tuple(float, float)):
+    ):
         """
         if checkpoint is in range, identifies next checkpoint to travel to based on PRM
         """
-        reached_goal = self.is_in_range(current_position=self.current_position)
+        reached_goal = self.is_in_range(current_position)
         if reached_goal:
-            new_goal = (0, 1)  # identify next goal based on prm
-            target_pos.update_goal(new_goal)
-
-            # calculate angle of rotation
-            # get distance to travel
-
-            return True, (1, 0)
+            if self.index < self.maxlen:
+                self.target_pos.update_goal(self.targets[self.index]) # identify next goal based on prm
+                self.index+=1
+                self.angle = self.calculate_angle_between_points(current_position, self.target_pos.current_goal)
+                self.distance = self.calculate_distance_between_points(current_position, self.target_pos.current_goal)
+        return True
+    
+    def recalculate_route(self,
+                            current_position: tuple(float, float)):
+        self.angle = self.calculate_angle_between_points(current_position, self.target_pos.current_goal)
+        self.distance = self.calculate_distance_between_points(current_position, self.target_pos.current_goal)
+        return True
 
     def is_in_range(self, current_position: tuple(float, float)) -> bool:
         """
@@ -41,9 +46,6 @@ class PathPlanner:
         returns boolean
         """
         return self.target_pos.is_goal_reached(current_position=current_position)
-
-    def update_current_position(self, position: tuple(float, float)) -> None:
-        self.current_position = position
 
     def calculate_distance_between_points(
         self, coordinate1: tuple(float, float), coordinate2: tuple(float, float)
@@ -80,13 +82,18 @@ class PathPlanner:
         """
         runs in the init part of the node
         """
-
+        start = self.environment["origin"]
+        finish = self.environment["finish"]
+        
+        # Todo; VERIFY ARRAYS OF INFORMATION FROM TOPIC WORK
+        
+        
         # Parameters
         NUM_SAMPLES = 400
         NEIGHBOR_RADIUS = 10
 
         # Define the boundary of the environment (example values)
-        boundary = Polygon([(0, 0), (0, 30), (30, 30), (30, 0)])
+        boundary = Polygon([self.environment["corner01"], self.environment["corner02"], self.environment["corner03"], self.environment["corner04"]])
 
         # Function to check if a point is in the free space
         def is_free(x, y):
@@ -108,7 +115,7 @@ class PathPlanner:
                 samples.append((x, y))
 
         # Ensure the start, checkpoints, and finish are in the samples
-        important_points = [self.start] + self.checkpoints + [self.finish]
+        important_points = [start] + self.checkpoints + [finish]
         for point in important_points:
             samples.append((point.x, point.y))
 
@@ -129,22 +136,19 @@ class PathPlanner:
                     )
 
         # Find the shortest path through the checkpoints
+        path = []
         try:
-            path = [tuple(self.start.coords)[0]]
+            path.append(tuple(start.coords)[0])
             for checkpoint in self.checkpoints:
-                path_segment = nx.shortest_path(
-                    graph, path[-1], tuple(checkpoint.coords)[0], weight="weight"
-                )
-                path.extend(
-                    path_segment[1:]
-                )  # Exclude the first point to avoid duplication
-            path.extend(
-                nx.shortest_path(
-                    graph, path[-1], tuple(self.finish.coords)[0], weight="weight"
-                )[1:]
-            )
-        except nx.NetworkXNoPath as e:
-            print(f"No path could be found: {e}")
-            path = []
+                path_segment = nx.shortest_path(graph, path[-1], tuple(checkpoint.coords)[0], weight="weight")
+                path.extend(path_segment[1:])  # Exclude the first point to avoid duplication
+            path.extend(nx.shortest_path(graph, path[-1], tuple(finish.coords)[0], weight="weight")[1:])
+        except nx.NetworkXNoPath:
+            print("No path could be found.")
+            path = []  # Clear the path if no complete path could be found
 
-        return False
+        self.targets = path
+        self.maxlen = len(path)
+        
+        
+        return True
