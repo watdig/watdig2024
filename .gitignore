@@ -5,3 +5,19 @@
 
 # VSCode
 /.vscode
+
+# Colcon Test Files
+/src/communication/test/__pycache__
+/src/navigation/test/__pycache__
+/src/controls/test/__pycache__
+/src/localization/test/__pycache__
+/src/interfaces/test/__pycache__
+/src/sensor_integration/test/__pycache__
+
+# Cache Files
+/src/communication/communication/__pycache__
+/src/navigation/navigation/__pycache__
+/src/controls/controls/__pycache__
+/src/localization/localization/__pycache__
+/src/interfaces/interfaces/__pycache__
+/src/sensor_integration/sensor_integration/__pycache__

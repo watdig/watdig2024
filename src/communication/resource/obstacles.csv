@@ -1,0 +1,11 @@
+name,easting,northing,elevation,boundingRadius
+garyTheSnail01,5.104,5.34,0.015,0.8
+theStrip01,5.8,15.0,0.261,1
+theStrip02,5.8,15.2,0.263,1
+theStrip03,5.8,15.4,0.261,1
+theStrip04,8.8,15.6,0.263,1
+theStrip05,8.8,15.8,0.265,1
+theStrip06,8.8,16,0.264,1
+tunnel01,-8.654,20.06,1.9,0.5
+tunnel02,-7.089,19.8,1.9,0.5
+tunnel03,-8.675,19.26,1.9,0.5
