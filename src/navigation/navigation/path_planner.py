@@ -9,9 +9,12 @@ from shapely.geometry import Point, LineString, Polygon
 class PathPlanner:
     def __init__(self):
         self.target_pos = goal_manager.GoalManager()
-        self.current_position = "init starting position from csv file"
-        self.checkpoints = "read checkpoint locations from csv file"
-        self.obstacles = "read obstacle locations"
+        self.current_position = []
+        self.checkpoints = []
+        self.obstacles = []
+        self.start = []
+        self.finish = []
+        self.targets = []
         self.angle = 0
 
     def get_next_checkpoint(
@@ -20,7 +23,7 @@ class PathPlanner:
         target_pos: goal_manager.GoalManager,
     ) -> tuple(bool, tuple(float, float)):
         """
-        checks if checkpoint is in range, identifies next checkpoint to travel to based on PRM
+        if checkpoint is in range, identifies next checkpoint to travel to based on PRM
         """
         reached_goal = self.is_in_range(current_position=self.current_position)
         if reached_goal:
@@ -34,7 +37,6 @@ class PathPlanner:
 
     def is_in_range(self, current_position: tuple(float, float)) -> bool:
         """
-        Recieved current_position and goal manager
         Checks if current_position and target coordinate are within relative range
         returns boolean
         """
@@ -48,13 +50,6 @@ class PathPlanner:
     ) -> float:
         """
         calculates distance between two points
-
-        Args:
-            coordinate1 (tuple[float, float]): _description_
-            coordinate2 (tuple[float, float]): _description_
-
-        Returns:
-            float: _description_
         """
         distance = math.sqrt(
             (coordinate1[0] - coordinate2[0]) ** 2
@@ -66,6 +61,9 @@ class PathPlanner:
     def calculate_angle_between_points(
         self, position: tuple(float, float), target: tuple(float, float)
     ) -> float:
+        """
+        calculates the angle between any two points
+        """
         dx = target[0] - position[0]
         dy = target[1] - position[1]
 
@@ -80,43 +78,12 @@ class PathPlanner:
         self,
     ):
         """
-        initial PRM, could be run as an action client when the program is started, could also make it a separate node
+        runs in the init part of the node
         """
 
         # Parameters
         NUM_SAMPLES = 400
         NEIGHBOR_RADIUS = 10
-
-        # Obstacles with a bounding radius, represented as buffered points
-        obstacles = [
-            Point(5.4, 5.34).buffer(0.8),  # garyTheSnail
-            Point(5, 15).buffer(1),  # theStrip1
-            Point(8, 15).buffer(1),  # theStrip2
-            Point(8, 15).buffer(
-                1
-            ),  # theStrip3 (assuming a typo in the image, adjusted for uniqueness)
-            Point(8, 15).buffer(
-                1
-            ),  # theStrip4 (assuming a typo in the image, adjusted for uniqueness)
-            Point(8, 6).buffer(1),  # theStrip5
-            Point(8, 6).buffer(
-                1
-            ),  # theStrip6 (assuming a typo in the image, adjusted for uniqueness)
-            Point(-8.654, 20.6).buffer(0.5),  # tunnel1
-            Point(-7.89, 19).buffer(0.5),  # tunnel2
-            Point(-8.675, 19.6).buffer(0.5),  # tunnel3
-            # Add more obstacles if needed
-        ]
-        checkpoints = [
-            Point(4, -0.5),  # gate01
-            Point(4, 1.5),  # gate02
-            Point(4.8, 3.8),  # gate03 (assumed coordinate, adjust as necessary)
-            Point(5.6, 3.8),  # finishRamp
-            Point(10.85, 24.96),
-            # Add more checkpoints if needed
-        ]
-        start = Point(0, 0)  # Example start point
-        finish = Point(23.126, 28.968)  # Example finish point
 
         # Define the boundary of the environment (example values)
         boundary = Polygon([(0, 0), (0, 30), (30, 30), (30, 0)])
@@ -125,13 +92,13 @@ class PathPlanner:
         def is_free(x, y):
             point = Point(x, y)
             return not any(
-                point.within(obstacle) for obstacle in obstacles
+                point.within(obstacle) for obstacle in self.obstacles
             ) and point.within(boundary)
 
         # Function to check if a path between two points is free of obstacles
         def is_path_free(p1, p2):
             line = LineString([p1, p2])
-            return not any(line.intersects(obstacle) for obstacle in obstacles)
+            return not any(line.intersects(obstacle) for obstacle in self.obstacles)
 
         # Sample points
         samples = []
@@ -141,7 +108,7 @@ class PathPlanner:
                 samples.append((x, y))
 
         # Ensure the start, checkpoints, and finish are in the samples
-        important_points = [start] + checkpoints + [finish]
+        important_points = [self.start] + self.checkpoints + [self.finish]
         for point in important_points:
             samples.append((point.x, point.y))
 
@@ -163,8 +130,8 @@ class PathPlanner:
 
         # Find the shortest path through the checkpoints
         try:
-            path = [tuple(start.coords)[0]]
-            for checkpoint in checkpoints:
+            path = [tuple(self.start.coords)[0]]
+            for checkpoint in self.checkpoints:
                 path_segment = nx.shortest_path(
                     graph, path[-1], tuple(checkpoint.coords)[0], weight="weight"
                 )
@@ -173,7 +140,7 @@ class PathPlanner:
                 )  # Exclude the first point to avoid duplication
             path.extend(
                 nx.shortest_path(
-                    graph, path[-1], tuple(finish.coords)[0], weight="weight"
+                    graph, path[-1], tuple(self.finish.coords)[0], weight="weight"
                 )[1:]
             )
         except nx.NetworkXNoPath as e:
