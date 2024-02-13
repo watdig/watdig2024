@@ -20,7 +20,7 @@ class Gyro:
 # Class for processing Left Encoder data
 class LeftEncoder:
     def __init__(self):
-        self.data = 0  # Initialize encoder data
+        self.data = 0 
 
     def process_data(self, data):
         # Placeholder for Left Encoder data processing logic (will know after testing left encoder)
