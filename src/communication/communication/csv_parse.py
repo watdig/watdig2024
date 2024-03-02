@@ -36,7 +36,7 @@ class CsvParse(Node):
             'obstacles.csv'
         ]
 
-        base_file_location = '~/Codes/watdig2024/install/communication/share/communication/resource/'
+        base_file_location = './install/communication/share/communication/resource/'
         csv_files_paths = []
 
         # CSV files paths

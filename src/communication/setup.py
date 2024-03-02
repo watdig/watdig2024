@@ -15,7 +15,7 @@ setup(
         ('share/' + PACKAGE_NAME, ['package.xml']),
         ('share/' + PACKAGE_NAME + '/resource', ['resource/checkpoints.csv', 'resource/environment.csv', 'resource/obstacles.csv']),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'pandas'],
     zip_safe=True,
     maintainer='jivankesan',
     maintainer_email='jkesan28@gmail.com',

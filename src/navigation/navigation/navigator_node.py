@@ -3,6 +3,7 @@ Navigator main node.
 """
 import rclpy
 from rclpy.node import Node
+from interfaces.msg import Environment, Checkpoints, Obstacles
 
 class NavigatorNode(Node):
     """
@@ -12,7 +13,31 @@ class NavigatorNode(Node):
     def __init__(self):
         super().__init__("navigator_node")
         self.counter_ = 0
+
+        self.subscription_obstacles = self.create_subscription(
+            Obstacles,
+            'obstacles_csv_topic',
+            self.obstacles_callback,
+            10)
+        
+        self.subscription_obstacles = self.create_subscription(
+            Environment,
+            'environment_csv_topic',
+            self.obstacles_callback,
+            10)
+        
+        self.subscription_obstacles = self.create_subscription(
+            Checkpoints,
+            'checkpoints_csv_topic',
+            self.obstacles_callback,
+            10)
+
         self.create_timer(1.0, self.timer_callback)
+
+    def obstacles_callback(self, msg):
+        assert msg is not None
+        self.get_logger().info(f'recieved message: {msg}')
+
 
     def timer_callback(self):
         """
