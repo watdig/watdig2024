@@ -1,6 +1,4 @@
-import pygame 
-import os
-import Jetson.GPIO as GPIO
+import RPi.GPIO as GPIO
 import controller
 
 class Car():
