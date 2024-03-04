@@ -95,8 +95,6 @@ class NavigatorNode(Node):
         directions.data = [self.path_planner.angle, self.path_planner.distance]
         self.publisher_directions.publish(directions)
 
-
-
 def main(args=None):
     """
     Counter.
