@@ -1,74 +1,95 @@
 import RPi.GPIO as GPIO
 import controller
+import time
 
 class Car():
     def __init__(self):
         # Define GPIO pins for motors
-        self.left_front_motor_power_pin = 17  # Example pin numbers
-        self.left_front_motor_reverse_pin = 18
-        self.left_back_motor_power_pin = 19
-        self.left_back_motor_reverse_pin = 20
-        self.right_front_motor_power_pin = 21
-        self.right_front_motor_reverse_pin = 22
-        self.right_back_motor_power_pin = 23
-        self.right_back_motor_reverse_pin = 24
+        self.PWM_RB = 17  # Example pin numbers
+        self.DIR_RB = 18
+        self.PWM_LB = 19
+        self.DIR_LB = 20
+        self.PWM_RF = 21
+        self.DIR_RF = 22
+        self.PWM_LF= 23
+        self.DIR_LF = 24
+
+        self.pins = [self.PWM_RF, self.DIR_RF, self.PWM_LB, self.DIR_LB, self.PWM_RF, self.DIR_RF, self.PWM_LF, self.DIR_LF]
+        self.pwm_pins = [self.PWM_LB, self.PWM_LF, self.PWM_RB, self.PWM_RF]
+        self.dir_L = [self.DIR_LB, self.DIR_LF]
+        self.dir_R = [self.DIR_RB, self.DIR_RF]
 
         # Setup GPIO pins
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.left_front_motor_power_pin, GPIO.OUT)
-        GPIO.setup(self.left_front_motor_reverse_pin, GPIO.OUT)
-        GPIO.setup(self.left_back_motor_power_pin, GPIO.OUT)
-        GPIO.setup(self.left_back_motor_reverse_pin, GPIO.OUT)
-        
-        GPIO.setup(self.right_front_motor_power_pin, GPIO.OUT)
-        GPIO.setup(self.right_front_motor_reverse_pin, GPIO.OUT)
-        GPIO.setup(self.right_back_motor_power_pin, GPIO.OUT)
-        GPIO.setup(self.right_back_motor_reverse_pin, GPIO.OUT)
+        GPIO.setmode(GPIO.BOARD)
+        for pin in self.pins:
+            GPIO.setup(pin, GPIO.LOW)
         
     
         # Initialize controller
         self.controller = controller()
 
+    @classmethod
+    def stop(self):
+        for pin in self.pins:
+            GPIO.output(pin, GPIO.LOW)
+    
+    @classmethod
+    def turn_right(self):
+        self.stop()
+        time.sleep(.1)
+        for pin in self.dir_L:
+            GPIO.output(pin, GPIO.HIGH)
+        for pin in self.pwm_pins:
+            GPIO.output(pin, GPIO.HIGH)
+    
+    @classmethod
+    def turn_left(self):
+        self.stop()
+        time.sleep(.1)
+        for pin in self.dir_R:
+            GPIO.output(pin, GPIO.HIGH)
+        for pin in self.pwm_pins:
+            GPIO.output(pin, GPIO.HIGH)
+
+    @classmethod
+    def forward(self):
+        self.stop()
+        time.sleep(.1)
+        for pin in self.pwm_pins:
+            GPIO.output(pin, GPIO.HIGH)
+    
+    @classmethod
+    def reverse(self):
+        self.stop()
+        time.sleep(.1)
+        for pin in self.dir_R:
+            GPIO.output(pin, GPIO.HIGH)
+        for pin in self.dir_L:
+            GPIO.output(pin, GPIO.HIGH)
+        for pin in self.pwm_pins:
+            GPIO.output(pin, GPIO.HIGH)
+        
+        
     def drive(self, axis_data):
-        # Determine motor states based on joystick input
-        left_motor_state = 'off'
-        right_motor_state = 'off'
+    
+        # mapping forwards backwards movement
+        if axis_data[0] < -0.9:  # Assume joystick left
+            self.turn_left()
+        
+        elif axis_data[0] > 0.9:  # Assume joystick right
+            self.turn_right()
+            
+        elif axis_data[5] > 0.9:  # Assume only forward
+            self.forward()
+        
+        elif axis_data[4] > 0.9: # assume only reverse
+            self.reverse()
+        
+        else: self.stop() # assume nothing pressed
 
-        # Mapping power/backward to right joystick up/down
-        if axis_data[4] > 0.5:  # Assume joystick pushed power
-            left_motor_state = 'power'
-            right_motor_state = 'power'
-        elif axis_data[4] < -0.5:  # Assume joystick pulled backward
-            left_motor_state = 'reverse'
-            right_motor_state = 'reverse'
-
-        # Example: Mapping left/right to left joystick left/right
-        if axis_data[0] > 0.5:  # Assume joystick pushed right
-            left_motor_state = 'power'
-            right_motor_state = 'reverse'
-        elif axis_data[0] < -0.5:  # Assume joystick pushed left
-            left_motor_state = 'reverse'
-            right_motor_state = 'power'
-
-        # Control motors based on determined states
-        self.control_motor(self.left_front_motor_power_pin, self.left_front_motor_reverse_pin, left_motor_state)
-        self.control_motor(self.left_back_motor_power_pin, self.left_back_motor_reverse_pin, left_motor_state)
-        self.control_motor(self.right_front_motor_power_pin, self.right_front_motor_reverse_pin, right_motor_state)
-        self.control_motor(self.right_back_motor_power_pin, self.right_back_motor_reverse_pin, right_motor_state)
-
-    def control_motor(self, power_pin, reverse_pin, state):
-        if state == 'power':
-            GPIO.output(power_pin, GPIO.HIGH)
-            GPIO.output(reverse_pin, GPIO.LOW)
-        elif state == 'reverse':
-            GPIO.output(power_pin, GPIO.LOW)
-            GPIO.output(reverse_pin, GPIO.HIGH)
-        else:  # state == 'off'
-            GPIO.output(power_pin, GPIO.LOW)
-            GPIO.output(reverse_pin, GPIO.LOW)
 
     def update(self):
-        # Update the controller input
+        # Replace this with an event listener
         axis_data = self.controller.listen()
         # Drive the car based on controller input
         self.drive(axis_data)
