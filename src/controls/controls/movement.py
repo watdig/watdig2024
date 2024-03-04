@@ -1,5 +1,4 @@
 import pygame 
-import os
 
 class robot_action():
     def __init__(self):

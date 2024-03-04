@@ -1,34 +1,43 @@
-import pygame 
-import os 
+import pygame
+import os
+import sys
 
-
-class controller():
-    def init(self):
+class Controller:
+    def __init__(self):
         """Initialize the joystick components"""
         pygame.init()
         pygame.joystick.init()
+        if pygame.joystick.get_count() == 0:
+            # No joysticks connected
+            print("No joystick detected")
+            pygame.quit()
+            sys.exit()
         self.controller = pygame.joystick.Joystick(0)
         self.controller.init()
-        self.axis_data = False
-     
+        self.axis_data = {i: 0.0 for i in range(self.controller.get_numaxes())}
         
-        print('Pygame init complete')
+        print('Controller initialized')
 
     def listen(self):
         """Listen for events to happen"""
-        
-        if not self.axis_data:
-            self.axis_data = {0:0.0,1:0.0,2:0.0,3:-1.0,4:-1.0,5:0.0} #default
-
         for event in pygame.event.get():
             if event.type == pygame.JOYAXISMOTION:
-                self.axis_data[event.axis] = round(event.value,2)
-                
+                self.axis_data[event.axis] = round(event.value, 2)
+            elif event.type == pygame.QUIT:
+                # Handle the window being closed
+                pygame.quit()
+                sys.exit()
+
         return self.axis_data
 
-
 if __name__ == "__main__":
-    ps4 = controller()
-    ps4.init()
-    ps4.listen()
-        
+    ps5_controller = Controller()
+    
+    try:
+        while True:
+            os.system('cls' if os.name == 'nt' else 'clear') 
+            axis_data = ps5_controller.listen()
+            print(axis_data)
+    except KeyboardInterrupt:
+        print("\nExiting program.")
+        pygame.quit()
