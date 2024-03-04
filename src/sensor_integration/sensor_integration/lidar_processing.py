@@ -7,8 +7,10 @@ from my_robot_msgs.msg import FusedData
 # Import MPU6050 driver library
 from mpu6050 import MPU6050
 
-# Class for processing Gyro data
 class Gyro:
+    '''
+    Class for processing Gyro data
+    '''
     def __init__(self):
         self.is_alive = True  # Flag indicating Gyro status
 
@@ -17,8 +19,10 @@ class Gyro:
         self.is_alive = True  # Update Gyro status
         return data
 
-# Class for processing Left Encoder data
 class LeftEncoder:
+    '''
+    Class for processing Left Encoder data
+    '''
     def __init__(self):
         self.data = 0 
 
@@ -29,8 +33,10 @@ class LeftEncoder:
     def reset_data(self):
         self.data = 0  # Reset encoder data
 
-# Class for processing Right Encoder data
 class RightEncoder:
+    '''
+    Class for processing Right Encoder data
+    '''
     def __init__(self):
         self.data = 0  # Initialize encoder data
 
@@ -41,8 +47,10 @@ class RightEncoder:
     def reset_data(self):
         self.data = 0  # Reset encoder data
 
-# Node for data fusion and communication
 class DataFusionNode(Node):
+    '''
+    Node for data fusion and communication
+    '''
     def __init__(self):
         super().__init__('data_fusion_node')  # Initialize Data Fusion Node
 
@@ -56,55 +64,76 @@ class DataFusionNode(Node):
         self.left_encoder_sub = self.create_subscription(Float64, '/left_encoder_topic', self.left_encoder_callback, 10)
         self.right_encoder_sub = self.create_subscription(Float64, '/right_encoder_topic', self.right_encoder_callback, 10)
 
-        # Create publisher for fused data
+        # Create publishers for fused data and health status
         self.fused_data_pub = self.create_publisher(FusedData, '/fused_data_topic', 10)
 
         # Flag to indicate if the robot is currently driving forward
         self.is_driving_forward = False
 
-    # Callback functions for each sensor topic triggered whenever a new message is received, then data is processed and published
+    # Callback functions
+
     def gyro_callback(self, msg):
+        '''
+        Gyro callback function is triggered whenever a new message is received, is processed, and then actually publishes it to topic
+        '''
         processed_data = self.gyro.process_data(msg)
         self.publish_fused_data()
         self.publish_health_status(self.gyro.is_alive, 'gyro')
 
     def left_encoder_callback(self, msg):
+        '''
+        Left Encoder callback function is triggered whenever a new message is received, is processed, and then actually publishes it to topic
+        '''
         if not self.is_driving_forward:
             self.left_encoder.reset_data()
         processed_data = self.left_encoder.process_data(msg)
         self.publish_fused_data()
     
     def right_encoder_callback(self, msg):
+        '''
+        Right Encoder callback function is triggered whenever a new message is received, is processed, and then actually publishes it to topic
+        '''
         if not self.is_driving_forward:
             self.right_encoder.reset_data()
         processed_data = self.right_encoder.process_data(msg)
         self.publish_fused_data()
     
     def drive_forward_callback(self, msg):
+        '''
+        Resets motor encoders based on whether robot is driving forwards or not
+        '''
         self.is_driving_forward = msg.data
         if self.is_driving_forward:
             self.reset_encoders()
 
     # Additional functions for fusion and publishing
             
-    # Fusion logic to combine data from different sensors
     def publish_fused_data(self):
+        '''
+        Fusion logic to combine data from different sensors and publish it to topic
+        '''
         fused_data = self.fuse_data()
         fused_data_array = self.convert_to_array(fused_data)
         self.fused_data_pub.publish(fused_data_array)
     
-    # Combines data from each sensor into an array
     def fuse_data(self):
+        '''
+        Combines data from different sensors into an array
+        '''
         fused_data_array = [self.gyro.data['x'], self.gyro.data['y'], self.gyro.data['z'], self.left_encoder.data, self.right_encoder.data, self.gyro.is_alive]
         return fused_data_array
 
-    # Resets both encoders, called when robot is not driving forward
     def reset_encoders(self): 
+        '''
+        Resets both encoders, called when robot is not driving forward
+        '''
         self.left_encoder.reset_data()
         self.right_encoder.reset_data()
 
-# Node for Gyro hardware communication
 class GyroHardwareNode(Node):
+    '''
+    Node for gyro hardware communication and publishing to data fusion node
+    '''
     def __init__(self):
         super().__init__('gyro_hardware_node')
 
@@ -121,8 +150,10 @@ class GyroHardwareNode(Node):
 
         self.gyro_publisher.publish(imu_msg)
 
-# Node for Left Encoder hardware communication
 class LeftEncoderHardwareNode(Node):
+    '''
+    Node for left encoder hardware communication and publishing to data fusion node
+    '''
     def __init__(self):
         super().__init__('left_encoder_hardware_node')
 
@@ -140,8 +171,10 @@ class LeftEncoderHardwareNode(Node):
 
         self.left_encoder_publisher.publish(left_encoder_msg)
 
-# Node for Right Encoder hardware communication
 class RightEncoderHardwareNode(Node):
+    '''
+    Node for right encoder hardware communication and publishing to data fusion node
+    '''
     def __init__(self):
         super().__init__('right_encoder_hardware_node')
 
@@ -159,8 +192,10 @@ class RightEncoderHardwareNode(Node):
 
         self.right_encoder_publisher.publish(right_encoder_msg)
 
-# Main function to initialize and spin all nodes
 def main(args=None):
+    '''
+    Main function to initialize and spin all nodes
+    '''
     rclpy.init(args=args)
     
     # Create instances of each node
