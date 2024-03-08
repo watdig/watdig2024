@@ -23,12 +23,12 @@ const CoordinateTest = () => {
   };
   useEffect(() => {
     const ros = new Roslib.Ros({
-      url: 'ws://localhost:9090'
+      url: 'ws://192.168.246.130:9090'
     });
 
     const topicListener = new Roslib.Topic({
       ros: ros,
-      name: '/Obstacles',
+      name: '/obstacle_csv_topic',
       messageType: 'interfaces/Obstacles'
     });
 
