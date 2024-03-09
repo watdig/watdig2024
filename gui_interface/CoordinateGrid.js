@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 
 const CoordinateGrid = () => {
     
   const renderGrid = () => {
     const grid = [];
-    for (let row = 0; row < 20; row++) {
+    for (let row = 0; row < 48; row++) {
         const rowNodes = [];
-      for (let col = 0; col < 20; col++) {
+      for (let col = 0; col < 100; col++) {
         rowNodes.push(<Node key={`node-${row}-${col}`} />);
       }
       grid.push(<View key={`row-${row}`} style={styles.row}>{rowNodes}</View>);
@@ -19,7 +19,7 @@ const CoordinateGrid = () => {
   return (
     <View style={styles.gridContainer}>
       {renderGrid()}
-      <Point size={10} x={10} y={1} />
+      <Point size={10} x={1} y={1} />
       <Point2 size={10} x={11} y={1} />
     </View>
   );
@@ -34,8 +34,8 @@ const Node = () => {
 const Point = ({ size, x, y }) => {
     const pointStyle = {
       position: 'absolute',
-      left: ((x * 18) + x + 7) - size / 2,
-      top: (378 - (y * 18) + y) - size / 2,
+      left: ((x * 10) + x + 768) - size / 2,
+      top: (288 - (y * 10) - y) - size / 2,
       width: size,
       height: size,
       backgroundColor: 'green', // You can customize the color here
@@ -49,7 +49,7 @@ const Point = ({ size, x, y }) => {
     const point2Style = {
       position: 'absolute',
       left: ((x * 18) + x + 7) - size / 2,
-      top: (378 - (y * 18) + y) - size / 2,
+      top: (279 - (y * 18) + y) - size / 2,
       width: size,
       height: size,
       backgroundColor: 'red', // You can customize the color here
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   node: {
-    width: 17,
-    height: 17,
+    width: 10,
+    height: 10,
     backgroundColor: 'white',
     margin: 1,
   },
