@@ -1,0 +1,10 @@
+# Goal
+float32 angle
+float32 distance
+---
+# Result
+bool success
+---
+# Feedback
+float32 current_angle
+float32 current_distance
