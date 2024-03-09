@@ -4,7 +4,7 @@
 source install/setup.bash
 
 # Define the list of node names
-NODES=("csv_parse")
+NODES=("csv_parse" "navigator_node" "rqt_graph")
 
 # Check if there are any nodes running
 if [ ${#NODES[@]} -gt 0 ]; then

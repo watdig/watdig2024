@@ -1,4 +1,4 @@
-import goal_manager
+from navigation.goal_manager import GoalManager
 import numpy as np
 import networkx as nx
 import math
@@ -8,7 +8,7 @@ from shapely.geometry import Point, LineString, Polygon
 
 class PathPlanner:
     def __init__(self):
-        self.target_pos = goal_manager.GoalManager()
+        self.target_pos = GoalManager()
         self.environment = {}
         self.checkpoints = []
         self.obstacles = []

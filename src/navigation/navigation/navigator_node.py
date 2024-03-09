@@ -3,7 +3,7 @@ Navigator main node.
 """
 import rclpy
 from rclpy.node import Node
-import path_planner
+from navigation.path_planner import PathPlanner
 from shapely.geometry import Point
 from interfaces.msg import Environment, Checkpoints, Obstacles, State, Current_Coords  # Replace with actual message types
 from std_msgs.msg import Float32MultiArray  # For directions topic
@@ -35,7 +35,7 @@ class NavigatorNode(Node):
             'directions_topic',
             10)
 
-        self.path_planner = path_planner.PathPlanner()
+        self.path_planner = PathPlanner()
         self.current_state = False
         self.current_location = (0,0)
         
@@ -75,10 +75,11 @@ class NavigatorNode(Node):
             self.path_planner.global_prm()
 
     def current_location_callback(self, msg):
-        self.current_location((msg.current_coords.x, msg.current_coords.y))
+        self.current_location = (msg.current_coords.x, msg.current_coords.y)
         # Check and publish the next direction if the state is active
         if self.current_state:
             self.publish_next_direction()
+
 
     def state_callback(self, msg):
         self.current_state = msg.state  # msg.state is a boolean
