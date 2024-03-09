@@ -20,7 +20,7 @@ class PathPlanner:
 
     def get_next_checkpoint(
         self,
-        current_position: tuple(float, float),
+        current_position: list[float, float],
     ):
         """
         if checkpoint is in range, identifies next checkpoint to travel to based on PRM
@@ -35,12 +35,12 @@ class PathPlanner:
         return True
     
     def recalculate_route(self,
-                            current_position: tuple(float, float)):
+                            current_position: list[float, float]):
         self.angle = self.calculate_angle_between_points(current_position, self.target_pos.current_goal)
         self.distance = self.calculate_distance_between_points(current_position, self.target_pos.current_goal)
         return True
 
-    def is_in_range(self, current_position: tuple(float, float)) -> bool:
+    def is_in_range(self, current_position: list[float, float]) -> bool:
         """
         Checks if current_position and target coordinate are within relative range
         returns boolean
@@ -48,7 +48,7 @@ class PathPlanner:
         return self.target_pos.is_goal_reached(current_position=current_position)
 
     def calculate_distance_between_points(
-        self, coordinate1: tuple(float, float), coordinate2: tuple(float, float)
+        self, coordinate1: list[float, float], coordinate2: list[float, float]
     ) -> float:
         """
         calculates distance between two points
@@ -61,7 +61,7 @@ class PathPlanner:
         return distance
 
     def calculate_angle_between_points(
-        self, position: tuple(float, float), target: tuple(float, float)
+        self, position: list[float, float], target: list[float, float]
     ) -> float:
         """
         calculates the angle between any two points
