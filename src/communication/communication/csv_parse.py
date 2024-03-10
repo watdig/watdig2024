@@ -56,10 +56,6 @@ class CsvParse(Node):
             # Use pandas to read the CSV file into a DataFrame
             df = pd.read_csv(file_path)
 
-            # Log DataFrame Data and CSV File Name
-            self.get_logger().info("CSV DataFrame:\n%s" % df)
-            self.get_logger().info("CSV File Name:\n%s" % csv_file_name)
-
             # Process the DataFrame as needed
             self.process_csv(df, csv_file_name)
 
@@ -74,7 +70,6 @@ class CsvParse(Node):
         # Converting Pandas Datarame to JSON and sending as HTTP Header
         records_list = df.to_dict(orient='records')
         records_string = json.dumps(records_list)
-        self.get_logger().info(records_string)
 
         # Publish each record to Topics
         for record in records_list:
@@ -91,7 +86,13 @@ class CsvParse(Node):
             env_msg.easting = df_record['easting']
             env_msg.northing = df_record['northing']
             env_msg.elevation = df_record['elevation']
-            self.get_logger().info('Publishing Environment Message to Topic with values' + str(env_msg))
+            self.get_logger().info("---------------------------------------------------------------")
+            self.get_logger().info('Publishing Environment Message to Topic with values:')
+            self.get_logger().info('Name' + env_msg.name)
+            self.get_logger().info(f"Easting {env_msg.easting}")
+            self.get_logger().info(f"Northing {env_msg.northing}")
+            self.get_logger().info(f"Elevation {env_msg.elevation}")
+            self.get_logger().info("---------------------------------------------------------------")
             self.env_publisher_.publish(env_msg)
         if csv_file_name == 'checkpoints':
             check_msg = Checkpoints()
@@ -99,7 +100,13 @@ class CsvParse(Node):
             check_msg.easting = df_record['easting']
             check_msg.northing = df_record['northing']
             check_msg.elevation = df_record['elevation']
-            self.get_logger().info('Publishing Checkpoint Message to Topic with values' + str(check_msg))
+            self.get_logger().info("---------------------------------------------------------------")
+            self.get_logger().info('Publishing Checkpoints Message to Topic with values:')
+            self.get_logger().info('Name' + check_msg.name)
+            self.get_logger().info(f"Easting {check_msg.easting}")
+            self.get_logger().info(f"Northing {check_msg.northing}")
+            self.get_logger().info(f"Elevation {check_msg.elevation}")
+            self.get_logger().info("---------------------------------------------------------------")
             self.check_publisher_.publish(check_msg)
         if csv_file_name == 'obstacles':
             obs_msg = Obstacles()
@@ -108,7 +115,13 @@ class CsvParse(Node):
             obs_msg.northing = df_record['northing']
             obs_msg.elevation = df_record['elevation']
             obs_msg.bounding_radius = df_record['boundingRadius']
-            self.get_logger().info('Publishing Obstacles Message to Topic with values' + str(obs_msg))
+            self.get_logger().info("---------------------------------------------------------------")
+            self.get_logger().info('Publishing Obstacles Message to Topic with values:')
+            self.get_logger().info('Name' + obs_msg.name)
+            self.get_logger().info(f"Easting {obs_msg.easting}")
+            self.get_logger().info(f"Northing {obs_msg.northing}")
+            self.get_logger().info(f"Elevation {obs_msg.elevation}")
+            self.get_logger().info("---------------------------------------------------------------")
             self.obs_publisher_.publish(obs_msg)
 
 
