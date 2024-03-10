@@ -19,7 +19,7 @@ const CoordinateGrid = () => {
   return (
     <View style={styles.gridContainer}>
       {renderGrid()}
-      <Point size={10} x={1} y={1} />
+      <Point size={8} x={0} y={0} />
       <Point2 size={10} x={11} y={1} />
     </View>
   );
@@ -34,8 +34,8 @@ const Node = () => {
 const Point = ({ size, x, y }) => {
     const pointStyle = {
       position: 'absolute',
-      left: ((x * 10) + x + 768) - size / 2,
-      top: (288 - (y * 10) - y) - size / 2,
+      left: ((x * 10) + x + 769) - size / 2,
+      top: (407 - (y * 10) - y) - size / 2,
       width: size,
       height: size,
       backgroundColor: 'green', // You can customize the color here
@@ -49,7 +49,7 @@ const Point = ({ size, x, y }) => {
     const point2Style = {
       position: 'absolute',
       left: ((x * 18) + x + 7) - size / 2,
-      top: (279 - (y * 18) + y) - size / 2,
+      top: (396 - (y * 18) + y) - size / 2,
       width: size,
       height: size,
       backgroundColor: 'red', // You can customize the color here

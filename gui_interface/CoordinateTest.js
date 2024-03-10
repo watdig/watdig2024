@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Roslib from 'roslib';
 
-
 const CoordinateTest = () => {
-  const [points, setPoints] = useState([]);
+  const [points1, setPoints1] = useState([]);
+  const [points2, setPoints2] = useState([]);
+  const [points3, setPoints3] = useState([]);
   let pointCounter = 0;
+
   const renderGrid = () => {
     const grid = [];
     for (let row = 0; row < 48; row++) {
         const rowNodes = [];
         for (let col = 0; col < 100; col++) {
-          if (row === 24) { // Check if it's the 15th row
-            rowNodes.push(<Node key={`node-${row}-${col}`} style={styles.boldNode} />);
-          } else {
-            rowNodes.push(<Node key={`node-${row}-${col}`} />);
-          }
+          rowNodes.push(<Node key={`node-${row}-${col}`} />);
         }
       grid.push(<View key={`row-${row}`} style={styles.row}>{rowNodes}</View>);
     }
@@ -26,39 +24,104 @@ const CoordinateTest = () => {
       url: 'ws://192.168.246.130:9090'
     });
 
-    const topicListener = new Roslib.Topic({
+    const topicListener1 = new Roslib.Topic({
       ros: ros,
       name: '/obstacle_csv_topic',
       messageType: 'interfaces/Obstacles'
     });
 
-    const subscribeToRosTopic = (message) => {
+    const topicListener2 = new Roslib.Topic({
+      ros: ros,
+      name: '/checkpoints_csv_topic',
+      messageType: 'interfaces/Checkpoints'
+    });
+
+    const topicListener3 = new Roslib.Topic({
+      ros: ros,
+      name: '/environment_csv_topic',
+      messageType: 'interfaces/Environment'
+    });
+
+    const subscribeToRosTopic1 = (message) => {
       // Parse the message
       const newPoint = {
         key: pointCounter++,
         easting: message.easting,
         northing: message.northing,
       };
-      setPoints(prevPoints => [...prevPoints, newPoint]);
+      setPoints1(prevPoints => [...prevPoints, newPoint]);
     };
 
-    topicListener.subscribe(subscribeToRosTopic);
+    const subscribeToRosTopic2 = (message) => {
+      const newPoint = {
+        key: pointCounter++,
+        easting: message.easting,
+        northing: message.northing,
+      };
+      setPoints2(prevPoints => [...prevPoints, newPoint]);
+    };
+
+    const subscribeToRosTopic3 = (message) => {
+      const newPoint = {
+        key: pointCounter++,
+        easting: message.easting,
+        northing: message.northing,
+      };
+      setPoints3(prevPoints => [...prevPoints, newPoint]);
+    };
+
+    topicListener1.subscribe(subscribeToRosTopic1);
+    topicListener2.subscribe(subscribeToRosTopic2);
+    topicListener3.subscribe(subscribeToRosTopic3);
 
     return () => {
-      topicListener.unsubscribe();
+      topicListener1.unsubscribe();
+      topicListener2.unsubscribe();
+      topicListener3.unsubscribe();
       ros.close();
     };
   }, []);
 
+  const XAxis = ({ x, y, length, color }) => {
+    const lineStyle = {
+      position: 'absolute',
+      left: x,
+      top: y,
+      width: length,
+      height: 2, // Adjust the height of the line as needed
+      backgroundColor: color,
+    };
+  
+    return <View style={lineStyle} />;
+  };
 
-
+  const YAxis = ({ x, y, height, color }) => {
+    const lineStyle = {
+      position: 'absolute',
+      left: x,
+      top: y,
+      width: 2, // Adjust the width of the line as needed
+      height: height,
+      backgroundColor: color,
+    };
+  
+    return <View style={lineStyle} />;
+  };
 
   return (
-    <View style={styles.container}>
+    <View>
       <View style={styles.gridContainer}>
         {renderGrid()}
-        {points.map((point, index) => (
-          <Point key={`${point.easting}-${point.northing}-${index}`} size={8} x={point.easting} y={point.northing} />
+        <XAxis x={169} y={408} length={1198} color="black" />
+        <YAxis x={767} y={0} height={576} color="black" />
+        {points1.map((point1, index) => (
+          <Point key={`point1-${index}`} size={8} x={point1.easting} y={point1.northing} color="red" />
+        ))}
+        {points2.map((point2, index) => (
+          <Point key={`point2-${index}`} size={8} x={point2.easting} y={point2.northing} color="green" />
+        ))}
+        {points3.map((point3, index) => (
+          <Point key={`point3-${index}`} size={8} x={point3.easting} y={point3.northing} color="purple" />
         ))}
       </View>
     </View>
@@ -71,14 +134,14 @@ const Node = () => {
     );
   };
 
-  const Point = ({ size, x, y }) => {
+  const Point = ({ size, x, y, color }) => {
     const pointStyle = {
       position: 'absolute',
-      left: ((x * 10) + x + 768) - size / 2,
-      top: (288 - (y * 10) - y) - size / 2,
+      left: ((x * 10) + x + 769) - size / 2,
+      top: (407 - (y * 10) - y) - size / 2,
       width: size,
       height: size,
-      backgroundColor: 'red', // You can customize the color here
+      backgroundColor: color, // You can customize the color here
       borderRadius: size / 2,
     };
   
@@ -87,10 +150,6 @@ const Node = () => {
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-  },
   gridContainer: {
     flexDirection: 'column',
     justifyContent: 'center',

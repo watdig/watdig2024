@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { Button, View } from 'react-native';
-import CoordinateTest from './CoordinateTest';
+import CoordinateGrid from './CoordinateGrid';
 
 function DetailsScreen() {
     
@@ -25,7 +25,7 @@ function DetailsScreen() {
         <Button title={text} onPress={onPressHandler} color={buttonColor} />
       </View>
       <View>
-        <CoordinateTest />
+        <CoordinateGrid />
       </View>
     </View>
     );
