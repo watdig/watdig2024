@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray  
 from rclpy.action import ActionClient
-from action_folder.action import TurnAndMove 
+from action_folder.action import TurnAndMove  
 
 class MotorControllerNode(Node):
     def __init__(self):
@@ -15,7 +14,7 @@ class MotorControllerNode(Node):
         # Subscriber to the topic publishing angle and distance commands
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
-        # Action client (replace YourAction with your actual action type)
+        # Action client for TurnAndMove action
         self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move_action_server')
 
     def callback(self, msg):
@@ -30,7 +29,7 @@ class MotorControllerNode(Node):
             self.prev_distance = current_distance
 
     def parse_data(self, msg):
-        return msg.data[0], msg.data[1]  # Adjust this based on how your data is actually structured
+        return msg.data[0], msg.data[1] 
 
     def perform_action(self, angle, distance):
         # Ensure the action server is available
@@ -38,13 +37,24 @@ class MotorControllerNode(Node):
             self.get_logger().warn('Action server not available!')
             return
 
-        # Create and send a goal to the action server
-        goal_msg = YourAction.Goal()  # Adjust for your actual goal message type
+        # Check if there's an ongoing goal and try to cancel it
+        if hasattr(self, 'goal_handle') and not self.goal_handle.done():
+            self.get_logger().info('Cancelling the previous goal')
+            # Cancel the previous goal
+            self.goal_handle.cancel_goal()
+
+        # Create and send a new goal to the action server
+        goal_msg = TurnAndMove.Goal()
         goal_msg.angle = angle
         goal_msg.distance = distance
         
+        # Send the new goal
         self.future = self.action_client.send_goal_async(goal_msg)
         self.future.add_done_callback(self.goal_response_callback)
+        
+        # Store the new future as the current goal handle for potential cancellation
+        self.future.add_done_callback(lambda future: setattr(self, 'goal_handle', future.result()))
+
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
@@ -59,7 +69,7 @@ class MotorControllerNode(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
-        self.get_logger().info('Result: {0}'.format(result.success))
+        self.get_logger().info(f'Result: {result.success}')
         # Handle the result as necessary
 
 def main(args=None):
