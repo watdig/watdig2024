@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import { Button, View } from 'react-native';
-import CoordinateGrid from './CoordinateGrid';
+import { Button, View, StyleSheet } from 'react-native';
+import CoordinateTest from './CoordinateTest';
 
 function DetailsScreen() {
     
@@ -15,8 +15,8 @@ function DetailsScreen() {
   };
 
   return (
-    <View>
-      <View style={{paddingTop: 0}}>
+    <View style={styles.container}>
+      <View>
         <Button
           title='START'
         />
@@ -25,10 +25,15 @@ function DetailsScreen() {
         <Button title={text} onPress={onPressHandler} color={buttonColor} />
       </View>
       <View>
-        <CoordinateGrid />
+        <CoordinateTest />
       </View>
     </View>
     );
 }
-
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+});
 export default DetailsScreen;

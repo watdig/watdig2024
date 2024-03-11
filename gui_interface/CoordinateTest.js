@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Roslib from 'roslib';
 
 const CoordinateTest = () => {
@@ -10,9 +10,9 @@ const CoordinateTest = () => {
 
   const renderGrid = () => {
     const grid = [];
-    for (let row = 0; row < 48; row++) {
+    for (let row = 0; row < 36; row++) {
         const rowNodes = [];
-        for (let col = 0; col < 100; col++) {
+        for (let col = 0; col < 30; col++) {
           rowNodes.push(<Node key={`node-${row}-${col}`} />);
         }
       grid.push(<View key={`row-${row}`} style={styles.row}>{rowNodes}</View>);
@@ -48,6 +48,8 @@ const CoordinateTest = () => {
         key: pointCounter++,
         easting: message.easting,
         northing: message.northing,
+        elevation: message.elevation,
+        bounding_radius: message.bounding_radius,
       };
       setPoints1(prevPoints => [...prevPoints, newPoint]);
     };
@@ -108,25 +110,52 @@ const CoordinateTest = () => {
     return <View style={lineStyle} />;
   };
 
+  const TextComponent = ({ text, size, x, y, color }) => {
+    const textStyle = {
+      position: 'absolute',
+      left: ((x * 12) + 183.5) - size / 2,
+      top: (423 - (y * 12)) - size / 2,
+      fontSize: size,
+      color: color,
+    };
+    return <Text style={textStyle}>{text}</Text>;
+  };
+
   return (
-    <View>
       <View style={styles.gridContainer}>
         {renderGrid()}
-        <XAxis x={169} y={408} length={1198} color="black" />
-        <YAxis x={767} y={0} height={576} color="black" />
+        <TextComponent text="0" size={16} x={0} y={-2} color="black" />
+        <TextComponent text="5" size={16} x={5} y={-2} color="black" />
+        <TextComponent text="10" size={16} x={9.5} y={-2} color="black" />
+        <TextComponent text="15" size={16} x={14.5} y={-2} color="black" />
+        <TextComponent text="-5" size={16} x={-5.4} y={-2} color="black" />
+        <TextComponent text="-10" size={16} x={-10.7} y={-2} color="black" />
+        <TextComponent text="-15" size={16} x={-15.7} y={-2} color="black" />
+        <TextComponent text="5" size={16} x={0} y={4.5} color="black" />
+        <TextComponent text="10" size={16} x={-0.3} y={9.5} color="black" />
+        <TextComponent text="15" size={16} x={-0.3} y={14.5} color="black" />
+        <TextComponent text="20" size={16} x={-0.3} y={19.5} color="black" />
+        <TextComponent text="25" size={16} x={-0.3} y={24.5} color="black" />
+        <TextComponent text="30" size={16} x={-0.3} y={29.5} color="black" />
+        <TextComponent text="35" size={16} x={-0.3} y={34.5} color="black" />
+        <XAxis x={0} y={432} length={359} color="black" />
+        <YAxis x={179} y={12} height={432} color="black" />
         {points1.map((point1, index) => (
-          <Point key={`point1-${index}`} size={8} x={point1.easting} y={point1.northing} color="red" />
+          <Point key={`point1-${index}`} size={8 * point1.bounding_radius} x={point1.easting} y={point1.northing} color="red" />
         ))}
         {points2.map((point2, index) => (
-          <Point key={`point2-${index}`} size={8} x={point2.easting} y={point2.northing} color="green" />
+          <Point key={`point2-${index}`} size={10} x={point2.easting} y={point2.northing} color="green" />
         ))}
         {points3.map((point3, index) => (
           <Point key={`point3-${index}`} size={8} x={point3.easting} y={point3.northing} color="purple" />
         ))}
-      </View>
-    </View>
+      </View>  
   );
 };
+
+
+
+
 
 const Node = () => {
     return (
@@ -134,11 +163,13 @@ const Node = () => {
     );
   };
 
+  
+
   const Point = ({ size, x, y, color }) => {
     const pointStyle = {
       position: 'absolute',
-      left: ((x * 10) + x + 769) - size / 2,
-      top: (407 - (y * 10) - y) - size / 2,
+      left: ((x * 12) + 180) - size / 2,
+      top: (432 - (y * 12)) - size / 2,
       width: size,
       height: size,
       backgroundColor: color, // You can customize the color here
@@ -151,6 +182,7 @@ const Node = () => {
 
 const styles = StyleSheet.create({
   gridContainer: {
+    paddingTop: 12,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
