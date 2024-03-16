@@ -5,7 +5,7 @@ from std_msgs.msg import String, Float32MultiArray
 from sympy import symbols, Eq, solve
 from scipy.optimize import minimize
 import math
-import numpy
+import numpy as np
 
 
 class LocalizationNode(Node):
@@ -21,6 +21,9 @@ class LocalizationNode(Node):
         # Placeholder for UWB distances
         self.uwbback = []
         self.uwbfront = []
+        
+        #change this to starting point, make guess as close to previously known position
+        self.x0 = np.array[0,0]
         
         # Current action state
         self.current_action = "still"
@@ -70,24 +73,19 @@ class LocalizationNode(Node):
         self.current_location_publisher.publish(current_location)
         self.get_logger().info(f'Published Current Location: {x}, {y}, {curr_angle}')
     
-    def location_solver(point1, point2, distances):
+    def location_solver(self, point1, point2, distances):
         # Adjusted objective function to minimize
         def objective_func(X):
             x, y = X
             return sum([((x - point[0])**2 + (y - point[1])**2 - d**2)**2 for point, d in zip([point1, point2], distances)])
 
-
-        # Compute the midpoint of the line segment connecting point1 and point2
-        midpoint = np.array([(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2])
-        
-        x0 = np.array([20,20])
-        
         # Perform the minimization with adjusted objective function
-        result = minimize(objective_func, x0, method='L-BFGS-B')
+        result = minimize(objective_func, self.x0, method='L-BFGS-B')
         
         if result.success:
             # Ensuring the solution has positive coordinates
             if result.x[0] >= 0 and result.x[1] >= 0:
+                self.x0 = result.x
                 return result.x
             else:
                 return "Solution has non-positive coordinates."
