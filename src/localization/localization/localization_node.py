@@ -2,7 +2,6 @@ import rclpy
 from rclpy.node import Node
 from interface.msg import State, CurrentCoords
 from std_msgs.msg import String, Float32MultiArray
-from sympy import symbols, Eq, solve
 from scipy.optimize import minimize
 import math
 import numpy as np
@@ -93,30 +92,25 @@ class LocalizationNode(Node):
             return "Optimization failed."
 
     def point_solver(Point1, distanceAB, distanceAC):
-        # Unpack the input parameters
         xB, yB = Point1
         AB = distanceAB
         AC = distanceAC
-        BC = 0.445
+        BC = 0.445  
         
-        # Compute the angle at A using the Law of Cosines
-        # Note: Adjusted to handle generic triangles, not requiring yB = 0
+        # Compute the angle at A using the Law of Cosines, adjusted to handle discrepancies
         cos_angle_A = (AB**2 + AC**2 - BC**2) / (2 * AB * AC)
-        
-        # Ensure the computed cosine is within the valid range to prevent math domain errors
-        if not -1 <= cos_angle_A <= 1:
-            raise ValueError("The provided distances do not form a valid triangle.")
+        # Clip cos_angle_A to the valid range [-1, 1] to handle potential inaccuracies
+        cos_angle_A = max(min(cos_angle_A, 1), -1)
         
         angle_A = math.acos(cos_angle_A)
         
         # Compute the direction of C relative to A based on B's position
-        # Calculate the angle of B relative to the X-axis
         angle_B = math.atan2(yB, xB)
         
         # The total angle from the X-axis to the line AC
         total_angle = angle_B + angle_A
         
-        # Calculate the coordinates of C
+        # Calculate the coordinates of C considering the potential discrepancies
         xC = AC * math.cos(total_angle)
         yC = AC * math.sin(total_angle)
         
