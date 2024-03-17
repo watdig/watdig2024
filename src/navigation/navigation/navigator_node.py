@@ -74,6 +74,7 @@ class NavigatorNode(Node):
     def current_location_callback(self, msg):
         self.current_location = (msg.easting, msg.westing)
         self.current_gyro = msg.angle
+        self.publish_next_direction()
 
     def publish_next_direction(self):
         """Publish next direction based on the current position."""
