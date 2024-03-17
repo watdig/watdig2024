@@ -128,7 +128,6 @@ class LocalizationNode(Node):
         return angle_degrees
         
     
-    
 def main(args=None):
     rclpy.init(args=args)
     localization_node = LocalizationNode()
