@@ -17,6 +17,8 @@ class LocalizationNode(Node):
         # UWB Anchor Points
         self.uwbs = [(0, 0), (15, 0)]
         
+        #calibrate with inital distances
+
         # Placeholder for UWB distances
         self.uwbback = []
         self.uwbfront = []
@@ -49,7 +51,9 @@ class LocalizationNode(Node):
 
     def compute_and_publish_location(self):
         uwb1_position = self.location_solver(self.uwbs[0], self.uwbs[1], self.uwbback)
+        print(uwb1_position)
         uwb2_position = self.point_solver(uwb1_position, self.uwbback[0], self.uwbfront[0])
+        print(uwb2_position)
         curr_angle = self.angle_from_vertical(uwb1_position, uwb2_position)
         
         x, y = uwb1_position
