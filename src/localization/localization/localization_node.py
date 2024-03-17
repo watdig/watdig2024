@@ -22,7 +22,7 @@ class LocalizationNode(Node):
         self.uwbfront = []
         
         #change this to starting point, make guess as close to previously known position
-        self.x0 = np.array[0,0]
+        self.x0 = np.array([0,0])
                 
         self.subscription_frontuwb = self.create_subscription(
             Float32MultiArray,
