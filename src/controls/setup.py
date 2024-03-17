@@ -25,7 +25,7 @@ setup(
     entry_points={
         'console_scripts': [\
             "controls_node = controls.controller_node:main",
-            "action_server = scripts.turn_and_move_action_server:main"
+            "action_server = controls.turn_and_move_action_server:main"
         ],
     },
 )
