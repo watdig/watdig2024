@@ -19,6 +19,8 @@ class MotorControllerNode(Node):
 
     def callback(self, msg):
         current_angle, current_distance = self.parse_data(msg)
+        print(current_angle)
+        print(current_distance)
         
         # Compare with previous commands and act if different
         if current_angle != self.prev_angle or current_distance != self.prev_distance:
