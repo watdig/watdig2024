@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from interface.msg import State, CurrentCoords
+from interfaces.msg import CurrentCoords
 from std_msgs.msg import String, Float32MultiArray
 from scipy.optimize import minimize
 import math
@@ -23,17 +23,7 @@ class LocalizationNode(Node):
         
         #change this to starting point, make guess as close to previously known position
         self.x0 = np.array[0,0]
-        
-        # Current action state
-        self.current_action = "still"
-        
-        # Subscriptions
-        self.subscription_curraction = self.create_subscription(
-            String,
-            'current_action',
-            self.curr_action_callback,
-            10)
-        
+                
         self.subscription_frontuwb = self.create_subscription(
             Float32MultiArray,
             'front_uwb_topic',
