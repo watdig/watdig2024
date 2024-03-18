@@ -7,6 +7,7 @@ from navigation.path_planner import PathPlanner
 from shapely.geometry import Point
 from interfaces.msg import Environment, Checkpoints, Obstacles, State, CurrentCoords  # Replace with actual message types
 from std_msgs.msg import Float32MultiArray  # For directions topic
+from interfacesarray.msg import Checkpointsarray, Environmentarray, Obstaclesarray
 
 
 class NavigatorNode(Node):
@@ -14,17 +15,17 @@ class NavigatorNode(Node):
         super().__init__('navigator_node')
         # Initialize subscribers for initial setup
         self.subscription_obstacles = self.create_subscription(
-            Obstacles,  
+            Obstaclesarray,  
             'obstacles_csv_topic',
             self.obstacles_callback,
             10)
         self.subscription_checkpoints = self.create_subscription(
-            Checkpoints,  
+            Checkpointsarray,  
             'checkpoints_csv_topic',
             self.checkpoints_callback,
             10)
         self.subscription_environment = self.create_subscription(
-            Environment,  
+            Environmentarray,  
             'environment_csv_topic',
             self.environment_callback,
             10)
@@ -49,20 +50,20 @@ class NavigatorNode(Node):
 
     def environment_callback(self, msg):
         # Assuming msg.environment is an iterable of environment objects
-        self.path_planner.environment = {
-            environment.name: Point(environment.easting, environment.northing)
-            for environment in msg.Environment
-        }
+        for environment in msg.array:
+            self.path_planner.environment = {environment.name: Point(environment.easting, environment.northing)}
         # Unsubscribe after receiving and processing the data
         self.subscription_environment = None
 
     # NEED TO MAKE OBSTACLES MESSAGE AN ARRAY OF OBSTACLE DATA types
     def obstacles_callback(self, msg):
-        self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing) for obstacle in msg.obstacles]
-        self.subscription_obstacles = None  # Unsubscribe after receiving data
+        for obstacle in msg.array:
+            self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing)]
+            self.subscription_obstacles = None  # Unsubscribe after receiving data
 
     def checkpoints_callback(self, msg):
-        self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing) for checkpoint in msg.checkpoints]
+        for checkpoint in msg.array:
+            self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing)]
         self.subscription_checkpoints = None  # Unsubscribe after receiving data
         self.check_initialization()
 
