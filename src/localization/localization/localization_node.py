@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from interfaces.msg import CurrentCoords
-from std_msgs.msg import String, Float32MultiArray
+from std_msgs.msg import Float32MultiArray
 from scipy.optimize import minimize
 import math
 import numpy as np
@@ -61,7 +61,7 @@ class LocalizationNode(Node):
         # Once computed, publish the current location
         current_location = CurrentCoords()
         current_location.easting = x
-        current_location.westing = y
+        current_location.northing = y
         current_location.angle = curr_angle
         self.current_location_publisher.publish(current_location)
         self.get_logger().info(f'Published Current Location: {x}, {y}, {curr_angle}')
