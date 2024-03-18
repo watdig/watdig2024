@@ -36,30 +36,27 @@ class NavigatorNode(Node):
             10)
 
         self.path_planner = PathPlanner()
-        self.current_state = False
+        self.current_gyro = 40
+        self.prev_gyro = 40
         self.current_location = (0,0)
         
-        # Setup subscriptions for current location and state immediately
+        # Setup subscriptions for current location and angle
         self.subscription_current_location = self.create_subscription(
             CurrentCoords,
             'current_location_topic',
             self.current_location_callback,
-            10)
-        self.subscription_state = self.create_subscription(
-            State,  # Adjust to your state message type
-            'state_topic',
-            self.state_callback,
             10)
 
     def environment_callback(self, msg):
         # Assuming msg.environment is an iterable of environment objects
         self.path_planner.environment = {
             environment.name: Point(environment.easting, environment.northing)
-            for environment in msg.environment
+            for environment in msg.Environment
         }
         # Unsubscribe after receiving and processing the data
         self.subscription_environment = None
 
+    # NEED TO MAKE OBSTACLES MESSAGE AN ARRAY OF OBSTACLE DATA types
     def obstacles_callback(self, msg):
         self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing) for obstacle in msg.obstacles]
         self.subscription_obstacles = None  # Unsubscribe after receiving data
@@ -75,20 +72,13 @@ class NavigatorNode(Node):
             self.path_planner.global_prm()
 
     def current_location_callback(self, msg):
-        self.current_location = (msg.currentcoords.x, msg.currentcoords.y)
-        # Check and publish the next direction if the state is active
-        if self.current_state:
-            self.publish_next_direction()
-
-
-    def state_callback(self, msg):
-        self.current_state = msg.state  # msg.state is a boolean
-        if self.current_state:
-            self.publish_next_direction()
+        self.current_location = (msg.easting, msg.westing)
+        self.current_gyro = msg.angle
+        self.publish_next_direction()
 
     def publish_next_direction(self):
         """Publish next direction based on the current position."""
-        if self.current_state:
+        if (self.current_gyro - self.prev_gyro) <= 2:
             self.path_planner.get_next_checkpoint(self.current_location)
         else:
             self.path_planner.recalculate_route(self.current_location)
@@ -98,7 +88,7 @@ class NavigatorNode(Node):
 
 def main(args=None):
     """
-    Counter.
+    published angle to turn and distance to travel based on current coords.
     """
     rclpy.init(args=args)
     node = NavigatorNode()

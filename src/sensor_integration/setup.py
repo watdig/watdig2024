@@ -23,7 +23,9 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
+        'console_scripts': [\
+            "back_uwb_node = sensor_integration.back_uwb:main",
+            "front_uwb_node = sensor_integration.front_uwb:main"
         ],
     },
 )
