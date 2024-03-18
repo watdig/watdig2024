@@ -1,0 +1,1 @@
+interfaces/Obstacles[] array
