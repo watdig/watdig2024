@@ -6,6 +6,7 @@ const CoordinateTest = () => {
   const [points1, setPoints1] = useState([]);
   const [points2, setPoints2] = useState([]);
   const [points3, setPoints3] = useState([]);
+  // const [points4, setPoints4] = useState([]);
   const [subscribed, setSubscribed] = useState(false);
   let pointCounter = 0;
 
@@ -44,11 +45,11 @@ const CoordinateTest = () => {
       messageType: 'interfaces/Environment'
     });
 
-    const topicListener4 = new Roslib.Topic({
-      ros: ros,
-      name: '/current_location_topic',
-      messageType: 'interfaces/Current_Coords'
-    });
+    // const topicListener4 = new Roslib.Topic({
+    //   ros: ros,
+    //   name: '/current_location_topic',
+    //   messageType: 'interfaces/Current_Coords'
+    // });
 
     const subscribeToRosTopic1 = (message) => {
       // Parse the message
@@ -80,27 +81,27 @@ const CoordinateTest = () => {
       setPoints3(prevPoints => [...prevPoints, newPoint]);
     };
 
-    const subscribeToRosTopic4 = (message) => {
-      const newPoint = {
-        key: pointCounter++,
-        easting: message.easting,
-        westing: message.westing,
-        angle: message.angle,
-      };
-      setPoints4(prevPoints => [...prevPoints, newPoint]);
-    };
+    // const subscribeToRosTopic4 = (message) => {
+    //   const newPoint = {
+    //     key: pointCounter++,
+    //     easting: message.easting,
+    //     westing: message.westing,
+    //     angle: message.angle,
+    //   };
+    //   setPoints4(prevPoints => [...prevPoints, newPoint]);
+    // };
 
     topicListener1.subscribe(subscribeToRosTopic1);
     topicListener2.subscribe(subscribeToRosTopic2);
     topicListener3.subscribe(subscribeToRosTopic3);
-    topicListener4.subscribe(subscribeToRosTopic4);
+    // topicListener4.subscribe(subscribeToRosTopic4);
 
     setSubscribed(true);
     return () => {
       topicListener1.unsubscribe();
       topicListener2.unsubscribe();
       topicListener3.unsubscribe();
-      topicListener4.unsubscribe();
+      // topicListener4.unsubscribe();
       ros.close();
     };
    }
@@ -144,9 +145,9 @@ const CoordinateTest = () => {
         {points3.map((point3, index) => (
           <Point key={`point3-${index}`} size={8} x={point3.easting} y={point3.northing} color="purple" />
         ))}
-        {points4.map((point4, index) => (
+        {/* {points4.map((point4, index) => (
           <Point key={`point4-${index}`} size={8} x={point4.easting} y={point4.westing} color="grey" />
-        ))}
+        ))} */}
       </View>  
   );
 };
