@@ -31,8 +31,8 @@ const CoordinateGrid = () => {
   const TextComponent = ({ text, size, x, y, color }) => {
     const textStyle = {
       position: 'absolute',
-      left: ((x * 12) + 183.5) - size / 2,
-      top: (423 - (y * 12)) - size / 2,
+      left: ((x * 12) + 303.5) - size / 2,
+      top: (483 - (y * 12)) - size / 2,
       fontSize: size,
       color: color,
     };
@@ -40,9 +40,9 @@ const CoordinateGrid = () => {
   };
   const renderGrid = () => {
     const grid = [];
-    for (let row = 0; row < 36; row++) {
+    for (let row = 0; row < 80; row++) {
         const rowNodes = [];
-      for (let col = 0; col < 30; col++) {
+      for (let col = 0; col < 50; col++) {
         rowNodes.push(<Node key={`node-${row}-${col}`} />);
       }
       grid.push(<View key={`row-${row}`} style={styles.row}>{rowNodes}</View>);
@@ -53,13 +53,15 @@ const CoordinateGrid = () => {
   return (
     <View style={styles.gridContainer}>
       {renderGrid()}
-      <TextComponent text="0" size={16} x={0} y={-2} color="black" />
+      <TextComponent text="0" size={16} x={0} y={-0.45} color="black" />
       <TextComponent text="5" size={16} x={5} y={-2} color="black" />
       <TextComponent text="10" size={16} x={9.5} y={-2} color="black" />
       <TextComponent text="15" size={16} x={14.5} y={-2} color="black" />
+      <TextComponent text="20" size={16} x={19.5} y={-2} color="black" />
       <TextComponent text="-5" size={16} x={-5.4} y={-2} color="black" />
       <TextComponent text="-10" size={16} x={-10.7} y={-2} color="black" />
       <TextComponent text="-15" size={16} x={-15.7} y={-2} color="black" />
+      <TextComponent text="-20" size={16} x={-20.7} y={-2} color="black" />
       <TextComponent text="5" size={16} x={0} y={4.5} color="black" />
       <TextComponent text="10" size={16} x={-0.3} y={9.5} color="black" />
       <TextComponent text="15" size={16} x={-0.3} y={14.5} color="black" />
@@ -67,8 +69,15 @@ const CoordinateGrid = () => {
       <TextComponent text="25" size={16} x={-0.3} y={24.5} color="black" />
       <TextComponent text="30" size={16} x={-0.3} y={29.5} color="black" />
       <TextComponent text="35" size={16} x={-0.3} y={34.5} color="black" />
-      <XAxis x={0} y={432} length={359} color="black" />
-      <YAxis x={179} y={12} height={432} color="black" />
+      <TextComponent text="-5" size={16} x={-0.3} y={-5.5} color="black" />
+      <TextComponent text="-10" size={16} x={-0.7} y={-10.5} color="black" />
+      <TextComponent text="-15" size={16} x={-0.7} y={-15.5} color="black" />
+      <TextComponent text="-20" size={16} x={-0.7} y={-20.5} color="black" />
+      <TextComponent text="-25" size={16} x={-0.7} y={-25.5} color="black" />
+      <TextComponent text="-30" size={16} x={-0.7} y={-30.5} color="black" />
+      <TextComponent text="-35" size={16} x={-0.7} y={-35.5} color="black" />
+      <XAxis x={0} y={491.5} length={600} color="black" />
+      <YAxis x={299} y={12} height={960} color="black" />
       <Point size={10} x={0} y={0} />
       <Point2 size={10} x={11} y={1} />
     </View>
@@ -84,8 +93,8 @@ const Node = () => {
 const Point = ({ size, x, y }) => {
     const pointStyle = {
       position: 'absolute',
-      left: ((x * 12) + 180) - size / 2,
-      top: (432 - (y * 12)) - size / 2,
+      left: ((x * 12) + 300) - size / 2,
+      top: (492 - (y * 12)) - size / 2,
       width: size,
       height: size,
       backgroundColor: 'green', // You can customize the color here
