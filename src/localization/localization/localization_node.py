@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from interfaces.msg import CurrentCoords
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
 import math
 import numpy as np
@@ -22,6 +22,7 @@ class LocalizationNode(Node):
         # Placeholder for UWB distances
         self.uwbback = []
         self.uwbfront = []
+        self.gyro = 0.00
         
         #change this to starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
@@ -38,12 +39,18 @@ class LocalizationNode(Node):
             self.back_uwb_callback,
             10)
         
-    def curr_action_callback(self, msg):
-        self.current_action = msg.data
-
+        self.subscription_gyro = self.create_subscription(
+            Float32,
+            'gyro_topic',
+            self.gyro_callback,
+            10
+        )
+    
+    def gyro_callback(self, msg):
+        self.gyro = msg.data
+    
     def front_uwb_callback(self, msg):
         self.uwbfront = [distance for distance in msg.data]
-        self.compute_and_publish_location()
 
     def back_uwb_callback(self, msg):
         self.uwbback = [distance for distance in msg.data]
@@ -51,10 +58,13 @@ class LocalizationNode(Node):
 
     def compute_and_publish_location(self):
         uwb1_position = self.location_solver(self.uwbs[0], self.uwbs[1], self.uwbback)
-        print(uwb1_position)
+        if isinstance(uwb1_position, str):  # Check if the return value indicates an error
+            self.get_logger().error(uwb1_position)
+            return 
         uwb2_position = self.point_solver(uwb1_position, self.uwbback[0], self.uwbfront[0])
         print(uwb2_position)
         curr_angle = self.angle_from_vertical(uwb1_position, uwb2_position)
+        curr_angle = self.gyro
         
         x, y = uwb1_position
 
@@ -85,7 +95,7 @@ class LocalizationNode(Node):
         else:
             return "Optimization failed."
 
-    def point_solver(Point1, distanceAB, distanceAC):
+    def point_solver(self, Point1, distanceAB, distanceAC):
         xB, yB = Point1
         AB = distanceAB
         AC = distanceAC
@@ -110,7 +120,7 @@ class LocalizationNode(Node):
         
         return [xC, yC]
         
-    def angle_from_vertical(Point1, Point2):
+    def angle_from_vertical(self, Point1, Point2):
         deltax = Point2[0] - Point1[0]
         deltay = Point2[1] - Point1[1]
         
