@@ -1,3 +1,6 @@
+"""
+Localization Node that outputs current location of robot.
+"""
 import rclpy
 from rclpy.node import Node
 from interfaces.msg import CurrentCoords
@@ -8,6 +11,9 @@ import numpy as np
 
 
 class LocalizationNode(Node):
+    """
+    Main Localization Node Class.
+    """
     def __init__(self):
         super().__init__('localization_node')
         
@@ -15,30 +21,30 @@ class LocalizationNode(Node):
         self.current_location_publisher = self.create_publisher(CurrentCoords, 'current_location_topic', 10)
         
         # UWB Anchor Points
+        # Ensure to calibrate with Inital distances
         self.uwbs = [(0, 0), (15, 0)]
         
-        #calibrate with inital distances
-
         # Placeholder for UWB distances
         self.uwbback = []
         self.uwbfront = []
         self.gyro = 0.00
         
-        #change this to starting point, make guess as close to previously known position
+        # Change this to starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
-                
+        
+        # Initalizing UWB Subscribers
         self.subscription_frontuwb = self.create_subscription(
             Float32MultiArray,
             'front_uwb_topic',
             self.front_uwb_callback,
             10)
-        
         self.subscription_backuwb = self.create_subscription(
             Float32MultiArray,
             'back_uwb_topic',
             self.back_uwb_callback,
             10)
         
+        # Initializing Gyro Subscriber
         self.subscription_gyro = self.create_subscription(
             Float32,
             'gyro_topic',
@@ -46,13 +52,23 @@ class LocalizationNode(Node):
             10
         )
     
+    # Subscriber callbacks
     def gyro_callback(self, msg):
+        """
+        Callback for gyro subscriber.
+        """
         self.gyro = msg.data
     
     def front_uwb_callback(self, msg):
+        """
+        Callback for front UWB subscriber.
+        """
         self.uwbfront = [distance for distance in msg.data]
 
     def back_uwb_callback(self, msg):
+        """
+        Callback for back UWB subscriber.
+        """
         self.uwbback = [distance for distance in msg.data]
         self.compute_and_publish_location()
 

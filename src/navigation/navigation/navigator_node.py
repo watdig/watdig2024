@@ -37,8 +37,8 @@ class NavigatorNode(Node):
         # Initialize the publisher for directions
         self.publisher_directions = self.create_publisher(Float32MultiArray, 'directions_topic', 10)
         self.path_planner = PathPlanner()
-        self.current_gyro = 40
-        self.prev_gyro = 40
+        self.current_gyro = 0
+        self.prev_gyro = 0
         self.current_location = (0,0)
         
         # Calling Request Functions
@@ -63,7 +63,10 @@ class NavigatorNode(Node):
             logger.info('Environment Name %s', environment.name)
 
         for environment in msg.array:
-            self.path_planner.environment = {environment.name: Point(environment.easting, environment.northing)}
+            self.path_planner.environment[environment.name] = Point(environment.easting, environment.northing)
+        
+        self.attempt_global_prm()
+        
 
     def obstacles_request(self):
         """
@@ -81,6 +84,9 @@ class NavigatorNode(Node):
 
         for obstacle in msg.array:
             logger.info('Obstacle Name %s', obstacle.name)
+        
+        self.attempt_global_prm()
+
 
     def checkpoints_request(self):
         """
@@ -98,11 +104,26 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         for checkpoint in msg.array:
             logger.info('Checkpoint Name %s', checkpoint.name)
+        
+        self.attempt_global_prm()
+
+    
+    def attempt_global_prm(self):
+        """
+        Attempting to call Global PRM. Checks if arrays are empty. If not empty, create PRM.
+        """
+        if self.path_planner.environment and self.path_planner.checkpoints and self.path_planner.obstacles:
+            self.path_planner.global_prm()
+
 
     def current_location_callback(self, msg):
+        """
+        Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
+        """
         self.current_location = (msg.easting, msg.westing)
         self.current_gyro = msg.angle
         self.publish_next_direction()
+
 
     def publish_next_direction(self):
         """Publish next direction based on the current position."""
@@ -113,6 +134,7 @@ class NavigatorNode(Node):
         directions = Float32MultiArray()
         directions.data = [self.path_planner.angle, self.path_planner.distance]
         self.publisher_directions.publish(directions)
+
 
 def main(args=None):
     """

@@ -1,3 +1,4 @@
+import logging
 from navigation.goal_manager import GoalManager
 import numpy as np
 import networkx as nx
@@ -14,7 +15,7 @@ class PathPlanner:
         self.obstacles = []
         self.targets = []
         self.index = 0
-        self.maxlen = 0
+        self.num_nodes = 0
         self.angle = 0
         self.distance = 0
 
@@ -27,7 +28,7 @@ class PathPlanner:
         """
         reached_goal = self.is_in_range(current_position)
         if reached_goal:
-            if self.index < self.maxlen:
+            if self.index < self.num_nodes:
                 self.target_pos.update_goal(self.targets[self.index]) # identify next goal based on prm
                 self.index+=1
                 self.angle = self.calculate_angle_between_points(current_position, self.target_pos.current_goal)
@@ -76,17 +77,13 @@ class PathPlanner:
 
         return angle_degrees
 
-    def global_prm(
-        self,
-    ):
+    def global_prm(self):
         """
-        runs in the init part of the node
+        Initializes the PRM.
         """
+        logger = logging.getLogger()
         start = self.environment["origin"]
         finish = self.environment["finish"]
-        
-        # Todo; VERIFY ARRAYS OF INFORMATION FROM TOPIC WORK
-        
         
         # Parameters
         NUM_SAMPLES = 400
@@ -147,8 +144,15 @@ class PathPlanner:
             print("No path could be found.")
             path = []  # Clear the path if no complete path could be found
 
+        # Setting targets and maxlen array
         self.targets = path
-        self.maxlen = len(path)
+        self.num_nodes = len(path)
         
+        # Logging information
+        logger.info('Number of Nodes: %d', self.num_nodes)
+        count = 1
+        for target in self.targets:
+            logger.info('Node Number %d: %s', count, target)
+            count += 1
         
         return True
