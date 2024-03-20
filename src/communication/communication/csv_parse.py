@@ -7,7 +7,9 @@ import rclpy
 from rclpy.node import Node
 import pandas as pd
 from interfaces.msg import Checkpoints, Environment, Obstacles
-from interfacesarray.msg import Checkpointsarray, Environmentarray, Obstaclesarray
+from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
+
+logging.basicConfig(level=logging.INFO)
 
 class CsvParse(Node):
     """
@@ -16,51 +18,43 @@ class CsvParse(Node):
 
     def __init__(self):
         super().__init__('csv_reader_node')
-        self.env_publisher_ = self.create_publisher(Environmentarray, 'environment_csv_topic', 10)
-        self.check_publisher_ = self.create_publisher(Checkpointsarray, 'checkpoints_csv_topic', 10)
-        self.obs_publisher_ = self.create_publisher(Obstaclesarray, 'obstacle_csv_topic', 10)
-        timer_period = 5 # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.env_service = self.create_service(Environmentarray, 'environment_csv_service', self.environment_service_callback)
+        self.check_service = self.create_service(Checkpointsarray, 'checkpoints_csv_service', self.checkpoint_service_callback)
+        self.obs_service = self.create_service(Obstaclesarray, 'obstacle_csv_service', self.obstacle_service_callback)
 
+    def environment_service_callback(self, request, response):
+        logger = logging.getLogger()
+        logger.info('Service Call for %s', request.csv)
+        parsed_data = self.parse(request.csv)
+        response.array = parsed_data
+        return response
+    
+    def checkpoint_service_callback(self, request, response):
+        logger = logging.getLogger()
+        logger.info('Service Call for %s', request.csv)
+        parsed_data = self.parse(request.csv)
+        response.array = parsed_data
+        return response
+    
+    def obstacle_service_callback(self, request, response):
+        logger = logging.getLogger()
+        logger.info('Service Call for %s', request.csv)
+        parsed_data = self.parse(request.csv)
+        response.array = parsed_data
+        return response
 
-    def timer_callback(self):
+    def parse(self, csv_name):
         """
-        Timer Callback that will execute every variable amount of seconds.
+        Parse function that will execute parse a desired CSV file.
         """
-        
         #Initalizing logger
         logger = logging.getLogger('my_logger')
-        
-        # CSV files
-        csv_files_names = [
-            'environment.csv',
-            'checkpoints.csv',
-            'obstacles.csv'
-        ]
 
         base_file_location = './install/communication/share/communication/resource/'
-        csv_files_paths = []
-
-        # CSV files paths
-        for csv_file_name in csv_files_names:
-            csv_files_paths.append(base_file_location + csv_file_name)
-
-        # Read and process each CSV file
-        for index, csv_file_path in enumerate(csv_files_paths):
-            logger.info("Parsing for %s", csv_file_path)
-            array = []
-            array = self.parse_csv(csv_file_path, csv_files_names[index].replace('.csv', ''))
-            
-            # Publishing Logic
-            if(csv_files_names[index].replace('.csv', '') == 'environment'):
-                env_array = Environmentarray(array=array)
-                self.env_publisher_.publish(env_array)
-            elif(csv_files_names[index].replace('.csv', '') == 'checkpoints'):
-                check_array = Checkpointsarray(array=array)
-                self.check_publisher_.publish(check_array)
-            else:
-                obs_array = Obstaclesarray(array=array)
-                self.obs_publisher_.publish(obs_array)
+        csv_file_path = base_file_location + csv_name + '.csv'
+        
+        array = []
+        return self.parse_csv(csv_file_path, csv_name)
 
 
     def parse_csv(self, file_path, csv_file_name):
@@ -85,6 +79,7 @@ class CsvParse(Node):
         """
         Store dataframe records in arrays.
         """
+        logger = logging.getLogger()
         array = []
         if csv_file_name == 'environment':
             for df_record in records_list:

@@ -10,10 +10,7 @@ echo "ROS Directories removed successfully."
 
 # Rebuilding ROS Directories and Sourcing setup
 echo "Building ROS Directories"
-colcon build --packages-select interfaces
-colcon build --packages-select interfacesarray
-colcon build --packages-select communication
-colcon build --packages-select navigation
+colcon build
 
 echo "Colcon Build Succesful. ROS Directories Recreated"
 source install/setup.bash

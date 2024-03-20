@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Source the setup file
 source install/setup.bash
 

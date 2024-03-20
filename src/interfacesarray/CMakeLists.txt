@@ -15,9 +15,9 @@ find_package(interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-    "msg/Checkpointsarray.msg"
-    "msg/Environmentarray.msg"
-    "msg/Obstaclesarray.msg"
+    "srv/Checkpointsarray.srv"
+    "srv/Environmentarray.srv"
+    "srv/Obstaclesarray.srv"
     DEPENDENCIES interfaces
 )
 

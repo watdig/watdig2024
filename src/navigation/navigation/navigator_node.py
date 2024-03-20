@@ -1,40 +1,39 @@
-"""
-Navigator main node.
-"""
+import logging
+from shapely.geometry import Point
 import rclpy
 from rclpy.node import Node
 from navigation.path_planner import PathPlanner
-from shapely.geometry import Point
-from interfaces.msg import Environment, Checkpoints, Obstacles, State, CurrentCoords  # Replace with actual message types
+from interfaces.msg import Environment, Checkpoints, Obstacles, State, CurrentCoords
 from std_msgs.msg import Float32MultiArray  # For directions topic
-from interfacesarray.msg import Checkpointsarray, Environmentarray, Obstaclesarray
+from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
+logging.basicConfig(level=logging.INFO)
 
 class NavigatorNode(Node):
     def __init__(self):
         super().__init__('navigator_node')
-        # Initialize subscribers for initial setup
-        self.subscription_obstacles = self.create_subscription(
-            Obstaclesarray,  
-            'obstacles_csv_topic',
-            self.obstacles_callback,
-            10)
-        self.subscription_checkpoints = self.create_subscription(
-            Checkpointsarray,  
-            'checkpoints_csv_topic',
-            self.checkpoints_callback,
-            10)
-        self.subscription_environment = self.create_subscription(
-            Environmentarray,  
-            'environment_csv_topic',
-            self.environment_callback,
-            10)
+        logger = logging.getLogger()
+        # Initialize clients for initial setup
+        self.obs_cli = self.create_client(Obstaclesarray, 'obstacle_csv_service')
+        self.check_cli = self.create_client(Checkpointsarray, 'checkpoints_csv_service')
+        self.env_cli = self.create_client(Environmentarray, 'environment_csv_service')
+        
+        # Waiting for all services to start
+        while not all([self.obs_cli.wait_for_service(), self.check_cli.wait_for_service(), self.env_cli.wait_for_service()]):
+            logger.info('Waiting for services')
+        
+        # Initialize requests
+        self.env_req = Environmentarray.Request()
+        self.check_req = Checkpointsarray.Request()
+        self.obs_req = Obstaclesarray.Request()
+        
+        # Calling Request Functions
+        self.environment_request()
+        self.checkpoints_request()
+        self.obstacles_request()
 
         # Initialize the publisher for directions
-        self.publisher_directions = self.create_publisher(
-            Float32MultiArray,
-            'directions_topic',
-            10)
+        self.publisher_directions = self.create_publisher(Float32MultiArray, 'directions_topic', 10)
 
         self.path_planner = PathPlanner()
         self.current_gyro = 40
@@ -42,35 +41,52 @@ class NavigatorNode(Node):
         self.current_location = (0,0)
         
         # Setup subscriptions for current location and angle
-        self.subscription_current_location = self.create_subscription(
-            CurrentCoords,
-            'current_location_topic',
-            self.current_location_callback,
-            10)
+        self.subscription_current_location = self.create_subscription(CurrentCoords,
+            'current_location_topic', self.current_location_callback, 10)
 
-    def environment_callback(self, msg):
-        # Assuming msg.environment is an iterable of environment objects
+    def environment_request(self):
+        logger = logging.getLogger()
+        # Requesting Server
+        self.env_req.csv = 'environment'
+        future = self.env_cli.call_async(self.env_req)
+        rclpy.spin_until_future_complete(self, future)
+        msg = future.result()
+        
+        # Logging information
         for environment in msg.array:
-            self.path_planner.environment = {environment.name: Point(environment.easting, environment.northing)}
-        # Unsubscribe after receiving and processing the data
-        self.subscription_environment = None
+            logger.info('Environment Name %s', environment.name)
 
-    # NEED TO MAKE OBSTACLES MESSAGE AN ARRAY OF OBSTACLE DATA types
-    def obstacles_callback(self, msg):
+        #for environment in msg.array:
+        #    self.path_planner.environment = {environment.name: Point(environment.easting, environment.northing)}
+
+    def obstacles_request(self):
+        logger = logging.getLogger()
+        self.obs_req.csv = 'obstacles'
+        # Requesting Server
+        future = self.obs_cli.call_async(self.obs_req)
+        rclpy.spin_until_future_complete(self, future)
+        msg = future.result()
+        
+        # Logging results
+        #for obstacle in msg.array:
+        #    self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing)]
+
         for obstacle in msg.array:
-            self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing)]
-            self.subscription_obstacles = None  # Unsubscribe after receiving data
+            logger.info('Obstacle Name %s', obstacle.name)
 
-    def checkpoints_callback(self, msg):
+    def checkpoints_request(self):
+        # Requesting Server
+        self.check_req.csv = 'checkpoints'
+        future = self.check_cli.call_async(self.check_req)
+        rclpy.spin_until_future_complete(self, future)
+        msg = future.result()
+        
+        #for checkpoint in msg.array:
+        #    self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing)]
+
+        logger = logging.getLogger()
         for checkpoint in msg.array:
-            self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing)]
-        self.subscription_checkpoints = None  # Unsubscribe after receiving data
-        self.check_initialization()
-
-    def check_initialization(self):
-        """Check if all initial data is received to run global_prm."""
-        if self.subscription_obstacles is None and self.subscription_checkpoints is None and self.subscription_environment is None:
-            self.path_planner.global_prm()
+            logger.info('Checkpoint Name %s', checkpoint.name)
 
     def current_location_callback(self, msg):
         self.current_location = (msg.easting, msg.westing)
@@ -89,13 +105,12 @@ class NavigatorNode(Node):
 
 def main(args=None):
     """
-    published angle to turn and distance to travel based on current coords.
+    Publishes angle to turn and distance to travel based on current coords.
     """
     rclpy.init(args=args)
     node = NavigatorNode()
     rclpy.spin(node)
     rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()
