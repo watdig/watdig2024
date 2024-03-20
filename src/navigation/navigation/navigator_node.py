@@ -10,6 +10,9 @@ from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarr
 logging.basicConfig(level=logging.INFO)
 
 class NavigatorNode(Node):
+    """
+    Navigatioj Node that calls the csv_parse for data. Populates the PathPlanner Class.
+    """
     def __init__(self):
         super().__init__('navigator_node')
         logger = logging.getLogger()
@@ -17,6 +20,10 @@ class NavigatorNode(Node):
         self.obs_cli = self.create_client(Obstaclesarray, 'obstacle_csv_service')
         self.check_cli = self.create_client(Checkpointsarray, 'checkpoints_csv_service')
         self.env_cli = self.create_client(Environmentarray, 'environment_csv_service')
+        
+        # Setup subscriptions for current location and angle
+        self.subscription_current_location = self.create_subscription(CurrentCoords,
+            'current_location_topic', self.current_location_callback, 10)
         
         # Waiting for all services to start
         while not all([self.obs_cli.wait_for_service(), self.check_cli.wait_for_service(), self.env_cli.wait_for_service()]):
@@ -27,24 +34,23 @@ class NavigatorNode(Node):
         self.check_req = Checkpointsarray.Request()
         self.obs_req = Obstaclesarray.Request()
         
-        # Calling Request Functions
-        self.environment_request()
-        self.checkpoints_request()
-        self.obstacles_request()
-
         # Initialize the publisher for directions
         self.publisher_directions = self.create_publisher(Float32MultiArray, 'directions_topic', 10)
-
         self.path_planner = PathPlanner()
         self.current_gyro = 40
         self.prev_gyro = 40
         self.current_location = (0,0)
         
-        # Setup subscriptions for current location and angle
-        self.subscription_current_location = self.create_subscription(CurrentCoords,
-            'current_location_topic', self.current_location_callback, 10)
+        # Calling Request Functions
+        self.environment_request()
+        self.checkpoints_request()
+        self.obstacles_request()
+
 
     def environment_request(self):
+        """
+        Requests for information from the environment.csv file.
+        """
         logger = logging.getLogger()
         # Requesting Server
         self.env_req.csv = 'environment'
@@ -56,10 +62,13 @@ class NavigatorNode(Node):
         for environment in msg.array:
             logger.info('Environment Name %s', environment.name)
 
-        #for environment in msg.array:
-        #    self.path_planner.environment = {environment.name: Point(environment.easting, environment.northing)}
+        for environment in msg.array:
+            self.path_planner.environment = {environment.name: Point(environment.easting, environment.northing)}
 
     def obstacles_request(self):
+        """
+        Requests for information from the obstacles.csv file.
+        """
         logger = logging.getLogger()
         self.obs_req.csv = 'obstacles'
         # Requesting Server
@@ -67,22 +76,24 @@ class NavigatorNode(Node):
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
         
-        # Logging results
-        #for obstacle in msg.array:
-        #    self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing)]
+        for obstacle in msg.array:
+            self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing)]
 
         for obstacle in msg.array:
             logger.info('Obstacle Name %s', obstacle.name)
 
     def checkpoints_request(self):
+        """
+        Requests for information from the checkpoints.csv file.
+        """
         # Requesting Server
         self.check_req.csv = 'checkpoints'
         future = self.check_cli.call_async(self.check_req)
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
         
-        #for checkpoint in msg.array:
-        #    self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing)]
+        for checkpoint in msg.array:
+            self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing)]
 
         logger = logging.getLogger()
         for checkpoint in msg.array:
