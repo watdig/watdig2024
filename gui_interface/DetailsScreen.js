@@ -14,8 +14,19 @@ function DetailsScreen() {
   const onPressStartHandler = async () => {
     setStartButtonText('START');
     setStartButtonColor('green');
-
-  };
+    try {
+      const response = await fetch('http://192.168.246.130:3000/start-script', {
+          method: 'POST'
+      });
+      if (response.ok) {
+          console.log('Script started');
+      } else {
+          console.error('Failed to start script');
+      }
+  } catch (error) {
+      console.error('Error:', error);
+  }
+};
 
   const onPressShutdownHandler = async () => {
     setShutdownButtonText('SHUTDOWN CONFIRMED');
