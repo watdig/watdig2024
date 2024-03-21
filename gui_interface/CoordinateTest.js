@@ -6,9 +6,6 @@ const CoordinateTest = () => {
   const [points1, setPoints1] = useState([]);
   const [points2, setPoints2] = useState([]);
   const [points3, setPoints3] = useState([]);
-  // const [points4, setPoints4] = useState([]);
-  const [subscribed, setSubscribed] = useState(false);
-  let pointCounter = 0;
 
   const renderGrid = () => {
     const grid = [];
@@ -22,90 +19,65 @@ const CoordinateTest = () => {
     return grid;
   };
   useEffect(() => {
-    if (subscribed) {
-      const ros = new Roslib.Ros({
-        url: 'ws://192.168.246.130:9090'
-      });
 
-    const topicListener1 = new Roslib.Topic({
-      ros: ros,
-      name: '/obstacle_csv_topic',
-      messageType: 'interfaces/Obstacles'
+    const ros = new Roslib.Ros({
+      url: 'ws://192.168.246.130:9090'
     });
 
-    const topicListener2 = new Roslib.Topic({
+    const environmentClient = new Roslib.Service({
       ros: ros,
-      name: '/checkpoints_csv_topic',
-      messageType: 'interfaces/Checkpoints'
+      name: '/environment_csv_service',
+      serviceType: 'interfacesarray/Environmentarray'
     });
 
-    const topicListener3 = new Roslib.Topic({
+    const checkpointsClient = new Roslib.Service({
       ros: ros,
-      name: '/environment_csv_topic',
-      messageType: 'interfaces/Environment'
+      name: '/checkpoints_csv_service',
+      serviceType: 'interfacesarray/Checkpointsarray'
     });
 
-    // const topicListener4 = new Roslib.Topic({
-    //   ros: ros,
-    //   name: '/current_location_topic',
-    //   messageType: 'interfaces/Current_Coords'
-    // });
+    const obstaclesClient = new Roslib.Service({
+      ros: ros,
+      name: '/obstacle_csv_service',
+      serviceType: 'interfacesarray/Obstaclesarray'
+    });
 
-    const subscribeToRosTopic1 = (message) => {
-      // Parse the message
-      const newPoint = {
-        key: pointCounter++,
-        easting: message.easting,
-        northing: message.northing,
-        elevation: message.elevation,
-        bounding_radius: message.bounding_radius,
-      };
-      setPoints1(prevPoints => [...prevPoints, newPoint]);
+    // Define service request messages
+    const environmentRequest = new Roslib.ServiceRequest({
+      csv: 'environment' // Specify the CSV file name
+    });
+
+    const checkpointsRequest = new Roslib.ServiceRequest({
+      csv: 'checkpoints' // Specify the CSV file name
+    });
+
+    const obstaclesRequest = new Roslib.ServiceRequest({
+      csv: 'obstacles' // Specify the CSV file name
+    });
+
+    // Define callback functions to handle service responses
+    const handleEnvironmentResponse = (response) => {
+      console.log(response)
+      setPoints3(response.array);
     };
 
-    const subscribeToRosTopic2 = (message) => {
-      const newPoint = {
-        key: pointCounter++,
-        easting: message.easting,
-        northing: message.northing,
-      };
-      setPoints2(prevPoints => [...prevPoints, newPoint]);
+    const handleCheckpointsResponse = (response) => {
+      setPoints2(response.array);
     };
 
-    const subscribeToRosTopic3 = (message) => {
-      const newPoint = {
-        key: pointCounter++,
-        easting: message.easting,
-        northing: message.northing,
-      };
-      setPoints3(prevPoints => [...prevPoints, newPoint]);
+    const handleObstaclesResponse = (response) => {
+      setPoints1(response.array);
     };
 
-    // const subscribeToRosTopic4 = (message) => {
-    //   const newPoint = {
-    //     key: pointCounter++,
-    //     easting: message.easting,
-    //     westing: message.westing,
-    //     angle: message.angle,
-    //   };
-    //   setPoints4(prevPoints => [...prevPoints, newPoint]);
-    // };
+    // Call services to fetch data
+    environmentClient.callService(environmentRequest, handleEnvironmentResponse);
+    checkpointsClient.callService(checkpointsRequest, handleCheckpointsResponse);
+    obstaclesClient.callService(obstaclesRequest, handleObstaclesResponse);
 
-    topicListener1.subscribe(subscribeToRosTopic1);
-    topicListener2.subscribe(subscribeToRosTopic2);
-    topicListener3.subscribe(subscribeToRosTopic3);
-    // topicListener4.subscribe(subscribeToRosTopic4);
-
-    setSubscribed(true);
     return () => {
-      topicListener1.unsubscribe();
-      topicListener2.unsubscribe();
-      topicListener3.unsubscribe();
-      // topicListener4.unsubscribe();
       ros.close();
     };
-   }
- }, [subscribed]);
+  }, []);
 
 
   return (
@@ -145,12 +117,11 @@ const CoordinateTest = () => {
         {points3.map((point3, index) => (
           <Point key={`point3-${index}`} size={8} x={point3.easting} y={point3.northing} color="purple" />
         ))}
-        {/* {points4.map((point4, index) => (
-          <Point key={`point4-${index}`} size={8} x={point4.easting} y={point4.westing} color="grey" />
-        ))} */}
+    
       </View>  
   );
 };
+
 
 const XAxis = ({ x, y, length, color }) => {
   const lineStyle = {
