@@ -23,7 +23,7 @@ class PositionSubscriber(Node):
             10)
         
         # Initializing MQTT Paramaters with MQTTX
-        self.broker = 'mqtt://172.17.0.1'
+        self.broker = '172.17.0.1'
         self.port = 1883
         self.topic = 'test'
         self.client_id = f'python-mqtt-{random.randint(1, 1000)}'
