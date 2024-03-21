@@ -4,4 +4,10 @@ networkx
 scipy
 numpy
 pandas
+adafruit_bno055
+board
+busio
+pigpio
+paho
+serial
 
