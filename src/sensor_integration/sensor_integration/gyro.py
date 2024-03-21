@@ -3,20 +3,22 @@ from rclpy.node import Node
 from std_msgs.msg import Float32  
 
 import board
+import busio
 import adafruit_bno055
 
 class Gyro(Node):
     def __init__(self):
         super().__init__('gyro_node')
-        self.i2c = board.I2C()  
-        self.sensor = adafruit_bno055.BNO055_I2C(self.i2c)  
+        self.i2c = busio.I2C(board.SCL, board.SDA)
+        self.sensor = adafruit_bno055.BNO055_I2C(self.i2c) 
         self.gyro_publisher = self.create_publisher(Float32, 'gyro_topic', 10)
         self.create_timer(0.1, self.publish_gyro)
 
     def publish_gyro(self):
         yaw = self.sensor.euler[0]  
         if yaw is None:
-            yaw = 0.0 
+            yaw = 0.0
+            self.get_logger().info("SENSOR ERROR") 
         msg = Float32()
         msg.data = yaw  
         self.gyro_publisher.publish(msg)

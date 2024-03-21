@@ -1,24 +1,20 @@
 import RPi.GPIO as GPIO
 import time
-import Gyroscope
-import pigpio
-import MotorEncoder
-import serial
 
 class Car():
     def __init__(self):
         # Define GPIO pins for motors
-        self.PWM_RB = 36  
-        self.DIR_RB = 32
+        self.PWM_RB = 16  
+        self.DIR_RB = 12
         
-        self.PWM_LB = 31
-        self.DIR_LB = 29
+        self.PWM_LB = 6
+        self.DIR_LB = 5
         
-        self.PWM_RF = 13
-        self.DIR_RF = 11
+        self.PWM_RF = 27
+        self.DIR_RF = 17
         
-        self.PWM_LF = 16
-        self.DIR_LF = 18
+        self.PWM_LF = 23
+        self.DIR_LF = 24
 
         self.pins = [self.PWM_RF, self.DIR_RF, self.PWM_LB, self.DIR_LB, self.PWM_RB, self.DIR_RB, self.PWM_LF, self.DIR_LF]
         self.pwm_pins = [self.PWM_LB, self.PWM_LF, self.PWM_RB, self.PWM_RF]
@@ -27,7 +23,6 @@ class Car():
  
 
         # Setup GPIO pins
-        GPIO.setmode(GPIO.BOARD)
         for pin in self.pins:
             GPIO.setup(pin, GPIO.OUT)    
 
@@ -85,60 +80,3 @@ class Car():
             self.reverse()
         
         else: self.stop() 
-
-
-if __name__ == "__main__":
-    
-    Pin1 = 8
-    Pin2 = 25
-    RUN_TIME = 60.0
-    SAMPLE_TIME = 0.01
-    
-    ser = serial.Serial('/dev/ttyUSB0', 115200)  # Adjust port and baud rate as needed
-
-    pi = pigpio.pi()
-    pi2 = pigpio.pi()
-    p = MotorEncoder.reader(pi, Pin1)
-    p2 = MotorEncoder.reader(pi2, Pin2)
-    
-    car = Car()
-    try:
-        while True:
-            """
-            car.drive(0)
-            while (p.pulse_count < 4685*(2/0.471234)):
-                distance = (p.pulse_count/4685)*0.471234
-                print(distance)
-                data = ser.readline().decode().strip()
-                print("Received:", data)  # Print received data
-                
-            print(p2.pulse_count)
-            print(p.pulse_count)
-            """
-        
-            car.drive(2)
-            time.sleep(1.947)
-            
-            car.stop()
-            time.sleep(2)
-            
-            p.pulse_count = 0  
-            p2.pulse_count = 0
-
-        """car.drive(0)
-            while (p.pulse_count < 4685*(5/0.471234)):
-                distance = (p.pulse_count/4685)*0.471234
-                print(distance)
-                data = ser.readline().decode().strip()
-                print("Received:", data)  # Print received data
-                time.sleep(0.2)
-            print(p2.pulse_count)
-            print(p.pulse_count)
-
-            p.pulse_count = 0  
-            p2.pulse_count = 0 
-        """
-        
-    except KeyboardInterrupt:
-        # Cleanup GPIO when program is interrupted
-        GPIO.cleanup()
