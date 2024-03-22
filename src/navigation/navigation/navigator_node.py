@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from navigation.path_planner import PathPlanner
 from interfaces.msg import Environment, Checkpoints, Obstacles, State, CurrentCoords
-from std_msgs.msg import Float32MultiArray  # For directions topic
+from std_msgs.msg import Float32MultiArray, String  # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +25,9 @@ class NavigatorNode(Node):
         self.subscription_current_location = self.create_subscription(CurrentCoords,
             'current_location_topic', self.current_location_callback, 10)
         
+        self.subscription_turning = self.create_subscription(String, 'current_action', 
+                                                             self.is_turning_callback, 10)
+        
         # Waiting for all services to start
         while not all([self.obs_cli.wait_for_service(), self.check_cli.wait_for_service(), self.env_cli.wait_for_service()]):
             logger.info('Waiting for services')
@@ -40,12 +43,13 @@ class NavigatorNode(Node):
         self.current_gyro = 0
         self.prev_gyro = 0
         self.current_location = (0,0)
+        self.turning = False
         
         # Calling Request Functions
         self.environment_request()
-        self.checkpoints_request()
         self.obstacles_request()
-
+        self.checkpoints_request()
+        
 
     def environment_request(self):
         """
@@ -64,9 +68,7 @@ class NavigatorNode(Node):
 
         for environment in msg.array:
             self.path_planner.environment[environment.name] = Point(environment.easting, environment.northing)
-        
-        self.attempt_global_prm()
-        
+         
 
     def obstacles_request(self):
         """
@@ -84,8 +86,6 @@ class NavigatorNode(Node):
 
         for obstacle in msg.array:
             logger.info('Obstacle Name %s', obstacle.name)
-        
-        self.attempt_global_prm()
 
 
     def checkpoints_request(self):
@@ -116,6 +116,10 @@ class NavigatorNode(Node):
             self.path_planner.global_prm()
 
 
+    def is_turning_callback(self, msg):
+        self.turning = msg.data
+
+    
     def current_location_callback(self, msg):
         """
         Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
@@ -127,10 +131,12 @@ class NavigatorNode(Node):
 
     def publish_next_direction(self):
         """Publish next direction based on the current position."""
-        if (self.current_gyro - self.prev_gyro) <= 2:
-            self.path_planner.get_next_checkpoint(self.current_location)
-        else:
-            self.path_planner.recalculate_route(self.current_location)
+        if self.turning != "turning":
+            if (self.current_gyro - self.prev_gyro) <= 2:
+                self.path_planner.get_next_checkpoint(self.current_location)
+            else:
+                self.path_planner.recalculate_route(self.current_location)
+        self.current_gyro = self.path_planner.angle
         directions = Float32MultiArray()
         directions.data = [self.path_planner.angle, self.path_planner.distance]
         self.publisher_directions.publish(directions)

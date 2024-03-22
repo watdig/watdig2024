@@ -61,11 +61,12 @@ class PathPlanner:
 
         return distance
 
-    def calculate_angle_between_points(
-        self, position: list[float, float], target: list[float, float]
-    ) -> float:
+    def calculate_angle_for_gyroscope(self, position: list[float], target: list[float]) -> float:
         """
-        calculates the angle between any two points
+        Calculates the angle between two points (position and target),
+        adjusted for a gyroscope where 90 degrees is the positive x-axis.
+        The function ensures that angles are given in a range suitable for the gyroscope,
+        increasing counterclockwise with 0 degrees at the unit circle's 90 degrees.
         """
         dx = target[0] - position[0]
         dy = target[1] - position[1]
@@ -73,7 +74,12 @@ class PathPlanner:
         angle_radians = math.atan2(dy, dx)
         angle_degrees = math.degrees(angle_radians)
 
-        # modify by 90 degrees right or left/add absolute value depending on 0 axis
+        # Adjust the angle so that 0 degrees is at the gyroscope's 90 degrees
+        # and correct the direction to match the gyroscope's orientation
+        if angle_degrees > 90:
+            angle_degrees = 360 - (angle_degrees - 90)
+        else:
+            angle_degrees = 90 - angle_degrees
 
         return angle_degrees
 
@@ -153,6 +159,5 @@ class PathPlanner:
         count = 1
         for target in self.targets:
             logger.info('Node Number %d: %s', count, target)
-            count += 1
         
         return True
