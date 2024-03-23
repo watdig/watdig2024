@@ -28,8 +28,13 @@ sshClient.on('ready', () => {
       return;
     }
 
+    const shellTimeout = setTimeout(() => {
+      console.log('Shell session timeout reached. Ending session.');
+      stream.end('exit\n'); // Send 'exit' command to end the session
+    }, 2 * 60 * 1000);
+
     // Execute the command
-    const command = 'cd /home/yashros-vm/watdig2024 && ./cleanbuild.sh';
+    const command = 'cd /home/yashros-vm/watdig2024 && ./kill.sh';
 
     stream.write(command + '\n');
 
@@ -46,6 +51,8 @@ sshClient.on('ready', () => {
     stream.pipe(process.stdout);
     stream.stderr.pipe(process.stderr);
   });
+
+
 });
 
 sshClient.on('error', err => {
