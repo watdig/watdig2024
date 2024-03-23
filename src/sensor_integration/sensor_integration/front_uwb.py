@@ -15,7 +15,7 @@ class FrontUWB(Node):
         uwb_distances_dict = {}
         for i in range(0,4):
             # Read data from the serial port
-            data = serial.readline().decode().strip()
+            data = self.serial_port.readline().decode().strip()
             if data:
                 data = data.split(",")
                 anchor_id = int(data[0])
