@@ -1,8 +1,8 @@
 name,easting,northing,elevation
-origin,0,0,0
-ref01,0,0,0
+origin,0.0,0.0,0.0
+ref01,0.0,0.0,0.0
 finish,3.3,3.9,0
-corner01,0,0,0
-corner02,3.6,4.2,0
-corner03,3.6,0,0
-corner04,0,4.2,0
+corner01,0.0,0.0,0.0
+corner02,3.6,4.2,0.0
+corner03,3.6,0.0,0.0
+corner04,0.0,4.2,0.0
