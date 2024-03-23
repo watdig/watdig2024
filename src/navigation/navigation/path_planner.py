@@ -88,9 +88,12 @@ class PathPlanner:
         Initializes the PRM.
         """
         logger = logging.getLogger()
-        start = self.environment["origin"]
-        finish = self.environment["finish"]
+        start = Point(self.environment["origin"])
+        finish = Point(self.environment["finish"])
         
+        for checkpoint in self.checkpoints:
+            checkpoint = Point(checkpoint)
+
         # Parameters
         NUM_SAMPLES = 50
         NEIGHBOR_RADIUS = 10
