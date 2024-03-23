@@ -4,22 +4,23 @@ const { exec } = require('child_process');
 const app = express();
 const port = 3000;
 
-app.post('/start-server', (req, res) => {
-  exec('node server.js', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing command: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`Command stderr: ${stderr}`);
-      return;
-    }
-    console.log(`Command stdout: ${stdout}`);
-  });
-
-  res.sendStatus(200);
+app.all('/start-script', (req, res) => {
+  if (req.method === 'POST' || req.method === 'GET') {
+      exec('cd C:\\Users\\yashp\\watdig2024\\ && node server.js', (error, stdout, stderr) => {
+          if (error) {
+              console.error(`exec error: ${error}`);
+              res.status(500).send('Error executing script');
+              return;
+          }
+          console.log(`stdout: ${stdout}`);
+          console.error(`stderr: ${stderr}`);
+          res.send('Script started');
+      });
+  } else {
+      res.status(405).send('Method Not Allowed');
+  }
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
