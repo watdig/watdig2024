@@ -95,7 +95,7 @@ class PathPlanner:
             checkpoint = Point(checkpoint)
 
         # Parameters
-        NUM_SAMPLES = 50
+        NUM_SAMPLES = 500
         NEIGHBOR_RADIUS = 10
 
         # Define the boundary of the environment (example values)

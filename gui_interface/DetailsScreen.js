@@ -2,36 +2,38 @@ import React, {useState, useEffect} from 'react';
 import { Button, View, StyleSheet } from 'react-native';
 import CoordinateTest from './CoordinateTest';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import axios from 'axios-1.6.8';
 
 function DetailsScreen() {
   const [startButtonText, setStartButtonText] = useState('START');
   const [shutdownButtonText, setShutdownButtonText] = useState('SHUTDOWN');
   const [startButtonColor, setStartButtonColor] = useState();
   const [shutdownButtonColor, setShutdownButtonColor] = useState();
-  
+
 
   const onPressStartHandler = async () => {
-    setStartButtonText('START');
+    setStartButtonText('STARTING...');
     setStartButtonColor('green');
+    setTimeout(() => {
+      setStartButtonText('STARTED'), setStartButtonColor('green');
+    }, 95000);
+
     try {
-      const response = await fetch('http://192.168.246.130:3000/start-script', {
-          method: 'POST'
-      });
-      if (response.ok) {
-          console.log('Script started');
-      } else {
-          console.error('Failed to start script');
-      }
-  } catch (error) {
-      console.error('Error:', error);
-  }
-};
+      // Make a POST request to the server endpoint to start the script
+      const response = await axios.post('http://192.168.2.55\:3000/start-script');
+      console.log(response.data); // Log the response from the server
+      
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+      setStartButtonText('START');
+      setStartButtonColor(null);
+    }
+  };
+    
 
   const onPressShutdownHandler = async () => {
     setShutdownButtonText('SHUTDOWN CONFIRMED');
     setShutdownButtonColor('red');
-
   };
 
 

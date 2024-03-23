@@ -1,21 +1,58 @@
-const express = require('express');
-const { exec } = require('child_process');
-const app = express();
-const port = 3000;
+const { Client } = require('ssh2');
+const fs = require('fs');
 
-app.post('/start-script', (req, res) => {
-    exec('ssh yashros-vm@192.168.246.130./watdig2024/start.sh', (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            res.status(500).send('Error executing script');
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
-        res.send('Script started');
+// Create a new SSH client
+const sshClient = new Client();
+
+// Define connection parameters
+const connectionParams = {
+  host: '192.168.2.87',
+  port: 22,
+  username: 'yashros-vm',
+  privateKey: fs.readFileSync('C:\\Users\\yashp\\.ssh\\id_rsa'), // Corrected file path with escaped backslashes
+  passphrase: '131404' // Provide the passphrase for your encrypted private key
+};
+
+// Connect to the SSH server
+sshClient.connect(connectionParams);
+
+// Handle SSH client events
+sshClient.on('ready', () => {
+  console.log('SSH connection established');
+
+  // Open a shell for interaction after command execution
+  sshClient.shell((err, stream) => {
+    if (err) {
+      console.error('Error opening shell:', err.message);
+      sshClient.end();
+      return;
+    }
+
+    // Execute the command
+    const command = 'cd /home/yashros-vm/watdig2024 && ./cleanbuild.sh';
+
+    stream.write(command + '\n');
+
+    // Handle command output
+    stream.on('data', data => {
+      console.log('Output:', data.toString());
+    }).on('close', () => {
+      console.log('Command execution completed');
+      sshClient.end();
     });
+
+    // Handle shell output
+    process.stdin.pipe(stream);
+    stream.pipe(process.stdout);
+    stream.stderr.pipe(process.stderr);
+  });
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://192.168.246.130:${port}`);
+sshClient.on('error', err => {
+  console.error('SSH connection error:', err.message);
+  sshClient.end();
+});
+
+sshClient.on('end', () => {
+  console.log('SSH connection closed');
 });
