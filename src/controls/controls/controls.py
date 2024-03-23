@@ -29,7 +29,7 @@ class Car():
         for pin in self.pins:
             GPIO.output(pin, GPIO.LOW)
     
-    def turn_right(self):
+    def turn_left(self):
         self.stop()
         time.sleep(.1)
         for pin in self.dir_L:
@@ -37,7 +37,7 @@ class Car():
         for pin in self.pwm_pins:
             GPIO.output(pin, GPIO.HIGH)
     
-    def turn_left(self):
+    def turn_right(self):
         self.stop()
         time.sleep(.1)
         for pin in self.dir_R:
