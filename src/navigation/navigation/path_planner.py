@@ -159,5 +159,6 @@ class PathPlanner:
         count = 1
         for target in self.targets:
             logger.info('Node Number %d: %s', count, target)
+            count += 1
         
         return True

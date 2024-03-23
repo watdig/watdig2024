@@ -2,11 +2,13 @@
 Node that subscribes to localization topics and sends data over as MQTT Topic.
 """
 import logging
+import json
 import random
 import rclpy
 from rclpy.node import Node
-from interfaces.msg import Position
 import paho.mqtt.publish as publish
+from interfaces.msg import CurrentCoords
+from communication.position import Position
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,9 +19,9 @@ class PositionSubscriber(Node):
     def __init__(self):
         super().__init__('position_subscriber')
         self.localization_subscriber_ = self.create_subscription(
-            Position,
-            'position_topic',
-            self.connect_mqtt,
+            CurrentCoords,
+            'current_location_topic',
+            self.position_subscriber_callback,
             10)
         
         # Initializing MQTT Paramaters with MQTTX
@@ -29,17 +31,22 @@ class PositionSubscriber(Node):
         self.client_id = f'python-mqtt-{random.randint(1, 1000)}'
 
 
-    def connect_mqtt(self):
+    def position_subscriber_callback(self, msg):
         """
         Function that sends MQTT topic to The Boring Company IP and Port.
         """
+        position = Position()
+        position.easting = msg.easting
+        position.elevation = 0
+        position.northing = msg.northing
+        position.extras = []
         logger = logging.getLogger()
-        logger.info('Connecting to MQTT Broker')
-        msg = f"mesages: {'here'}" 
-        publish.single(self.topic, msg, hostname=self.broker, port=self.port)
+        logger.info('Sending Position JSON to MQTT Broker')
+        json_msg = self.convert_position_to_json(position)
+        publish.single(self.topic, json_msg, hostname=self.broker, port=self.port)
 
 
-    def convert_msg_to_json(self, msg):
+    def convert_position_to_json(self, msg):
         """
         Converts ROS2 Messages to a dictionary
         """
@@ -63,7 +70,6 @@ def main(args=None):
     """
     rclpy.init(args=args)
     position_subscriber = PositionSubscriber()
-    position_subscriber.connect_mqtt()
     rclpy.spin(position_subscriber)
     position_subscriber.destroy_node()
     rclpy.shutdown()
