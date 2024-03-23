@@ -82,7 +82,7 @@ class NavigatorNode(Node):
         msg = future.result()
         
         for obstacle in msg.array:
-            self.path_planner.obstacles = [Point(obstacle.easting, obstacle.northing)]
+            self.path_planner.obstacles.append(Point(obstacle.easting, obstacle.northing).buffer(obstacle.bounding_radius))
 
         for obstacle in msg.array:
             logger.info('Obstacle Name %s', obstacle.name)
@@ -98,9 +98,19 @@ class NavigatorNode(Node):
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
         
-        for checkpoint in msg.array:
-            self.path_planner.checkpoints = [Point(checkpoint.easting, checkpoint.northing)]
+        temp = []
 
+        for checkpoint in msg.array:
+            temp.append([checkpoint.easting, checkpoint.northing])
+
+
+        for i in range(0, len(temp) - 1, 2):
+            if i+1 < len(temp): 
+                midpoint_x = (temp[i][0] + temp[i+1][0]) / 2
+                midpoint_y = (temp[i][1] + temp[i+1][1]) / 2
+                self.path_planner.checkpoints.append(Point(midpoint_x, midpoint_y))
+            
+            
         logger = logging.getLogger()
         for checkpoint in msg.array:
             logger.info('Checkpoint Name %s', checkpoint.name)

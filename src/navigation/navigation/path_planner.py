@@ -88,11 +88,20 @@ class PathPlanner:
         Initializes the PRM.
         """
         logger = logging.getLogger()
-        start = self.environment["origin"]
-        finish = self.environment["finish"]
+        start = Point(self.environment["origin"])
+        finish = Point(self.environment["finish"])
         
+
+        print(len(self.obstacles))
+        print(len(self.checkpoints))
+
+        for checkpoint in self.checkpoints:
+            checkpoint = Point(checkpoint)
+            logger.info(checkpoint)
+
+
         # Parameters
-        NUM_SAMPLES = 500
+        NUM_SAMPLES = 50
         NEIGHBOR_RADIUS = 10
 
         # Define the boundary of the environment (example values)
@@ -161,19 +170,40 @@ class PathPlanner:
             logger.info('Node Number %d: %s', count, target)
             count += 1
 
-        # Plotting the shortest path graph
-        plt.figure(figsize=(8, 8))
-        for u, v in zip(path[:-1], path[1:]):
-            plt.plot([u[0], v[0]], [u[1], v[1]], 'b-', linewidth=2)
+        # Plotting
+        fig, ax = plt.subplots()
 
-        plt.scatter(*zip(*path), color='g', s=50)
-        plt.scatter(start.x, start.y, color='b', marker='s', label='Start')
-        plt.scatter(finish.x, finish.y, color='b', marker='o', label='Finish')
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.title('Shortest Path')
+        # Plot the environment boundary
+        x, y = boundary.exterior.xy
+        ax.plot(x, y, 'b')
+
+        # Plot obstacles
+        for obstacle in self.obstacles:
+            x, y = obstacle.exterior.xy
+            ax.fill(x, y, 'r')
+
+        # Plot checkpoints
+        for checkpoint in self.checkpoints:
+            plt.plot(checkpoint.x, checkpoint.y, 'yo')
+
+        # Plot start and finish
+        plt.plot(start.x, start.y, 'go')
+        plt.plot(finish.x, finish.y, 'mo')
+
+        # Plot the PRM graph
+        for (node1, node2) in graph.edges():
+            x1, y1 = node1
+            x2, y2 = node2
+            plt.plot([x1, x2], [y1, y2], 'k-', lw=0.5)
+
+        # Plot the shortest path if found
+        if path:
+            x_path, y_path = zip(*path)
+            ax.plot(x_path, y_path, 'c-', lw=2, label='Optimal Path')
+
+        # Show plot
+        plt.axis('equal')
         plt.legend()
-        plt.grid(True)
         plt.show()
         
         return True
