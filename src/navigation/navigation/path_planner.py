@@ -5,7 +5,7 @@ import networkx as nx
 import math
 from scipy.spatial import KDTree
 from shapely.geometry import Point, LineString, Polygon
-
+import matplotlib.pyplot as plt
 
 class PathPlanner:
     def __init__(self):
@@ -92,7 +92,7 @@ class PathPlanner:
         finish = self.environment["finish"]
         
         # Parameters
-        NUM_SAMPLES = 400
+        NUM_SAMPLES = 50
         NEIGHBOR_RADIUS = 10
 
         # Define the boundary of the environment (example values)
@@ -160,5 +160,20 @@ class PathPlanner:
         for target in self.targets:
             logger.info('Node Number %d: %s', count, target)
             count += 1
+
+        # Plotting the shortest path graph
+        plt.figure(figsize=(8, 8))
+        for u, v in zip(path[:-1], path[1:]):
+            plt.plot([u[0], v[0]], [u[1], v[1]], 'b-', linewidth=2)
+
+        plt.scatter(*zip(*path), color='g', s=50)
+        plt.scatter(start.x, start.y, color='b', marker='s', label='Start')
+        plt.scatter(finish.x, finish.y, color='b', marker='o', label='Finish')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('Shortest Path')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
         
         return True
