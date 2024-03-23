@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { Button, View, StyleSheet } from 'react-native';
 import CoordinateTest from './CoordinateTest';
 import { ScrollView } from 'react-native-gesture-handler';
-import axios from 'axios-1.6.8';
+import axios from 'axios-1.6.8'; // Install axios using npm or yarn
 
 function DetailsScreen() {
   const [startButtonText, setStartButtonText] = useState('START');
@@ -16,18 +16,23 @@ function DetailsScreen() {
     setStartButtonColor('green');
 
     try {
-      const response = await axios.post('http://172.20.10.7:3000/startScript', {
-      });
-      console.log(response.data);
-      setStartButtonText('STARTED');
-      setStartButtonColor('green');
+      const response = await axios.post('http://localhost:3000/start-server');
+
+      if (response.status === 200) {
+        console.log('Command executed successfully');
+      } else {
+        console.error('Failed to execute command');
+      }
     } catch (error) {
-      console.error('Error:', error.response ? error.response.data : error.message);
-      setStartButtonText('START');
-      setStartButtonColor(null);
+      console.error('Error:', error.message);
     }
   };
 
+
+
+
+
+  
 
   const onPressShutdownHandler = async () => {
     setShutdownButtonText('SHUTDOWN CONFIRMED');

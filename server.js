@@ -6,7 +6,7 @@ const sshClient = new Client();
 
 // Define connection parameters
 const connectionParams = {
-  host: '172.20.10.13',
+  host: '192.168.2.87',
   port: 22,
   username: 'yashros-vm',
   privateKey: fs.readFileSync('C:\\Users\\yashp\\.ssh\\id_rsa'), // Corrected file path with escaped backslashes
@@ -20,15 +20,18 @@ sshClient.connect(connectionParams);
 sshClient.on('ready', () => {
   console.log('SSH connection established');
 
-  // Execute the command
-  const command = process.platform === 'win32' ? 'cd /home/yashros-vm/watdig2024 && ./cleanbuild.sh' : './cleanbuild.sh';
-
-  sshClient.exec(command, (err, stream) => {
+  // Open a shell for interaction after command execution
+  sshClient.shell((err, stream) => {
     if (err) {
-      console.error('Error executing command:', err.message);
+      console.error('Error opening shell:', err.message);
       sshClient.end();
       return;
     }
+
+    // Execute the command
+    const command = 'cd /home/yashros-vm/watdig2024 && ./cleanbuild.sh';
+
+    stream.write(command + '\n');
 
     // Handle command output
     stream.on('data', data => {
@@ -37,6 +40,11 @@ sshClient.on('ready', () => {
       console.log('Command execution completed');
       sshClient.end();
     });
+
+    // Handle shell output
+    process.stdin.pipe(stream);
+    stream.pipe(process.stdout);
+    stream.stderr.pipe(process.stderr);
   });
 });
 
@@ -48,5 +56,3 @@ sshClient.on('error', err => {
 sshClient.on('end', () => {
   console.log('SSH connection closed');
 });
-
-//"C:\\Program Files\\PuTTY\\plink.exe" -i "C:\\Users\\yashp\\.ssh\\id_rsa_putty1.ppk" -P 22 yashros-vm@172.20.10.13

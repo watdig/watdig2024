@@ -21,7 +21,10 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.14.0",
     "react-native-web": "~0.19.6",
-    "roslib": "^1.4.1"
+    "roslib": "^1.4.1",
+    "ssh2": "^1.15.0",
+    "expo-file-system": "~16.0.8",
+    "expo-intent-launcher": "~10.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
