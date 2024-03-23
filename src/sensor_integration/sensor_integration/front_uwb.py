@@ -9,7 +9,7 @@ class FrontUWB(Node):
         super().__init__('front_uwb_node')
         self.front_uwb_publisher = self.create_publisher(Float32MultiArray, 'front_uwb_topic', 10)
         self.serial_port = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.1)        
-        self.create_timer(0.1, self.publish_average) 
+        self.create_timer(0.1, self.publish_uwb) 
 
     def read_from_serial(self):
         uwb_distances_dict = {}
