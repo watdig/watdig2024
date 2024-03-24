@@ -24,7 +24,7 @@ class TurnAndMoveActionServer(Node):
         self.p = reader(self.pi, self.pin1)
         GPIO.setmode(GPIO.BCM)
         self.Car = Car()
-        self.current_gyro
+        self.current_gyro = 0.0
        
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
         self.subscription_current_location = self.create_subscription(Currentcoords,
