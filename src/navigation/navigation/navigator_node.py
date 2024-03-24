@@ -134,7 +134,7 @@ class NavigatorNode(Node):
         """
         Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
         """
-        self.current_location = (msg.easting, msg.westing)
+        self.current_location = (msg.easting, msg.northing)
         self.current_gyro = msg.angle
         self.publish_next_direction()
 
