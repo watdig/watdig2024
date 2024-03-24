@@ -1,9 +1,9 @@
 import rclpy
+import logging
 from rclpy.node import Node
 from interfaces.msg import CurrentCoords
 from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
-import math
 import numpy as np
 
 
@@ -23,7 +23,9 @@ class LocalizationNode(Node):
         self.uwbback = []
         self.uwbfront = []
         self.gyro = 0.00
+        logger = logging.getLogger()
         
+        logger.info("setup complete")
         #change this to starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
                 
@@ -45,10 +47,13 @@ class LocalizationNode(Node):
     
     def front_uwb_callback(self, msg):
         self.uwbfront = [distance for distance in msg.data]
-        self.compute_and_publish_location
+        self.compute_and_publish_location()
 
     def compute_and_publish_location(self):
+        logger = logging.getLogger()
+        logger.info("computing location")
         uwb1_position = self.location_solver(self.uwbs, self.uwbback)
+        logger.info("function run")
         if isinstance(uwb1_position, str):  # Check if the return value indicates an error
             self.get_logger().info(uwb1_position)
             x, y = self.x0[0], self.x0[1]
@@ -57,13 +62,15 @@ class LocalizationNode(Node):
         
         curr_angle = self.gyro
 
+        logger.info("got gyro")
+        
         # Once computed, publish the current location
         current_location = CurrentCoords()
         current_location.easting = x
         current_location.northing = y
         current_location.angle = curr_angle
         self.current_location_publisher.publish(current_location)
-        self.get_logger().info(f'Published Current Location: {x}, {y}, {curr_angle}')
+        logger.info(f'Published Current Location: {x}, {y}, {curr_angle}')
     
     def location_solver(self, points, distances):
         # Adjusted objective function to minimize

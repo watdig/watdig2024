@@ -9,13 +9,13 @@ class FrontUWB(Node):
         super().__init__('front_uwb_node')
         self.front_uwb_publisher = self.create_publisher(Float32MultiArray, 'front_uwb_topic', 10)
         self.serial_port = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.1)        
-        self.create_timer(0.1, self.publish_average) 
+        self.create_timer(0.1, self.publish_uwb) 
 
     def read_from_serial(self):
         uwb_distances_dict = {}
         for i in range(0,4):
             # Read data from the serial port
-            data = serial.readline().decode().strip()
+            data = self.serial_port.readline().decode().strip()
             if data:
                 data = data.split(",")
                 anchor_id = int(data[0])
@@ -28,9 +28,9 @@ class FrontUWB(Node):
         dictionary = self.read_from_serial()
         if dictionary:
             msg = Float32MultiArray()
-            msg.data = [dictionary[1], dictionary[2], dictionary[3], dictionary[4]]
+            msg.data = [dictionary.get(1, 0.0), dictionary.get(2, 0.0), dictionary.get(3, 0.0), dictionary.get(4, 0.0)]
             self.front_uwb_publisher.publish(msg)
-            self.get_logger().info(f'Published uwbs: %d', msg.data)
+            self.get_logger().info(f'Published uwbs: {msg.data}')
         else:
             self.get_logger().info('dictioanry is empty')
 

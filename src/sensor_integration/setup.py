@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [\
-            "back_uwb_node = sensor_integration.back_uwb:main",
+            "front_uwb_node = sensor_integration.front_uwb:main",
             "gyro_node = sensor_integration.gyro:main"
         ],
     },
