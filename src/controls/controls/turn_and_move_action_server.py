@@ -70,11 +70,12 @@ class TurnAndMoveActionServer(Node):
         while True:
                 if self.current_gyro is None:
                     continue  # Skip iteration if sensor read failed
-                    
+                self.get_logger("turning loop")    
                 if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
                     break
                 await rclpy.spin_once(self, timeout_sec=0.1)  # Allow other callbacks to process
                 loop_rate.sleep()
+                self.get_logger(self.current_gyro)
             
         self.current_action_publisher.publish(String(data="driving"))    
         
