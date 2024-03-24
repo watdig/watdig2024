@@ -68,7 +68,7 @@ class LocalizationNode(Node):
         current_location.easting, current_location.northing = location
         current_location.angle = self.gyro 
         self.current_location_publisher.publish(current_location)
-        self.get_logger().info(f'Published Current Location: {current_location.easting}, {current_location.northing}')
+        self.get_logger().info(f'Published Current Location: {current_location.easting}, {current_location.northing}, {current_location.angle}')
 
     def location_solver(self, points, distances, x0):
         def objective_func(X):
