@@ -2,7 +2,7 @@
 source install/setup.bash
 
 # Define the list of node names
-NODES=("csv_parse" "navigator_node" "controls_node" "action_server" "localization_node" "back_uwb_node" "front_uwb_node" "rqt_graph")
+NODES=("csv_parse" "navigator_node" "controls_node" "action_server" "position_subscriber" "localization_node" "gyro_node" "front_uwb_node" "rqt_graph")
 
 # Check if there are any nodes running
 if [ ${#NODES[@]} -gt 0 ]; then
