@@ -52,9 +52,17 @@ class TurnAndMoveActionServer(Node):
         else:
             self.Car.turn_left()
 
+
+        def normalize_angle(angle):
+            return angle % 360
+        
         # Wait for the duration of the turn, non-blocking wait
-        while (self.current_gyro - angle) > 2:
-            pass
+        while True:
+                if self.current_gyro is None:
+                    continue  # Skip iteration if sensor read failed
+                    
+                if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
+                    break
             
         self.current_action_publisher.publish(String(data="driving"))    
         
@@ -64,7 +72,7 @@ class TurnAndMoveActionServer(Node):
             pass  
 
         self.Car.stop()
-        GPIO.cleanup()
+        GPIO.cleanup()  
         
         result.success = True
         return result
