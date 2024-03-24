@@ -22,7 +22,7 @@ const CoordinateTest = () => {
   useEffect(() => {
 
     const ros = new Roslib.Ros({
-      url: 'ws://192.168.2.87:9090'
+      url: 'ws://172.20.10.11:9090'
     });
 
     const environmentClient = new Roslib.Service({
