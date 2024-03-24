@@ -4,7 +4,6 @@ from rclpy.node import Node
 from interfaces.msg import CurrentCoords
 from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
-import math
 import numpy as np
 
 
@@ -26,6 +25,7 @@ class LocalizationNode(Node):
         self.gyro = 0.00
         logger = logging.getLogger()
         
+        logger.info("setup complete")
         #change this to starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
                 

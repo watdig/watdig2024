@@ -3,7 +3,7 @@ from shapely.geometry import Point
 import rclpy
 from rclpy.node import Node
 from navigation.path_planner import PathPlanner
-from interfaces.msg import Environment, Checkpoints, Obstacles, State, CurrentCoords
+from interfaces.msg import CurrentCoords
 from std_msgs.msg import Float32MultiArray, String  # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
