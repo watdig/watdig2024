@@ -22,9 +22,10 @@ class TurnAndMoveActionServer(Node):
         self.pin1 = 8
         self.pi = pigpio.pi()
         self.p = reader(self.pi, self.pin1)
+        GPIO.setmode(GPIO.BCM)
         self.Car = Car()
         self.current_gyro
-        GPIO.setmode(GPIO.BCM)
+       
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
         self.subscription_current_location = self.create_subscription(Currentcoords,
             'current_location_topic', self.current_location_callback, 10)
