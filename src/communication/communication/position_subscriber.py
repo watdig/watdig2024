@@ -35,26 +35,20 @@ class PositionSubscriber(Node):
         """
         Function that sends MQTT topic to The Boring Company IP and Port.
         """
-        position_data = {
-            'team': 'WatDig',
-            'timestamp': self.get_clock().now().to_msg(),  # Convert ROS Time to message format
-            'running': True,
-            'easting': msg.easting,
-            'northing': msg.northing,
-            'elevation': msg.elevation,
-            'extras': msg.extras  # Assuming extras is a list or dictionary
-        }
-
+        position = Position()
+        position.easting = msg.easting
+        position.northing = msg.northing
+        position.extras = []
         logger = logging.getLogger()
         logger.info('Sending Position JSON to MQTT Broker')
-        json_msg = json.dumps(position_data)  # Serialize to JSON
+        json_msg = self.convert_position_to_json(position)
         publish.single(self.topic, json_msg, hostname=self.broker, port=self.port)
 
-"""
+
     def convert_position_to_json(self, msg):
-       
+        """
         Converts ROS2 Messages to a dictionary
-        
+        """
         team_name = 'WatDig'
         json_dict = {
             'team': team_name,
@@ -62,12 +56,10 @@ class PositionSubscriber(Node):
             'running': True,
             'easting': msg.easting,
             'northing': msg.northing,
-            'elevation': msg.elevation,
             'extras': msg.extras
         }
 
         return json_dict
-        """
 
 
 def main(args=None):
