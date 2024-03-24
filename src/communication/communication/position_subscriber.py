@@ -41,7 +41,7 @@ class PositionSubscriber(Node):
             'running': True,
             'easting': msg.easting,
             'northing': msg.northing,
-            'extras': msg.extras  # Assuming extras is a list or dictionary
+        
         }
 
         logger = logging.getLogger()
