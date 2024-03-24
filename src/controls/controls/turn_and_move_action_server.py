@@ -20,7 +20,6 @@ class TurnAndMoveActionServer(Node):
             TurnAndMove,
             'turn_and_move',
             self.execute_callback)
-        self.callback_group = MutuallyExclusiveCallbackGroup()
         self.pin1 = 8
         self.pi = pigpio.pi()
         self.p = reader(self.pi, self.pin1)
@@ -55,7 +54,7 @@ class TurnAndMoveActionServer(Node):
         distance = goal_handle.request.distance  
         
         self.current_action_publisher.publish(String(data="turning"))
-        loop_rate = self.create_rate(10, callback_group=self.callback_group)  # 10 Hz
+        loop_rate = self.create_rate(10)
         
         # Turn based on angle
         if goal_handle.request.angle > 0:
@@ -74,7 +73,8 @@ class TurnAndMoveActionServer(Node):
                     
                 if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
                     break
-                await loop_rate.sleep()
+                await rclpy.spin_once(self, timeout_sec=0.1)  # Allow other callbacks to process
+                loop_rate.sleep()
             
         self.current_action_publisher.publish(String(data="driving"))    
         
