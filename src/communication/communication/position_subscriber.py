@@ -7,7 +7,7 @@ import random
 import rclpy
 from rclpy.node import Node
 import paho.mqtt.publish as publish
-from interfaces.msg import Currentcoords
+from interfaces.msg import CurrentCoords
 from communication.position import Position
 
 logging.basicConfig(level=logging.INFO)
@@ -25,7 +25,7 @@ class PositionSubscriber(Node):
             10)
         
         # Initializing MQTT Paramaters with MQTTX
-        self.broker = '172.20.10.3'
+        self.broker = '172.20.10.2'
         self.port = 1883
         self.topic = 'test'
         self.client_id = f'python-mqtt-{random.randint(1, 1000)}'
@@ -35,20 +35,24 @@ class PositionSubscriber(Node):
         """
         Function that sends MQTT topic to The Boring Company IP and Port.
         """
-        position = Position()
-        position.easting = msg.easting
-        position.northing = msg.northing
-        position.extras = []
+        position_data = {
+            'team': 'WatDig',
+            'timestamp': self.get_clock().now().to_msg(),  # Convert ROS Time to message format
+            'running': True,
+            'easting': msg.easting,
+            'northing': msg.northing,
+            'extras': msg.extras  # Assuming extras is a list or dictionary
+        }
+
         logger = logging.getLogger()
         logger.info('Sending Position JSON to MQTT Broker')
-        json_msg = self.convert_position_to_json(position)
+        json_msg = json.dumps(position_data)  # Serialize to JSON
         publish.single(self.topic, json_msg, hostname=self.broker, port=self.port)
 
-
-    def convert_position_to_json(self, msg):
-        """
+"""     def convert_position_to_json(self, msg):
+      
         Converts ROS2 Messages to a dictionary
-        """
+       
         team_name = 'WatDig'
         json_dict = {
             'team': team_name,
@@ -59,7 +63,7 @@ class PositionSubscriber(Node):
             'extras': msg.extras
         }
 
-        return json_dict
+        return json_dict """
 
 
 def main(args=None):
