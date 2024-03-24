@@ -7,7 +7,7 @@ import random
 import rclpy
 from rclpy.node import Node
 import paho.mqtt.publish as publish
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 from communication.position import Position
 
 logging.basicConfig(level=logging.INFO)
