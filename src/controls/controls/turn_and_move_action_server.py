@@ -6,7 +6,7 @@ from rclpy.node import Node
 from controls.controls import Car
 from controls.encoder import reader
 from action_folder.action import TurnAndMove 
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 
 from std_msgs.msg import String 
 
@@ -25,7 +25,7 @@ class TurnAndMoveActionServer(Node):
         self.current_gyro
         
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
-        self.subscription_current_location = self.create_subscription(CurrentCoords,
+        self.subscription_current_location = self.create_subscription(Currentcoords,
             'current_location_topic', self.current_location_callback, 10)
 
     def current_location_callback(self, msg):
