@@ -57,13 +57,14 @@ class LocalizationNode(Node):
             x, y = uwb1_position[0], uwb1_position[1]
         
         curr_angle = self.gyro
-        
+        self.get_logger().info("got location")
         # Once computed, publish the current location
         current_location = Currentcoords()
         current_location.easting = x
         current_location.northing = y
         current_location.angle = curr_angle
         self.current_location_publisher.publish(current_location)
+        self.get_logger().info(current_location)
 
     
     def location_solver(self, points, distances):
