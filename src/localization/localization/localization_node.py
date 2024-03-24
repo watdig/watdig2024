@@ -47,7 +47,7 @@ class LocalizationNode(Node):
     
     def front_uwb_callback(self, msg):
         self.uwbfront = [distance for distance in msg.data]
-        self.compute_and_publish_location
+        self.compute_and_publish_location()
 
     def compute_and_publish_location(self):
         logger = logging.getLogger()
