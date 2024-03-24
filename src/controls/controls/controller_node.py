@@ -35,7 +35,7 @@ class MotorControllerNode(Node):
 
     def perform_action(self, angle, distance):
         # Ensure the action server is available
-        if not self.action_client.wait_for_server(timeout_sec=4.0):
+        if not self.action_client.wait_for_server():
             self.get_logger().warn('Action server not available!')
             return
 
