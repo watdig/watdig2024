@@ -6,7 +6,7 @@ const sshClient = new Client();
 
 // Define connection parameters
 const connectionParams = {
-  host: '172.20.10.14',
+  host: '172.20.10.11',
   port: 22,
   username: 'watdig',
   password: 'watdig'

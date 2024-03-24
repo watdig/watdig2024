@@ -17,7 +17,7 @@ function DetailsScreen() {
 
     try {
       // Make a POST request to the server endpoint to start the script
-      const response = await axios.post('http://172.20.10.7\:3000/start-script');
+      const response = await axios.post('http://172.20.10.2\:3000/start-script');
       console.log(response.data); // Log the response from the server
       
     } catch (error) {
@@ -35,7 +35,7 @@ function DetailsScreen() {
 
     try {
       // Make a POST request to the server endpoint to start the script
-      const response = await axios.post('http://172.20.10.7\:3000/end-script');
+      const response = await axios.post('http://172.20.10.2\:3000/end-script');
       console.log(response.data); // Log the response from the server
       
     } catch (error) {
