@@ -22,18 +22,13 @@ class LocalizationNode(Node):
         # Starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
                 
-        # Assuming there are topics for each UWB sensor's distance data
-        # Here we simulate subscribing to two topics for simplicity
         self.subscription_uwb_distances = self.create_subscription(
             Float32MultiArray,
-            'uwb_distances_topic',
+            'front_uwb_topic',
             self.uwb_distances_callback,
             10)
                 
     def uwb_distances_callback(self, msg):
-        # Assuming the msg.data contains distances from all UWB sensors
-        # Update the self.uwb_distances_dict with the new distances
-        # This example assumes the distances are in the order of the sensor IDs
         for sensor_id, distance in enumerate(msg.data, start=1):
             self.uwb_distances_dict[sensor_id] = distance
         self.compute_and_publish_location()
