@@ -30,7 +30,7 @@ class FrontUWB(Node):
             msg = Float32MultiArray()
             msg.data = [dictionary[1], dictionary[2], dictionary[3], dictionary[4]]
             self.front_uwb_publisher.publish(msg)
-            self.get_logger().info(f'Published uwbs: %d', msg.data)
+            self.get_logger().info(f'Published uwbs: {msg.data}')
         else:
             self.get_logger().info('dictioanry is empty')
 
