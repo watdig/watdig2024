@@ -15,7 +15,7 @@ class MotorControllerNode(Node):
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
         # Action client for TurnAndMove action
-        self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move_action_server')
+        self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move')
 
     def callback(self, msg):
         current_angle, current_distance = self.parse_data(msg)
