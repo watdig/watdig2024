@@ -10,6 +10,7 @@ from controls.encoder import reader
 from action_folder.action import TurnAndMove 
 from interfaces.msg import Currentcoords
 from std_msgs.msg import String 
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
@@ -19,6 +20,7 @@ class TurnAndMoveActionServer(Node):
             TurnAndMove,
             'turn_and_move',
             self.execute_callback)
+        self.callback_group = MutuallyExclusiveCallbackGroup()
         self.pin1 = 8
         self.pi = pigpio.pi()
         self.p = reader(self.pi, self.pin1)
