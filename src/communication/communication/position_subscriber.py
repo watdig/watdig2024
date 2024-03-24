@@ -43,7 +43,7 @@ class PositionSubscriber(Node):
         logger = logging.getLogger()
         logger.info('Sending Position JSON to MQTT Broker')
         json_msg = self.convert_position_to_json(position)
-        publish.single(self.topic, json_msg, hostname=self.broker, port=self.port)
+        publish.single(self.topic, json.dumps(json_msg), hostname=self.broker, port=self.port)
 
 
     def convert_position_to_json(self, msg):
@@ -53,7 +53,7 @@ class PositionSubscriber(Node):
         team_name = 'WatDig'
         json_dict = {
             'team': team_name,
-            'timestamp': self.get_clock().now(),
+            'timestamp': str(self.get_clock().now()),
             'running': True,
             'easting': msg.easting,
             'northing': msg.northing,
@@ -70,6 +70,8 @@ def main(args=None):
     """
     rclpy.init(args=args)
     position_subscriber = PositionSubscriber()
+    #position = Position()
+    #position_subscriber.position_subscriber_callback(position)
     rclpy.spin(position_subscriber)
     position_subscriber.destroy_node()
     rclpy.shutdown()
