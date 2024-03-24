@@ -28,7 +28,7 @@ class FrontUWB(Node):
         dictionary = self.read_from_serial()
         if dictionary:
             msg = Float32MultiArray()
-            msg.data = [dictionary.get(1, 0), dictionary.get(2, 0), dictionary.get(3, 0), dictionary.get(4, 0)]
+            msg.data = [dictionary.get(1, 0.0), dictionary.get(2, 0.0), dictionary.get(3, 0.0), dictionary.get(4, 0.0)]
             self.front_uwb_publisher.publish(msg)
             self.get_logger().info(f'Published uwbs: {msg.data}')
         else:
