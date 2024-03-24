@@ -2,13 +2,13 @@ import rclpy
 import RPi.GPIO as GPIO
 import time
 import pigpio
+import signal  # Import the signal module
 from rclpy.action import ActionServer
 from rclpy.node import Node
 from controls.controls import Car
 from controls.encoder import reader
 from action_folder.action import TurnAndMove 
 from interfaces.msg import Currentcoords
-
 from std_msgs.msg import String 
 
 class TurnAndMoveActionServer(Node):
@@ -29,11 +29,19 @@ class TurnAndMoveActionServer(Node):
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
         self.subscription_current_location = self.create_subscription(Currentcoords,
             'current_location_topic', self.current_location_callback, 10)
+        
+        # Register the signal handler for SIGINT
+        signal.signal(signal.SIGINT, self.cleanup)
+
+    def cleanup(self, signum, frame):
+        """Cleanup resources before shutting down."""
+        self.get_logger().info('Stopping motors and cleaning up GPIO')
+        self.Car.stop()
+        GPIO.cleanup()
+        # It's important to also shutdown ROS2 to stop the node properly
+        rclpy.shutdown()
 
     def current_location_callback(self, msg):
-        """
-        Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
-        """
         self.current_gyro = msg.angle
         
     async def execute_callback(self, goal_handle):
@@ -80,8 +88,15 @@ class TurnAndMoveActionServer(Node):
 def main(args=None):
     rclpy.init(args=args)
     action_server = TurnAndMoveActionServer()
-    rclpy.spin(action_server)
-    rclpy.shutdown()
+    try:
+        rclpy.spin(action_server)
+    except KeyboardInterrupt:
+        action_server.cleanup()  # Explicitly call cleanup if KeyboardInterrupt is caught
+    finally:
+        # Cleanup ROS2 resources
+        action_server.destroy_node()
+        rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
