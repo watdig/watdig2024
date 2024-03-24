@@ -1,5 +1,5 @@
 import rclpy
-import Rpi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 import pigpio
 from rclpy.action import ActionServer
