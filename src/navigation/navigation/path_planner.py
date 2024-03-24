@@ -172,40 +172,4 @@ class PathPlanner:
             logger.info('Node Number %d: %s', count, target)
             count += 1
 
-        # Plotting
-        fig, ax = plt.subplots()
-
-        # Plot the environment boundary
-        x, y = boundary.exterior.xy
-        ax.plot(x, y, 'b')
-
-        # Plot obstacles
-        for obstacle in self.obstacles:
-            x, y = obstacle.exterior.xy
-            ax.fill(x, y, 'r')
-
-        # Plot checkpoints
-        for checkpoint in self.checkpoints:
-            plt.plot(checkpoint.x, checkpoint.y, 'yo')
-
-        # Plot start and finish
-        plt.plot(start.x, start.y, 'go')
-        plt.plot(finish.x, finish.y, 'mo')
-
-        # Plot the PRM graph
-        for (node1, node2) in graph.edges():
-            x1, y1 = node1
-            x2, y2 = node2
-            plt.plot([x1, x2], [y1, y2], 'k-', lw=0.5)
-
-        # Plot the shortest path if found
-        if path:
-            x_path, y_path = zip(*path)
-            ax.plot(x_path, y_path, 'c-', lw=2, label='Optimal Path')
-
-        # Show plot
-        plt.axis('equal')
-        plt.legend()
-        plt.show()
-        
         return True
