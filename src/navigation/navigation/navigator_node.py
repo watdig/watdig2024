@@ -140,6 +140,7 @@ class NavigatorNode(Node):
 
 
     def publish_next_direction(self):
+        logger = logging.getLogger()
         """Publish next direction based on the current position."""
         if self.turning != "turning":
             if (self.current_gyro - self.prev_gyro) <= 2:
@@ -148,7 +149,8 @@ class NavigatorNode(Node):
                 self.path_planner.recalculate_route(self.current_location)
         self.current_gyro = self.path_planner.angle
         directions = Float32MultiArray()
-        directions.data = [self.path_planner.angle, self.path_planner.distance]
+        directions.data = [max(self.path_planner.angle, 0.0), max(self.path_planner.distance, 0.0)]
+        logger.info(self.path_planner.distance)
         self.publisher_directions.publish(directions)
 
 
