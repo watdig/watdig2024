@@ -136,7 +136,8 @@ class NavigatorNode(Node):
         """
         self.current_location = [msg.easting, msg.northing]
         self.current_gyro = msg.angle
-        self.publish_next_direction()
+        if self.path_planner.targets: 
+            self.publish_next_direction()
 
 
     def publish_next_direction(self):
