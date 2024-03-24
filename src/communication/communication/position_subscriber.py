@@ -6,6 +6,7 @@ import json
 import random
 import rclpy
 from rclpy.node import Node
+from rclpy.time import Time
 import paho.mqtt.publish as publish
 from interfaces.msg import Currentcoords
 from communication.position import Position
@@ -37,7 +38,7 @@ class PositionSubscriber(Node):
         """
         position_data = {
             'team': 'WatDig',
-            'timestamp': self.get_clock().now().to_msg(),  # Convert ROS Time to message format
+            'timestamp': self.get_current_time(),  # Convert ROS Time to message format
             'running': True,
             'easting': msg.easting,
             'northing': msg.northing,
@@ -64,7 +65,11 @@ class PositionSubscriber(Node):
         }
 
         return json_dict """
-
+def get_current_time(self):
+        """
+        Get current time in a format suitable for JSON serialization.
+        """
+        return Time().to_msg().nanoseconds
 
 def main(args=None):
     """
