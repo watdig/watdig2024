@@ -15,7 +15,7 @@ class MotorControllerNode(Node):
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
         # Action client for TurnAndMove action
-        self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move_action_server')
+        self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move')
 
     def callback(self, msg):
         current_angle, current_distance = self.parse_data(msg)
@@ -35,7 +35,7 @@ class MotorControllerNode(Node):
 
     def perform_action(self, angle, distance):
         # Ensure the action server is available
-        if not self.action_client.wait_for_server(timeout_sec=1.0):
+        if not self.action_client.wait_for_server():
             self.get_logger().warn('Action server not available!')
             return
 

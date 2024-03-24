@@ -3,7 +3,7 @@ from shapely.geometry import Point
 import rclpy
 from rclpy.node import Node
 from navigation.path_planner import PathPlanner
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, String  # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
@@ -22,7 +22,7 @@ class NavigatorNode(Node):
         self.env_cli = self.create_client(Environmentarray, 'environment_csv_service')
         
         # Setup subscriptions for current location and angle
-        self.subscription_current_location = self.create_subscription(CurrentCoords,
+        self.subscription_current_location = self.create_subscription(Currentcoords,
             'current_location_topic', self.current_location_callback, 10)
         
         self.subscription_turning = self.create_subscription(String, 'current_action', 
@@ -41,9 +41,9 @@ class NavigatorNode(Node):
         self.publisher_directions = self.create_publisher(Float32MultiArray, 'directions_topic', 10)
         self.path_planner = PathPlanner()
         self.current_gyro = 0
-        self.prev_gyro = 0
+        self.prev_gyro = 360
         self.current_location = (0,0)
-        self.turning = False
+        self.turning = 'not turning'
         
         # Calling Request Functions
         self.environment_request()
@@ -134,21 +134,24 @@ class NavigatorNode(Node):
         """
         Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
         """
-        self.current_location = (msg.easting, msg.westing)
+        self.current_location = [msg.easting, msg.northing]
         self.current_gyro = msg.angle
-        self.publish_next_direction()
+        if self.path_planner.targets: 
+            self.publish_next_direction()
 
 
     def publish_next_direction(self):
+        logger = logging.getLogger()
         """Publish next direction based on the current position."""
         if self.turning != "turning":
-            if (self.current_gyro - self.prev_gyro) <= 2:
+            if (abs(self.current_gyro - self.prev_gyro)) <= 2:
                 self.path_planner.get_next_checkpoint(self.current_location)
             else:
                 self.path_planner.recalculate_route(self.current_location)
         self.current_gyro = self.path_planner.angle
         directions = Float32MultiArray()
-        directions.data = [self.path_planner.angle, self.path_planner.distance]
+        directions.data = [max(self.path_planner.angle, 0.0), max(self.path_planner.distance, 0.0)]
+        logger.info(self.path_planner.distance)
         self.publisher_directions.publish(directions)
 
 

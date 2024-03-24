@@ -31,13 +31,13 @@ class PathPlanner:
             if self.index < self.num_nodes:
                 self.target_pos.update_goal(self.targets[self.index]) # identify next goal based on prm
                 self.index+=1
-                self.angle = self.calculate_angle_between_points(current_position, self.target_pos.current_goal)
+                self.angle = self.calculate_angle_for_gyroscope(current_position, self.target_pos.current_goal)
                 self.distance = self.calculate_distance_between_points(current_position, self.target_pos.current_goal)
         return True
     
     def recalculate_route(self,
                             current_position: list[float, float]):
-        self.angle = self.calculate_angle_between_points(current_position, self.target_pos.current_goal)
+        self.angle = self.calculate_angle_for_gyroscope(current_position, self.target_pos.current_goal)
         self.distance = self.calculate_distance_between_points(current_position, self.target_pos.current_goal)
         return True
 
@@ -162,6 +162,8 @@ class PathPlanner:
         # Setting targets and maxlen array
         self.targets = path
         self.num_nodes = len(path)
+        
+        self.target_pos.set_goal(path[0])
         
         # Logging information
         logger.info('Number of Nodes: %d', self.num_nodes)

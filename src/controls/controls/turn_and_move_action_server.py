@@ -1,4 +1,5 @@
 import rclpy
+import RPi.GPIO as GPIO
 import time
 import pigpio
 from rclpy.action import ActionServer
@@ -6,13 +7,13 @@ from rclpy.node import Node
 from controls.controls import Car
 from controls.encoder import reader
 from action_folder.action import TurnAndMove 
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 
 from std_msgs.msg import String 
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
-        super().__init__('turn_and_move_action_server')
+        super().__init__('turn_and_move')
         self._action_server = ActionServer(
             self,
             TurnAndMove,
@@ -21,11 +22,12 @@ class TurnAndMoveActionServer(Node):
         self.pin1 = 8
         self.pi = pigpio.pi()
         self.p = reader(self.pi, self.pin1)
+        GPIO.setmode(GPIO.BCM)
         self.Car = Car()
-        self.current_gyro
-        
+        self.current_gyro = 0.0
+       
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
-        self.subscription_current_location = self.create_subscription(CurrentCoords,
+        self.subscription_current_location = self.create_subscription(Currentcoords,
             'current_location_topic', self.current_location_callback, 10)
 
     def current_location_callback(self, msg):
@@ -46,9 +48,9 @@ class TurnAndMoveActionServer(Node):
         
         # Turn based on angle
         if goal_handle.request.angle > 0:
-            self.car.turn_right()
+            self.Car.turn_right()
         else:
-            self.car.turn_left()
+            self.Car.turn_left()
 
         # Wait for the duration of the turn, non-blocking wait
         while (self.current_gyro - angle) > 2:

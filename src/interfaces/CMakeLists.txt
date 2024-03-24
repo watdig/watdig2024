@@ -17,7 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/Obstacles.msg"
 "msg/Checkpoints.msg"
 "msg/State.msg"
-"msg/CurrentCoords.msg"
+"msg/Currentcoords.msg"
 )
 
 
