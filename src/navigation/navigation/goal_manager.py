@@ -14,17 +14,17 @@ class GoalManager:
         # Initialize with no goal.
         self.current_goal = None
 
-    def set_goal(self, float_one: float, float_two: float) -> None:
+    def set_goal(self, float_one: list[float, float]) -> None:
         """sets coordinate goal
 
         Args:
             float_one (float): _description_
             float_two (float): _description_
         """
-        self.current_goal = (float_one, float_two)
+        self.current_goal = float_one
         print(f"Current goal set: {self.current_goal}")
 
-    def update_goal(self, coordinate: tuple[float, float]) -> None:
+    def update_goal(self, coordinate: list[float, float]) -> None:
         """updates coordinate goal
 
         Args:
@@ -35,7 +35,7 @@ class GoalManager:
         else:
             print("No current goal, please use set_goal method first")
 
-    def is_goal_reached(self, current_position: tuple[float, float]) -> bool:
+    def is_goal_reached(self, current_position: list[float, float]) -> bool:
         """checks whether current position is within tolerance of goal
 
         Args:
@@ -58,7 +58,7 @@ class GoalManager:
 
         return distance < radius
 
-    def get_current_goal(self) -> tuple[float, float]:
+    def get_current_goal(self) -> list[float, float]:
         """returns the current goal
 
         Returns:
