@@ -44,20 +44,20 @@ class LocalizationNode(Node):
         self.gyro = msg.data
     
     def front_uwb_callback(self, msg):
-        self.get_logger().info("uwb callback")
+        # self.get_logger().info("uwb callback")
         self.uwbfront = [distance for distance in msg.data]
         self.compute_and_publish_location()
 
     def compute_and_publish_location(self):
         uwb1_position = self.location_solver(self.uwbs, self.uwbback)
         if isinstance(uwb1_position, str):  # Check if the return value indicates an error
-            self.get_logger().info(uwb1_position)
+            # self.get_logger().info(uwb1_position)
             x, y = self.x0[0], self.x0[1]
         else: 
             x, y = uwb1_position[0], uwb1_position[1]
         
         curr_angle = self.gyro
-        self.get_logger().info("got location")
+        # self.get_logger().info("got location")
         # Once computed, publish the current location
         current_location = Currentcoords()
         current_location.easting = x

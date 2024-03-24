@@ -12,4 +12,3 @@ ros2 run controls action_server &
 ros2 run localization localization_node &
 ros2 run sensor_integration front_uwb_node &
 ros2 run rosbridge_server rosbridge_websocket &
-rqt_graph

@@ -22,7 +22,7 @@ class Gyro(Node):
         msg = Float32()
         msg.data = yaw  
         self.gyro_publisher.publish(msg)
-        self.get_logger().info(f'Publishing: {msg.data}')
+        # self.get_logger().info(f'Publishing: {msg.data}')
 
 def main(args=None):
     rclpy.init(args=args)
