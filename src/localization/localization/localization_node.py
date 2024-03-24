@@ -21,7 +21,15 @@ class LocalizationNode(Node):
         
         # Starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
-                
+        self.gyro = 0.0        
+        
+        self.subscription_gyro = self.create_subscription(
+            Float32,
+            'gyro_topic',
+            self.gyro_callback,
+            10
+        )
+        
         self.subscription_uwb_distances = self.create_subscription(
             Float32MultiArray,
             'front_uwb_topic',
@@ -29,10 +37,13 @@ class LocalizationNode(Node):
             10)
                 
     def uwb_distances_callback(self, msg):
-        for sensor_id, distance in enumerate(msg.data, start=1):
-            self.uwb_distances_dict[sensor_id] = distance
+        for i in range(msg.data):
+            self.uwb_distances_dict[i+1] = msg.data[i]
         self.compute_and_publish_location()
 
+    def gyro_callback(self, msg):
+        self.gyro = msg.data
+    
     def compute_and_publish_location(self):
         # Check if we have all needed distances
         if len(self.uwb_distances_dict) >= 4:
@@ -54,7 +65,7 @@ class LocalizationNode(Node):
         # Once computed, publish the current location
         current_location = Currentcoords()
         current_location.easting, current_location.northing = location
-        current_location.angle = 0  # Placeholder for angle
+        current_location.angle = self.gyro 
         self.current_location_publisher.publish(current_location)
         self.get_logger().info(f'Published Current Location: {current_location.easting}, {current_location.northing}')
 
