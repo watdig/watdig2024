@@ -38,7 +38,7 @@ class MotorControllerNode(Node):
             return
 
         # Check if there's an ongoing goal and try to cancel it
-        if hasattr(self, 'goal_handle') and not self.goal_handle.done():
+        if hasattr(self, 'goal_handle'):
             self.get_logger().info('Cancelling the previous goal')
             # Cancel the previous goal
             self.goal_handle.cancel_goal()
