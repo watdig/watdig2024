@@ -64,7 +64,8 @@ class LocalizationNode(Node):
         current_location.northing = y
         current_location.angle = curr_angle
         self.current_location_publisher.publish(current_location)
-        self.get_logger().info(current_location)
+        log_msg = f'Current Location - Easting: {current_location.easting}, Northing: {current_location.northing}, Angle: {current_location.angle}'
+        self.get_logger().info(log_msg)
 
     
     def location_solver(self, points, distances):
