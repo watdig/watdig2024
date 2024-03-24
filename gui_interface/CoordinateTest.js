@@ -46,7 +46,7 @@ const CoordinateTest = () => {
     const dynamicPointSubscriber = new Roslib.Topic({
       ros: ros,
       name: '/current_location_topic', // Change this to your actual topic name
-      messageType: 'interfaces/CurrentCoords' // Change this to your actual message type
+      messageType: 'interfaces/Currentcoords' // Change this to your actual message type
     });
 
     // Define service request messages
