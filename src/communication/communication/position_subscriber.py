@@ -6,7 +6,6 @@ import json
 import random
 import rclpy
 from rclpy.node import Node
-from rclpy.time import Time
 import paho.mqtt.publish as publish
 from interfaces.msg import Currentcoords
 from communication.position import Position
@@ -26,7 +25,7 @@ class PositionSubscriber(Node):
             10)
         
         # Initializing MQTT Paramaters with MQTTX
-        self.broker = '172.20.10.2'
+        self.broker = '172.20.10.3'
         self.port = 1883
         self.topic = 'test'
         self.client_id = f'python-mqtt-{random.randint(1, 1000)}'
@@ -36,24 +35,21 @@ class PositionSubscriber(Node):
         """
         Function that sends MQTT topic to The Boring Company IP and Port.
         """
-        position_data = {
-            'team': 'WatDig',
-            'timestamp': self.get_current_time(),  # Convert ROS Time to message format
-            'running': True,
-            'easting': msg.easting,
-            'northing': msg.northing,
-        
-        }
-
+        position = Position()
+        position.easting = msg.easting
+        position.elevation = 0
+        position.northing = msg.northing
+        position.extras = []
         logger = logging.getLogger()
         logger.info('Sending Position JSON to MQTT Broker')
-        json_msg = json.dumps(position_data)  # Serialize to JSON
+        json_msg = self.convert_position_to_json(position)
         publish.single(self.topic, json_msg, hostname=self.broker, port=self.port)
 
-"""     def convert_position_to_json(self, msg):
-      
+
+    def convert_position_to_json(self, msg):
+        """
         Converts ROS2 Messages to a dictionary
-       
+        """
         team_name = 'WatDig'
         json_dict = {
             'team': team_name,
@@ -61,15 +57,12 @@ class PositionSubscriber(Node):
             'running': True,
             'easting': msg.easting,
             'northing': msg.northing,
+            'elevation': msg.elevation,
             'extras': msg.extras
         }
 
-        return json_dict """
-def get_current_time(self):
-        """
-        Get current time in a format suitable for JSON serialization.
-        """
-        return Time().to_msg().nanoseconds
+        return json_dict
+
 
 def main(args=None):
     """
