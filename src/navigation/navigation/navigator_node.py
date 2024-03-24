@@ -43,7 +43,7 @@ class NavigatorNode(Node):
         self.current_gyro = 0
         self.prev_gyro = 0
         self.current_location = (0,0)
-        self.turning = False
+        self.turning = 'not turning'
         
         # Calling Request Functions
         self.environment_request()
@@ -134,7 +134,7 @@ class NavigatorNode(Node):
         """
         Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
         """
-        self.current_location = (msg.easting, msg.northing)
+        self.current_location = [msg.easting, msg.northing]
         self.current_gyro = msg.angle
         self.publish_next_direction()
 
@@ -143,7 +143,7 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         """Publish next direction based on the current position."""
         if self.turning != "turning":
-            if (self.current_gyro - self.prev_gyro) <= 2:
+            if (abs(self.current_gyro - self.prev_gyro)) <= 2:
                 self.path_planner.get_next_checkpoint(self.current_location)
             else:
                 self.path_planner.recalculate_route(self.current_location)
