@@ -64,7 +64,8 @@ class TurnAndMoveActionServer(Node):
             pass  
 
         self.Car.stop()
-
+        GPIO.cleanup()
+        
         result.success = True
         return result
 
