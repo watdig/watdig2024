@@ -13,7 +13,7 @@ from std_msgs.msg import String
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
-        super().__init__('turn_and_move_action_server')
+        super().__init__('turn_and_move')
         self._action_server = ActionServer(
             self,
             TurnAndMove,
