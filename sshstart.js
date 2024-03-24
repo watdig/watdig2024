@@ -6,11 +6,10 @@ const sshClient = new Client();
 
 // Define connection parameters
 const connectionParams = {
-  host: '192.168.2.87',
+  host: '172.20.10.14',
   port: 22,
-  username: 'yashros-vm',
-  privateKey: fs.readFileSync('C:\\Users\\yashp\\.ssh\\id_rsa'), // Corrected file path with escaped backslashes
-  passphrase: '131404' // Provide the passphrase for your encrypted private key
+  username: 'watdig',
+  password: 'watdig'
 };
 
 // Connect to the SSH server
@@ -31,10 +30,10 @@ sshClient.on('ready', () => {
     const shellTimeout = setTimeout(() => {
       console.log('Shell session timeout reached. Ending session.');
       stream.end('exit\n'); // Send 'exit' command to end the session
-    }, 2 * 60 * 1000);
+    }, 1 * 60 * 1000);
 
     // Execute the command
-    const command = 'cd /home/yashros-vm/watdig2024 && ./cleanbuild.sh && ./startonly.sh';
+    const command = 'cd /home/watdig/watdig2024 && cleanbuild.sh && ./startonly.sh';
 
     stream.write(command + '\n');
 
