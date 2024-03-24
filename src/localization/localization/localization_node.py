@@ -24,7 +24,7 @@ class LocalizationNode(Node):
         self.uwbback = []
         self.uwbfront = []
         self.gyro = 0.00
-        self.logger = logging.getLogger()
+        logger = logging.getLogger()
         
         #change this to starting point, make guess as close to previously known position
         self.x0 = np.array([0,0])
@@ -47,11 +47,13 @@ class LocalizationNode(Node):
     
     def front_uwb_callback(self, msg):
         self.uwbfront = [distance for distance in msg.data]
-        self.logger(msg.data)
         self.compute_and_publish_location
 
     def compute_and_publish_location(self):
+        logger = logging.getLogger()
+        logger.info("computing location")
         uwb1_position = self.location_solver(self.uwbs, self.uwbback)
+        logger.info("function run")
         if isinstance(uwb1_position, str):  # Check if the return value indicates an error
             self.get_logger().info(uwb1_position)
             x, y = self.x0[0], self.x0[1]
@@ -60,6 +62,8 @@ class LocalizationNode(Node):
         
         curr_angle = self.gyro
 
+        logger.info("got gyro")
+        
         # Once computed, publish the current location
         current_location = CurrentCoords()
         current_location.easting = x
