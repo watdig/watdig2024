@@ -150,7 +150,7 @@ class NavigatorNode(Node):
                 self.path_planner.recalculate_route(self.current_location)
         self.current_gyro = self.path_planner.angle
         directions = Float32MultiArray()
-        directions.data = [max(self.path_planner.angle, 0.0), max(self.path_planner.distance, 0.0)]
+        directions.data = [float(max(self.path_planner.angle, 0.0)), float(max(self.path_planner.distance, 0.0))]
         # logger.info(self.path_planner.distance)
         self.publisher_directions.publish(directions)
 
