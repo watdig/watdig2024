@@ -1,6 +1,5 @@
 import rclpy
 import RPi.GPIO as GPIO
-import time
 import pigpio
 import signal  # Import the signal module
 from rclpy.action import ActionServer
@@ -10,7 +9,7 @@ from controls.encoder import reader
 from action_folder.action import TurnAndMove 
 from interfaces.msg import Currentcoords
 from std_msgs.msg import String 
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+import asyncio
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
@@ -54,7 +53,6 @@ class TurnAndMoveActionServer(Node):
         distance = goal_handle.request.distance  
         
         self.current_action_publisher.publish(String(data="turning"))
-        loop_rate = self.create_rate(10)
         
         # Turn based on angle
         if goal_handle.request.angle > 0:
@@ -73,16 +71,15 @@ class TurnAndMoveActionServer(Node):
                 self.get_logger().info("turning loop")    
                 if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
                     break
-                await rclpy.spin_once(self, timeout_sec=0.1)  # Allow other callbacks to process
-                loop_rate.sleep()
-                self.get_logger().info(self.current_gyro)
-            
+                await asyncio.sleep(0.1)  # Asynchronous sleep without blocking
+                self.get_logger().info(f"Current Gyro: {self.current_gyro}")
+        
         self.current_action_publisher.publish(String(data="driving"))    
         
         self.p.pulse_count = 0
         self.Car.drive(0)
         while (self.p.pulse_count < 4685*(distance/0.471234)): 
-            pass  
+            await asyncio.sleep(0.1)  
 
         self.Car.stop()
         GPIO.cleanup()  
