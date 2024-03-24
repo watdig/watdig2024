@@ -48,9 +48,9 @@ class TurnAndMoveActionServer(Node):
         
         # Turn based on angle
         if goal_handle.request.angle > 0:
-            self.car.turn_right()
+            self.Car.turn_right()
         else:
-            self.car.turn_left()
+            self.Car.turn_left()
 
         # Wait for the duration of the turn, non-blocking wait
         while (self.current_gyro - angle) > 2:
