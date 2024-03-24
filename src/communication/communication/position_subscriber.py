@@ -7,7 +7,7 @@ import random
 import rclpy
 from rclpy.node import Node
 import paho.mqtt.publish as publish
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 from communication.position import Position
 
 logging.basicConfig(level=logging.INFO)
@@ -19,7 +19,7 @@ class PositionSubscriber(Node):
     def __init__(self):
         super().__init__('position_subscriber')
         self.localization_subscriber_ = self.create_subscription(
-            CurrentCoords,
+            Currentcoords,
             'current_location_topic',
             self.position_subscriber_callback,
             10)

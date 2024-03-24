@@ -3,7 +3,7 @@ from shapely.geometry import Point
 import rclpy
 from rclpy.node import Node
 from navigation.path_planner import PathPlanner
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, String  # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
@@ -22,7 +22,7 @@ class NavigatorNode(Node):
         self.env_cli = self.create_client(Environmentarray, 'environment_csv_service')
         
         # Setup subscriptions for current location and angle
-        self.subscription_current_location = self.create_subscription(CurrentCoords,
+        self.subscription_current_location = self.create_subscription(Currentcoords,
             'current_location_topic', self.current_location_callback, 10)
         
         self.subscription_turning = self.create_subscription(String, 'current_action', 

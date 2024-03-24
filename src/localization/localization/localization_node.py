@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from interfaces.msg import CurrentCoords
+from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
 import numpy as np
@@ -11,7 +11,7 @@ class LocalizationNode(Node):
         super().__init__('localization_node')
         self.get_logger().set_level(rclpy.logging.LoggingSeverity.INFO)
         # Publishers
-        self.current_location_publisher = self.create_publisher(CurrentCoords, 'current_location_topic', 10)
+        self.current_location_publisher = self.create_publisher(Currentcoords, 'current_location_topic', 10)
         
         # UWB Anchor Points
         self.uwbs = [(0, 0), (15, 0), (0,15), (15,15)]
@@ -57,15 +57,14 @@ class LocalizationNode(Node):
             x, y = uwb1_position[0], uwb1_position[1]
         
         curr_angle = self.gyro
-
         
         # Once computed, publish the current location
-        current_location = CurrentCoords()
+        current_location = Currentcoords()
         current_location.easting = x
         current_location.northing = y
         current_location.angle = curr_angle
         self.current_location_publisher.publish(current_location)
-        logger.info(f'Published Current Location: {x}, {y}, {curr_angle}')
+
     
     def location_solver(self, points, distances):
         # Adjusted objective function to minimize
