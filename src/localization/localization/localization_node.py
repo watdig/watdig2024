@@ -70,7 +70,7 @@ class LocalizationNode(Node):
         current_location.northing = y
         current_location.angle = curr_angle
         self.current_location_publisher.publish(current_location)
-        self.logger.info(f'Published Current Location: {x}, {y}, {curr_angle}')
+        logger.info(f'Published Current Location: {x}, {y}, {curr_angle}')
     
     def location_solver(self, points, distances):
         # Adjusted objective function to minimize
