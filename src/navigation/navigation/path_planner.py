@@ -27,6 +27,7 @@ class PathPlanner:
         if checkpoint is in range, identifies next checkpoint to travel to based on PRM
         """
         reached_goal = self.is_in_range(current_position)
+        print("True")
         if reached_goal:
             if self.index < self.num_nodes:
                 self.target_pos.update_goal(self.targets[self.index]) # identify next goal based on prm
@@ -164,6 +165,7 @@ class PathPlanner:
         self.num_nodes = len(path)
         
         self.target_pos.set_goal(path[1])
+        self.index = 2
         logger.info(self.target_pos.current_goal)
         
         # Logging information
