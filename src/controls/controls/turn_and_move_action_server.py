@@ -76,7 +76,7 @@ class TurnAndMoveActionServer(Node):
                 self.get_logger().info("turning loop")    
                 if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
                     break
-                await asyncio.sleep(0.1)  # Asynchronous sleep without blocking
+                asyncio.sleep(0.1)  # Asynchronous sleep without blocking
                 self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
         self.current_action_publisher.publish(String(data="driving"))    
@@ -84,7 +84,7 @@ class TurnAndMoveActionServer(Node):
         self.p.pulse_count = 0
         self.Car.drive(0)
         while (self.p.pulse_count < 4685*(distance/0.471234)): 
-            await asyncio.sleep(0.1)  
+            asyncio.sleep(0.1)  
 
         self.Car.stop()
         GPIO.cleanup()  
