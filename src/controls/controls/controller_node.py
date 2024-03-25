@@ -3,6 +3,7 @@ from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray  
 from rclpy.action import ActionClient
 from action_folder.action import TurnAndMove  
+from rclpy.executors import MultiThreadedExecutor
 
 class MotorControllerNode(Node):
     def __init__(self):
@@ -10,6 +11,7 @@ class MotorControllerNode(Node):
         
         self.prev_angle = None
         self.prev_distance = None
+        self.action_in_progress = False  # Flag to track if an action is in progress
         
         # Subscriber to the topic publishing angle and distance commands
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
@@ -22,6 +24,9 @@ class MotorControllerNode(Node):
         
         # Compare with previous commands and act if different
         if current_angle != self.prev_angle or current_distance != self.prev_distance:
+            # Wait for the current action to complete before sending a new one
+            while self.action_in_progress:
+                rclpy.spin_once(self, timeout_sec=0.1)
             self.perform_action(current_angle, current_distance)
             
             # Update previous commands
@@ -37,6 +42,7 @@ class MotorControllerNode(Node):
             self.get_logger().warn('Action server not available!')
             return
 
+        self.action_in_progress = True  # Set the flag when an action starts
         # Create and send a new goal to the action server
         goal_msg = TurnAndMove.Goal()
         goal_msg.angle = angle
@@ -46,15 +52,13 @@ class MotorControllerNode(Node):
         self.future = self.action_client.send_goal_async(goal_msg)
         self.future.add_done_callback(self.goal_response_callback)
         self.get_logger().info("sent new goal")
-        
-        # Store the new future as the current goal handle for potential cancellation
-        self.future.add_done_callback(lambda future: setattr(self, 'goal_handle', future.result()))
 
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
+            self.action_in_progress = False  # Reset the flag if goal is rejected
             return
 
         self.get_logger().info('Goal accepted :)')
@@ -65,12 +69,13 @@ class MotorControllerNode(Node):
     def get_result_callback(self, future):
         result = future.result().result
         self.get_logger().info(f'Result: {result.success}')
-        # Handle the result as necessary
+        self.action_in_progress = False  # Reset the flag when action completes
 
 def main(args=None):
     rclpy.init(args=args)
     motor_controller_node = MotorControllerNode()
-    rclpy.spin(motor_controller_node)
+    executor = MultiThreadedExecutor() 
+    rclpy.spin(motor_controller_node, executor=executor)
     rclpy.shutdown()
 
 if __name__ == '__main__':
