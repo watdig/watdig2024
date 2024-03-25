@@ -54,8 +54,6 @@ class TurnAndMoveActionServer(Node):
         rclpy.shutdown()
 
     def current_gyro_callback(self, msg):
-        logger = logging.getLogger()
-        logger.info("turn_and_move_action_server Gyro Value is: %f", msg.data)
         self.current_gyro = msg.data
         
     def execute_callback(self, goal_handle):
@@ -84,14 +82,11 @@ class TurnAndMoveActionServer(Node):
         # Wait for the duration of the turn, non-blocking wait
         while True:
             if self.current_gyro is None:
-                continue  # Skip iteration if sensor read failed
-            self.get_logger().info("turning loop")    
+                continue  # Skip iteration if sensor read failed   
             if abs(normalize_angle(self.current_gyro - angle)) < 5:
                 self.get_logger().info('stop turning')
                 break
-            self.get_logger().info('Calling Request Function')
             self.current_gyro = self.gyro_request_service()
-            self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
         self.current_action_publisher.publish(String(data="driving"))    
         
@@ -111,7 +106,6 @@ class TurnAndMoveActionServer(Node):
         Requests for information from the environment.csv file.
         """
         logger = logging.getLogger()
-        logger.info('Requesting Gyro Angle')
         # Requesting Server
         self.gyro_request.messagereq = "gyro"
         future = self.gyro_client.call_async(self.gyro_request)
