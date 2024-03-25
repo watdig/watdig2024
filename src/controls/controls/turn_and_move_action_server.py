@@ -51,7 +51,7 @@ class TurnAndMoveActionServer(Node):
 
     def current_location_callback(self, msg):
         logger = logging.getLogger()
-        logger.info("turn_and_move_action_server Gyro Value is: %f", msg.data)
+        logger.info("turn_and_move_action_server Gyro Value is: %f", msg.angle)
         self.current_gyro = msg.angle
         
     def execute_callback(self, goal_handle):
