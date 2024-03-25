@@ -1,6 +1,7 @@
 import rclpy
 import RPi.GPIO as GPIO
 import pigpio
+import logging
 import signal  # Import the signal module
 from rclpy.action import ActionServer
 from rclpy.node import Node
@@ -10,6 +11,8 @@ from action_folder.action import TurnAndMove
 from interfaces.msg import Currentcoords
 from std_msgs.msg import String 
 import asyncio
+
+logging.basicConfig(level=logging.INFO)
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
@@ -47,6 +50,8 @@ class TurnAndMoveActionServer(Node):
         rclpy.shutdown()
 
     def current_location_callback(self, msg):
+        logger = logging.getLogger()
+        logger.info("turn_and_move_action_server Gyro Value is: %f", msg.data)
         self.current_gyro = msg.angle
         
     def execute_callback(self, goal_handle):
