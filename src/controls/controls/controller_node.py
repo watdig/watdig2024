@@ -24,20 +24,16 @@ class MotorControllerNode(Node):
         self.get_logger().info("recieved new coordinate")
         
         # Compare with previous commands and act if different
-        """_summary_
-        
         if current_angle != self.prev_angle or current_distance != self.prev_distance:
             # Wait for the current action to complete before sending a new one
             while self.action_in_progress:
-                rclpy.spin_once(self, timeout_sec=0.1)
-                self.get_logger().info("action in ")
-        """
-        self.perform_action(current_angle, current_distance)
+                continue
+            self.perform_action(current_angle, current_distance)
             
             # Update previous commands
-        self.prev_angle = current_angle
-        self.prev_distance = current_distance
-        # self.get_logger().info("updated previous commands")
+            self.prev_angle = current_angle
+            self.prev_distance = current_distance
+            self.get_logger().info("updated previous commands")
 
     def parse_data(self, msg):
         return msg.data[0], msg.data[1] 
