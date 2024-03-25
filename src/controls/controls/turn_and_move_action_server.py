@@ -83,7 +83,7 @@ class TurnAndMoveActionServer(Node):
             self.get_logger().info("turning loop")    
             if abs(normalize_angle(self.current_gyro - angle)) < 5:  # 5 degrees tolerance
                 break
-            self.gyro_request()
+            self.current_gyro = self.gyro_request()
             self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
         self.current_action_publisher.publish(String(data="driving"))    
