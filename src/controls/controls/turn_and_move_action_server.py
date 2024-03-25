@@ -27,7 +27,7 @@ class TurnAndMoveActionServer(Node):
         
         self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
 
-        self.gyro_request = Gyroserv().Request()
+        self.gyro_request = Gyroserv.Request()
         
         # Set Pins
         self.pin1 = 8
