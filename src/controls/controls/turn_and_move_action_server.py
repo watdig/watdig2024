@@ -101,6 +101,7 @@ class TurnAndMoveActionServer(Node):
         self.current_action_publisher.publish(String(data="stopped"))
         
         result.success = True
+        goal_handle.succeed()
         return result
 
     def gyro_request_service(self):
