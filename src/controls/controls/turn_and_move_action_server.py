@@ -32,7 +32,10 @@ class TurnAndMoveActionServer(Node):
         self.Car = Car()
         self.current_gyro = 0.0
        
+       
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
+        self.subscription_gyro = self.create_subscription(Float32,
+            'gyro_topic', self.current_gyro_callback, 10)
         
         # Register the signal handler for SIGINT
         signal.signal(signal.SIGINT, self.cleanup)
@@ -50,7 +53,7 @@ class TurnAndMoveActionServer(Node):
         logger.info("turn_and_move_action_server Gyro Value is: %f", msg.data)
         self.current_gyro = msg.data
         
-    def execute_callback(self, goal_handle):        
+    def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
         feedback_msg = TurnAndMove.Feedback()
         result = TurnAndMove.Result()
@@ -72,12 +75,10 @@ class TurnAndMoveActionServer(Node):
         
         # Wait for the duration of the turn, non-blocking wait
         while True:
-            self.subscription_gyro = self.create_subscription(Float32,
-            'gyro_topic', self.current_gyro_callback, 10)
             if self.current_gyro is None:
                 continue  # Skip iteration if sensor read failed
             self.get_logger().info("turning loop")    
-            if abs(normalize_angle(self.current_gyro - angle)) < 5:  # 5 degrees tolerance
+            if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
                 break
             asyncio.sleep(0.2)  # Asynchronous sleep without blocking
             self.get_logger().info(f"Current Gyro: {self.current_gyro}")
