@@ -88,7 +88,7 @@ class TurnAndMoveActionServer(Node):
                 break
             self.current_gyro = self.gyro_request_service()
         
-        self.current_action_publisher.publish(String(data="driving"))    
+        # self.current_action_publisher.publish(String(data="driving"))    
         
         self.p.pulse_count = 0
         self.Car.drive(0)
@@ -97,6 +97,8 @@ class TurnAndMoveActionServer(Node):
 
         self.Car.stop()
         GPIO.cleanup()  
+        
+        self.current_action_publisher.publish(String(data="stopped"))
         
         result.success = True
         return result
