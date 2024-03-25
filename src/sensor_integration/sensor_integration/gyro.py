@@ -1,10 +1,12 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32  
-
+import logging
 import board
 import busio
 import adafruit_bno055
+
+logging.basicConfig(level=logging.INFO)
 
 class Gyro(Node):
     def __init__(self):
@@ -15,12 +17,14 @@ class Gyro(Node):
         self.create_timer(0.1, self.publish_gyro)
 
     def publish_gyro(self):
+        logger = logging.getLogger()
         yaw = self.sensor.euler[0]  
         if yaw is None:
             yaw = 0.0
             self.get_logger().info("SENSOR ERROR") 
         msg = Float32()
         msg.data = yaw  
+        logger.info("Gyro Value: %f", msg.data)
         self.gyro_publisher.publish(msg)
         # self.get_logger().info(f'Publishing: {msg.data}')
 
