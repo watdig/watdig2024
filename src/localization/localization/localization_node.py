@@ -1,9 +1,12 @@
+import logging
 import rclpy
 from rclpy.node import Node
 from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
 import numpy as np
+
+logging.basicConfig(level=logging.INFO)
 
 class LocalizationNode(Node):
     def __init__(self):
@@ -43,6 +46,8 @@ class LocalizationNode(Node):
         self.compute_and_publish_location()
 
     def gyro_callback(self, msg):
+        logger = logging.getLogger()
+        logger.info("Localization Node Received from gyro_topic: %f", msg.data)
         self.gyro = msg.data
     
     def compute_and_publish_location(self):
