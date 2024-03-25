@@ -36,7 +36,7 @@ class TurnAndMoveActionServer(Node):
        
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
         self.subscription_current_location = self.create_subscription(Currentcoords,
-            'current_location_topic', self.current_location_callback, 10)
+            'gyro_topic', self.current_location_callback, 10)
         
         # Register the signal handler for SIGINT
         signal.signal(signal.SIGINT, self.cleanup)
