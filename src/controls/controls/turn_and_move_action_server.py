@@ -10,6 +10,7 @@ from controls.encoder import reader
 from action_folder.action import TurnAndMove 
 from std_msgs.msg import String, Float32 
 import asyncio
+from interfaces import Gyro
 
 logging.basicConfig(level=logging.INFO)
 
@@ -23,6 +24,9 @@ class TurnAndMoveActionServer(Node):
             TurnAndMove,
             'turn_and_move',
             self.execute_callback)
+        
+        self.gyro_client = self.create_client(Gyro, 'gyro_service')
+
         
         # Set Pins
         self.pin1 = 8
@@ -80,7 +84,8 @@ class TurnAndMoveActionServer(Node):
             self.get_logger().info("turning loop")    
             if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
                 break
-            asyncio.sleep(0.2)  # Asynchronous sleep without blocking
+            self.get_logger().info('Calling Request Function')
+            self.current_gyro = self.gyro_request()
             self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
         self.current_action_publisher.publish(String(data="driving"))    
@@ -95,6 +100,19 @@ class TurnAndMoveActionServer(Node):
         
         result.success = True
         return result
+
+    def gyro_request(self):
+        """
+        Requests for information from the environment.csv file.
+        """
+        logger = logging.getLogger()
+        logger.info('Requesting Gyro Angle')
+        # Requesting Server
+        requestmsg = 'F'
+        future = self.gyro_client.call_asyncr(requestmsg)
+        rclpy.spin_until_future_complete(self, future)
+        msg = future.result()
+        return msg.angle
 
 def main(args=None):
     rclpy.init(args=args)
