@@ -90,7 +90,7 @@ class TurnAndMoveActionServer(Node):
                 self.get_logger().info('stop turning')
                 break
             self.get_logger().info('Calling Request Function')
-            self.current_gyro = self.gyro_request()
+            self.current_gyro = self.gyro_request_service()
             self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
         self.current_action_publisher.publish(String(data="driving"))    
@@ -106,7 +106,7 @@ class TurnAndMoveActionServer(Node):
         result.success = True
         return result
 
-    def gyro_request(self):
+    def gyro_request_service(self):
         """
         Requests for information from the environment.csv file.
         """
