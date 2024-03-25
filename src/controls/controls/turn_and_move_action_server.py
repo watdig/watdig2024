@@ -3,30 +3,21 @@ import RPi.GPIO as GPIO
 import pigpio
 import logging
 import signal  # Import the signal module
-from rclpy.action import ActionServer
 from rclpy.node import Node
 from controls.controls import Car
 from controls.encoder import reader
-from action_folder.action import TurnAndMove 
+from interfaces.srv import TurnAndMove 
 from std_msgs.msg import String, Float32 
-import asyncio
 from interfaces.srv import Gyroserv
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
         super().__init__('turn_and_move')
         
-        # Initializing Action Server
-        self._action_server = ActionServer(
-            self,
-            TurnAndMove,
-            'turn_and_move',
-            self.execute_callback)
-        
+        self._action_server = self.create_service(TurnAndMove, 'turn_and_move', self.turn_move_service_callback)
         self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
-
         self.gyro_request = Gyroserv.Request()
         
         # Set Pins
@@ -56,15 +47,13 @@ class TurnAndMoveActionServer(Node):
     def current_gyro_callback(self, msg):
         self.current_gyro = msg.data
         
-    def execute_callback(self, goal_handle):
-        self.get_logger().info('Executing goal...')
-        feedback_msg = TurnAndMove.Feedback()
-        result = TurnAndMove.Result()
-        angle = goal_handle.request.angle
-        distance = goal_handle.request.distance  
+    def turn_move_service_callback(self, request, response):
+        logger = logging.getLogger()
+        logger.debug()
+        angle = request.angle
+        distance = request.distance
         
         self.get_logger().info(f"Turn and Moving with Angle: {angle}")
-
         
         self.current_action_publisher.publish(String(data="turning"))
         
@@ -99,10 +88,8 @@ class TurnAndMoveActionServer(Node):
         
         self.current_action_publisher.publish(String(data="stopped"))
         
-        goal_handle.succeed()
-        
-        result.success = True
-        return result
+        response.success = True
+        return response
 
     def gyro_request_service(self):
         """

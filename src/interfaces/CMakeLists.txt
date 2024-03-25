@@ -19,6 +19,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/State.msg"
 "msg/Currentcoords.msg"
 "srv/Gyroserv.srv"
+"srv/Turnandmove.srv"
 )
 
 

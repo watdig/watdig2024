@@ -1,9 +1,12 @@
+import logging
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray  
 from rclpy.action import ActionClient
-from action_folder.action import TurnAndMove  
+from interfaces.srv import TurnAndMove  
 from rclpy.executors import MultiThreadedExecutor
+
+logging.basicConfig(level=logging.DEBUG)
 
 class MotorControllerNode(Node):
     def __init__(self):
@@ -13,12 +16,10 @@ class MotorControllerNode(Node):
         self.prev_distance = None
         self.action_in_progress = False  # Flag to track if an action is in progress
         
-        # Subscriber to the topic publishing angle and distance commands
+        self.controller_client = self.create_client(TurnAndMove, "turn_and_move")
+        self.controller_request = TurnAndMove.Request()
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
-        # Action client for TurnAndMove action
-        self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move')
-
     def callback(self, msg):
         current_angle, current_distance = self.parse_data(msg)
         self.get_logger().info("recieved new coordinate")
@@ -28,7 +29,7 @@ class MotorControllerNode(Node):
             # Wait for the current action to complete before sending a new one
             while self.action_in_progress:
                 continue
-            self.perform_action(current_angle, current_distance)
+            self.controller_request_service(current_angle, current_distance)
             
             # Update previous commands
             self.prev_angle = current_angle
@@ -37,6 +38,15 @@ class MotorControllerNode(Node):
 
     def parse_data(self, msg):
         return msg.data[0], msg.data[1] 
+    
+    def controller_request_service(self, angle, distance):
+        logger = logging.getLogger()
+        logger.debug("Calling Controller Service")
+        self.controller_request.angle = angle
+        self.controller_request.distance = distance
+        future = self.controller_client.call_async(self.controller_request)
+        msg = future.result
+        return msg.success
 
     def perform_action(self, angle, distance):
         # Ensure the action server is available
