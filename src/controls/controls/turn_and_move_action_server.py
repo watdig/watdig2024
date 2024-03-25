@@ -10,7 +10,7 @@ from controls.encoder import reader
 from action_folder.action import TurnAndMove 
 from std_msgs.msg import String, Float32 
 import asyncio
-from interfaces import Gyro
+from interfaces.srv import Gyro
 
 logging.basicConfig(level=logging.INFO)
 
