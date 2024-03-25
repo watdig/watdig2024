@@ -65,8 +65,6 @@ class TurnAndMoveActionServer(Node):
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
         
-        self.get_logger().info("Turn and Moving with Angle: %f", angle)
-        
         self.current_action_publisher.publish(String(data="turning"))
         
         # Turn based on angle
