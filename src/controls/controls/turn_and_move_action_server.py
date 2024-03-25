@@ -10,7 +10,7 @@ from controls.encoder import reader
 from action_folder.action import TurnAndMove 
 from std_msgs.msg import String, Float32 
 import asyncio
-from interfaces.srv import Gyro
+from interfaces.srv import Gyroserv
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,7 +25,7 @@ class TurnAndMoveActionServer(Node):
             'turn_and_move',
             self.execute_callback)
         
-        self.gyro_client = self.create_client(Gyro, 'gyro_service')
+        self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
 
         
         # Set Pins

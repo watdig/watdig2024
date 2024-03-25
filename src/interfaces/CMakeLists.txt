@@ -18,7 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 "msg/Checkpoints.msg"
 "msg/State.msg"
 "msg/Currentcoords.msg"
-"srv/Gyro.srv"
+"srv/Gyroserv.srv"
 )
 
 

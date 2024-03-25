@@ -5,7 +5,7 @@ import logging
 import board
 import busio
 import adafruit_bno055
-from interfaces.srv import Gyro
+from interfaces.srv import Gyroserv
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,7 +16,7 @@ class Gyro(Node):
         self.sensor = adafruit_bno055.BNO055_I2C(self.i2c) 
         self.gyro_publisher = self.create_publisher(Float32, 'gyro_topic', 10)
         self.create_timer(0.1, self.publish_gyro)
-        self.gyro_service = self.create_service(Gyro, 'gyro_service', self.gyro_service_callback)
+        self.gyro_service = self.create_service(Gyroserv, 'gyro_service', self.gyro_service_callback)
 
 
     def publish_gyro(self):
