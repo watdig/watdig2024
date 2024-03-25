@@ -30,7 +30,7 @@ To install WatDig, follow these steps:
 ## Usage
 Launch watdig using the command
 ```bash
-ros2 launch watdig_navigation start.launch.py
+./startonly.sh
 ```
 ## Configuration
 - **Sensors**: Configure **'conifg/sensors.yaml'**
