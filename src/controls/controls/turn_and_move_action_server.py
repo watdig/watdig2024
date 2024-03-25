@@ -34,8 +34,8 @@ class TurnAndMoveActionServer(Node):
        
        
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
-        self.subscription_current_location = self.create_subscription(Float32,
-            'gyro_topic', self.current_location_callback, 10)
+        self.subscription_gyro = self.create_subscription(Float32,
+            'gyro_topic', self.current_gyro_callback, 10)
         
         # Register the signal handler for SIGINT
         signal.signal(signal.SIGINT, self.cleanup)
@@ -48,7 +48,7 @@ class TurnAndMoveActionServer(Node):
         # It's important to also shutdown ROS2 to stop the node properly
         rclpy.shutdown()
 
-    def current_location_callback(self, msg):
+    def current_gyro_callback(self, msg):
         logger = logging.getLogger()
         logger.info("turn_and_move_action_server Gyro Value is: %f", msg.data)
         self.current_gyro = msg.data
@@ -75,13 +75,14 @@ class TurnAndMoveActionServer(Node):
         
         # Wait for the duration of the turn, non-blocking wait
         while True:
-                if self.current_gyro is None:
-                    continue  # Skip iteration if sensor read failed
-                self.get_logger().info("turning loop")    
-                if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
-                    break
-                asyncio.sleep(0.1)  # Asynchronous sleep without blocking
-                self.get_logger().info(f"Current Gyro: {self.current_gyro}")
+            self.current_location_callback()
+            if self.current_gyro is None:
+                continue  # Skip iteration if sensor read failed
+            self.get_logger().info("turning loop")    
+            if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
+                break
+            asyncio.sleep(0.1)  # Asynchronous sleep without blocking
+            self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
         self.current_action_publisher.publish(String(data="driving"))    
         
