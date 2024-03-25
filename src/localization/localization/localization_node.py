@@ -47,8 +47,9 @@ class LocalizationNode(Node):
 
     def gyro_callback(self, msg):
         logger = logging.getLogger()
-        logger.info("Localization Node Received from gyro_topic: %f", msg.data)
         self.gyro = msg.data
+        logger.info("Localization Node Received from gyro_topic: %f", self.gyro)
+        
     
     def compute_and_publish_location(self):
         # Check if we have all needed distances
