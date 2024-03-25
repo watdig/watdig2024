@@ -68,10 +68,12 @@ class LocalizationNode(Node):
             self.get_logger().info('Waiting for distances from all UWB sensors.')
 
     def publish_location(self, location):
+        logger = logging.getLogger()
         # Once computed, publish the current location
         current_location = Currentcoords()
         current_location.easting, current_location.northing = location
         current_location.angle = self.gyro 
+        logger.info("Localization sending to current_location_topic Gyro Value: %f", current_location.angle)
         self.current_location_publisher.publish(current_location)
         self.get_logger().info(f'Published Current Location: {current_location.easting}, {current_location.northing}, {current_location.angle}')
 
