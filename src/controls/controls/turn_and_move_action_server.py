@@ -60,7 +60,6 @@ class TurnAndMoveActionServer(Node):
         self.get_logger().info('Executing goal...')
         feedback_msg = TurnAndMove.Feedback()
         result = TurnAndMove.Result()
-        goal_handle.succeed()
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
         
@@ -100,8 +99,9 @@ class TurnAndMoveActionServer(Node):
         
         self.current_action_publisher.publish(String(data="stopped"))
         
-        result.success = True
         goal_handle.succeed()
+        
+        result.success = True
         return result
 
     def gyro_request_service(self):
