@@ -46,7 +46,7 @@ class LocalizationNode(Node):
         self.compute_and_publish_location()
 
     def gyro_callback(self, msg):
-        logger = logging.gtLogger()
+        logger = logging.getLogger()
         self.gyro = msg.data
         logger.info("Localization Node Received from gyro_topic: %f", self.gyro)
         
