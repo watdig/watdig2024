@@ -38,9 +38,8 @@ class Gyro(Node):
         if yaw is None:
             yaw = 0.0
             self.get_logger().info("SENSOR ERROR") 
-        msg = Float32()
-        msg.data = yaw  
-        logger.info("Gyro Value: %f", msg.data)
+        response.angle = yaw  
+        logger.info("Gyro Value: %f", response.angle)
         return response
         
 
