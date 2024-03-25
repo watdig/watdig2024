@@ -82,7 +82,7 @@ class TurnAndMoveActionServer(Node):
         # Wait for the duration of the turn, non-blocking wait
         while True:
             if self.current_gyro is None:
-                continue  # Skip iteration if sensor read failed   
+                continue  
             if abs(normalize_angle(self.current_gyro - angle)) < 5:
                 self.get_logger().info('stop turning')
                 break
@@ -92,8 +92,8 @@ class TurnAndMoveActionServer(Node):
         
         self.p.pulse_count = 0
         self.Car.drive(0)
-        while (self.p.pulse_count < 4685*(distance/0.471234)): 
-            self.get_logger().info(f"distance: {self.p.pulse_count}")  
+        while (self.p.pulse_count < 4685*(distance/0.471234)):
+            continue
 
         self.Car.stop()
         GPIO.cleanup()  
