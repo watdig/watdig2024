@@ -14,17 +14,22 @@ import asyncio
 class TurnAndMoveActionServer(Node):
     def __init__(self):
         super().__init__('turn_and_move')
+        
+        # Initializing Action Server
         self._action_server = ActionServer(
             self,
             TurnAndMove,
             'turn_and_move',
             self.execute_callback)
+        
+        # Set Pins
         self.pin1 = 8
         self.pi = pigpio.pi()
         self.p = reader(self.pi, self.pin1)
         GPIO.setmode(GPIO.BCM)
         self.Car = Car()
         self.current_gyro = 0.0
+       
        
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
         self.subscription_current_location = self.create_subscription(Currentcoords,
@@ -44,11 +49,11 @@ class TurnAndMoveActionServer(Node):
     def current_location_callback(self, msg):
         self.current_gyro = msg.angle
         
-    async def execute_callback(self, goal_handle):
+    def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
         feedback_msg = TurnAndMove.Feedback()
         result = TurnAndMove.Result()
-
+        goal_handle.succeed()
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
         
