@@ -113,7 +113,7 @@ class TurnAndMoveActionServer(Node):
         logger = logging.getLogger()
         logger.info('Requesting Gyro Angle')
         # Requesting Server
-        self.gyro_request.requestmsg = "gyro"
+        self.gyro_request.messagereq = "gyro"
         future = self.gyro_client.call_async(self.gyro_request)
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
