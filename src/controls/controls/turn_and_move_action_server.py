@@ -8,8 +8,7 @@ from rclpy.node import Node
 from controls.controls import Car
 from controls.encoder import reader
 from action_folder.action import TurnAndMove 
-from interfaces.msg import Currentcoords
-from std_msgs.msg import String 
+from std_msgs.msg import String, Float32 
 import asyncio
 
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +34,7 @@ class TurnAndMoveActionServer(Node):
        
        
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
-        self.subscription_current_location = self.create_subscription(Currentcoords,
+        self.subscription_current_location = self.create_subscription(Float32,
             'gyro_topic', self.current_location_callback, 10)
         
         # Register the signal handler for SIGINT
@@ -51,8 +50,8 @@ class TurnAndMoveActionServer(Node):
 
     def current_location_callback(self, msg):
         logger = logging.getLogger()
-        logger.info("turn_and_move_action_server Gyro Value is: %f", msg.angle)
-        self.current_gyro = msg.angle
+        logger.info("turn_and_move_action_server Gyro Value is: %f", msg.data)
+        self.current_gyro = msg.data
         
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
