@@ -149,6 +149,7 @@ class NavigatorNode(Node):
         directions.data = [float(max(self.path_planner.angle, 0.0)), float(max(self.path_planner.distance, 0.0))]
         logger.info(self.path_planner.angle)
         self.publisher_directions.publish(directions)
+        self.turning == "driving"
         
         
         """
