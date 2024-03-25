@@ -43,7 +43,7 @@ class NavigatorNode(Node):
         self.current_gyro = 0
         self.prev_gyro = 360
         self.current_location = (0,0)
-        self.turning = 'not turning'
+        self.turning = 'stopped'
         
         # Calling Request Functions
         self.environment_request()
