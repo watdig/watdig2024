@@ -65,6 +65,8 @@ class TurnAndMoveActionServer(Node):
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
         
+        self.get_logger().info(angle)
+        
         self.current_action_publisher.publish(String(data="turning"))
         
         # Turn based on angle
@@ -82,7 +84,8 @@ class TurnAndMoveActionServer(Node):
             if self.current_gyro is None:
                 continue  # Skip iteration if sensor read failed
             self.get_logger().info("turning loop")    
-            if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
+            if abs(normalize_angle(self.current_gyro - angle)) < 5:
+                self.get_logger().info('stop turning')
                 break
             self.get_logger().info('Calling Request Function')
             self.current_gyro = self.gyro_request()
