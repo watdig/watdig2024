@@ -37,12 +37,6 @@ class MotorControllerNode(Node):
             self.get_logger().warn('Action server not available!')
             return
 
-        # Check if there's an ongoing goal and try to cancel it
-        if hasattr(self, 'goal_handle'):
-            self.get_logger().info('Cancelling the previous goal')
-            # Cancel the previous goal
-            self.goal_handle.cancel_goal()
-
         # Create and send a new goal to the action server
         goal_msg = TurnAndMove.Goal()
         goal_msg.angle = angle
@@ -51,6 +45,7 @@ class MotorControllerNode(Node):
         # Send the new goal
         self.future = self.action_client.send_goal_async(goal_msg)
         self.future.add_done_callback(self.goal_response_callback)
+        self.get_logger().info("sent new goal")
         
         # Store the new future as the current goal handle for potential cancellation
         self.future.add_done_callback(lambda future: setattr(self, 'goal_handle', future.result()))

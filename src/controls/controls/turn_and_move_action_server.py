@@ -93,7 +93,7 @@ class TurnAndMoveActionServer(Node):
         self.p.pulse_count = 0
         self.Car.drive(0)
         while (self.p.pulse_count < 4685*(distance/0.471234)): 
-            asyncio.sleep(0.1)  
+            self.get_logger().info(f"distance: {self.p.pulse_count}")  
 
         self.Car.stop()
         GPIO.cleanup()  
