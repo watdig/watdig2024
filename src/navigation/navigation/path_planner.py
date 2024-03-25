@@ -163,7 +163,7 @@ class PathPlanner:
         self.targets = path
         self.num_nodes = len(path)
         
-        self.target_pos.set_goal(path[0])
+        self.target_pos.set_goal(path[1])
         logger.info(self.target_pos.current_goal)
         
         # Logging information
