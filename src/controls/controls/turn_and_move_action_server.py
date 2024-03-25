@@ -76,13 +76,12 @@ class TurnAndMoveActionServer(Node):
         
         # Wait for the duration of the turn, non-blocking wait
         while True:
-            self.subscription_gyro = self.create_subscription(Float32,
-            'gyro_topic', self.current_gyro_callback, 10)
             if self.current_gyro is None:
                 continue  # Skip iteration if sensor read failed
             self.get_logger().info("turning loop")    
             if abs(normalize_angle(self.current_gyro - angle)) < 5:  # 5 degrees tolerance
                 break
+            self.get_logger().info('Calling Request Function')
             self.current_gyro = self.gyro_request()
             self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
@@ -104,19 +103,13 @@ class TurnAndMoveActionServer(Node):
         Requests for information from the environment.csv file.
         """
         logger = logging.getLogger()
+        logger.info('Requesting Gyro Angle')
         # Requesting Server
-        requestmsg = 'environment'
+        requestmsg = 'F'
         future = self.gyro_client.call_asyncr(requestmsg)
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
         return msg.angle
-        
-        # Logging information
-        for environment in msg.array:
-            logger.info('Environment Name %s', environment.name)
-
-        for environment in msg.array:
-            self.path_plan
 
 def main(args=None):
     rclpy.init(args=args)
