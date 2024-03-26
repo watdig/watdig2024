@@ -203,7 +203,7 @@ class NavigatorNode(Node):
         GPIO.setmode(GPIO.BCM)
         self.Car = Car()
         self.current_gyro = 0.0
-        self.curr_point = (1,1)
+        self.curr_point = (0,0)
         logger.info(self.path_planner.angle)
         
         car = Car()
