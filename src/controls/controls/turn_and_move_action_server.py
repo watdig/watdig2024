@@ -94,8 +94,7 @@ class TurnAndMoveActionServer(Node):
         while (self.p.pulse_count < 4685*(distance/0.471234)):
             continue
 
-        self.Car.stop()
-        GPIO.cleanup()  
+        self.Car.stop()  
         
         self.current_action_publisher.publish(String(data="stopped"))
         
