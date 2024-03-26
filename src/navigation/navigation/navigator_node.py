@@ -180,6 +180,18 @@ class NavigatorNode(Node):
         self.publisher_directions.publish(directions)
         """
 
+    def gyro_request_service(self):
+        """
+        Requests for information from the gyro topic.
+        """
+        logger = logging.getLogger()
+        # Requesting Server
+        self.gyro_request.messagereq = "gyro"
+        future = self.gyro_client.call_async(self.gyro_request)
+        rclpy.spin_until_future_complete(self, future)
+        msg = future.result()
+        return msg.angle
+    
     def backup(self):
         
         self.pin1 = 8
