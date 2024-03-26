@@ -201,8 +201,11 @@ class NavigatorNode(Node):
         self.Car = Car()
         self.current_gyro = 0.0
         self.curr_point = (0,0)
+        logger.info(self.path_planner.angle)
         
         car = Car()
+        logger.info("car initialized")
+        
         def distance(point1, point2):
             return math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
     
@@ -214,6 +217,7 @@ class NavigatorNode(Node):
             return normalize_angle(angle_to_target - current_yaw)
     
         logger = logging.getLogger()
+        
         for point in self.path_planner.targets:
             dist = distance(self.curr_point, point)
             target_yaw = calculate_target_yaw(self.current_gyro, point, self.curr_point)
@@ -223,13 +227,14 @@ class NavigatorNode(Node):
             else:
                 car.drive(2) 
             
+            logger.info("entering turn loop")
             while True:
                 current_yaw = self.gyro_request_service()
                 if current_yaw is None:
                     continue  # Skip iteration if sensor read failed    
                 if abs(normalize_angle(current_yaw - target_yaw)) < 3:  # 5 degrees tolerance
                     break  # Exit loop once close to the target yaw
-                self.get_logger().info(f"current gyro: {current_yaw}")    
+                logger.info(current_yaw)   
             car.stop()
                    
             self.p.pulse_count=0 
