@@ -240,7 +240,7 @@ class NavigatorNode(Node):
             logger.info("entering turn loop")
             while True:
                 self.current_gyro = read_yaw_angle(sensor)
-                self.current_action_publisher.publish(String(data=self.current_gyro))  
+                self.publisher_directions.publish(Float32(data=self.current_gyro))  
                 if self.current_gyro is None:
                     continue  # Skip iteration if sensor read failed    
                 if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
