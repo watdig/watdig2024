@@ -74,6 +74,7 @@ class MotorControllerNode(Node):
         result = future.result().result
         self.get_logger().info(f'Result: {result.success}')
         self.action_in_progress = False 
+        rclpy.shutdown()
 
 def main(args=None):
     rclpy.init(args=args)
