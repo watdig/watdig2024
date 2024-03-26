@@ -34,12 +34,6 @@ def generate_launch_description():
             name='controls_node'
         ),
         Node(
-            package='controls',
-            executable='action_server',
-            output='screen',
-            name='action_server_node'
-        ),
-        Node(
             package='localization',
             executable='localization_node',
             output='screen',
