@@ -193,7 +193,7 @@ class NavigatorNode(Node):
         return msg.angle
     
     def backup(self):
-        
+        logger = logging.getLogger()
         self.pin1 = 8
         self.pi = pigpio.pi()
         self.p = reader(self.pi, self.pin1)
@@ -216,7 +216,7 @@ class NavigatorNode(Node):
             angle_to_target = math.atan2(target_point[1] - current_point[1], target_point[0] - current_point[0]) * 180 / math.pi
             return normalize_angle(angle_to_target - current_yaw)
     
-        logger = logging.getLogger()
+    
         
         for point in self.path_planner.targets:
             dist = distance(self.curr_point, point)
