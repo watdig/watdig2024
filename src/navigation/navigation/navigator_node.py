@@ -14,6 +14,8 @@ import math
 import RPi.GPIO as GPIO
 from navigation.reader import reader
 import pigpio
+import board
+import adafruit_bno055
 
 
 logging.basicConfig(level=logging.INFO)
@@ -206,6 +208,15 @@ class NavigatorNode(Node):
         car = Car()
         logger.info("car initialized")
         
+        i2c = board.I2C()  
+        sensor = adafruit_bno055.BNO055_I2C(i2c) 
+
+        def read_yaw_angle(sensor):
+            euler = sensor.euler[0]
+            if euler is not None:
+                return euler 
+            return None
+        
         def distance(point1, point2):
             return math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
     
@@ -229,12 +240,12 @@ class NavigatorNode(Node):
             
             logger.info("entering turn loop")
             while True:
-                current_yaw = self.gyro_request_service()
-                if current_yaw is None:
+                self.current_gyro = read_yaw_angle(sensor)
+                if self.current_gyro is None:
                     continue  # Skip iteration if sensor read failed    
-                if abs(normalize_angle(current_yaw - target_yaw)) < 3:  # 5 degrees tolerance
+                if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
                     break  # Exit loop once close to the target yaw
-                logger.info(current_yaw)   
+                logger.info(self.current_gyro)   
             car.stop()
                    
             self.p.pulse_count=0 
