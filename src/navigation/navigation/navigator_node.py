@@ -260,8 +260,8 @@ class NavigatorNode(Node):
             self.curr_gyro= self.gyro_request_service()
             self.curr_point = point
             car.stop()
-    GPIO.cleanup()
-    rclpy.shutdown()
+        GPIO.cleanup()
+        rclpy.shutdown()
 
 
 def main(args=None):
