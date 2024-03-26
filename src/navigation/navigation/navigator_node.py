@@ -229,8 +229,10 @@ class NavigatorNode(Node):
             return normalize_angle(angle_to_target - current_yaw)
     
         for point in self.path_planner.targets:
+            logger.info(f"Point: {point}")
             dist = distance(self.curr_point, point)
             target_yaw = calculate_target_yaw(self.current_gyro, point, self.curr_point)
+            logger.info(f"Yaw: {target_yaw}")
             
             if target_yaw < 0:
                 car.drive(3)  
@@ -263,7 +265,7 @@ class NavigatorNode(Node):
                 # logger.info(curr_distance) 
             car.stop()
 
-            logger.info(f"Point: {point}")
+            
               
             self.curr_gyro= read_yaw_angle(sensor)
             self.curr_point = point
