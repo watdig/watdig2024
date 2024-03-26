@@ -202,7 +202,7 @@ class NavigatorNode(Node):
         GPIO.setmode(GPIO.BCM)
         self.Car = Car()
         self.current_gyro = 0.0
-        self.curr_point = (0,0)
+        self.curr_point = (1,1)
         logger.info(self.path_planner.angle)
         
         car = Car()
@@ -226,7 +226,6 @@ class NavigatorNode(Node):
         def calculate_target_yaw(current_yaw, target_point, current_point):
             angle_to_target = math.atan2(target_point[1] - current_point[1], target_point[0] - current_point[0]) * 180 / math.pi
             return normalize_angle(angle_to_target - current_yaw)
-    
     
         
         for point in self.path_planner.targets:
