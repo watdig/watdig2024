@@ -241,7 +241,7 @@ class NavigatorNode(Node):
             while True:
                 self.current_gyro = read_yaw_angle(sensor)
                 msg = Float32()
-                msg.data = self.current_gyro  
+                msg.data = float(self.current_gyro) 
                 self.gyro_publisher.publish(msg) 
                 if self.current_gyro is None:
                     continue  # Skip iteration if sensor read failed    
