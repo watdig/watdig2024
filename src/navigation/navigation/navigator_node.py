@@ -202,7 +202,7 @@ class NavigatorNode(Node):
             return normalize_angle(angle_to_target - current_yaw)
     
         logger = logging.getLogger()
-        for point in self.targets:
+        for point in self.path_planner.targets:
             dist = distance(curr_point, point)
             target_yaw = calculate_target_yaw(curr_angle, point, curr_point)
             
