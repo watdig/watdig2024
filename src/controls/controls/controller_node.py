@@ -16,7 +16,7 @@ class MotorControllerNode(Node):
         self.prev_distance = None
         self.action_in_progress = False  # Flag to track if an action is in progress
         
-        self.controller_client = self.create_client(TurnAndMove, "turn_and_move")
+        self.controller_client = self.create_client(TurnAndMove, "turn_and_move_service")
         
         # Waiting for all services to start
         while not self.controller_client.wait_for_service():

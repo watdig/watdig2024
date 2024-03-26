@@ -16,7 +16,7 @@ class TurnAndMoveActionServer(Node):
     def __init__(self):
         super().__init__('turn_and_move')
         
-        self._action_server = self.create_service(TurnAndMove, 'turn_and_move', self.turn_move_service_callback)
+        self._action_server = self.create_service(TurnAndMove, 'turn_and_move_service', self.turn_move_service_callback)
         self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
         self.gyro_request = Gyroserv.Request()
         

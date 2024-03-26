@@ -10,6 +10,12 @@ def generate_launch_description():
             name='csv_parse_node'
         ),
         Node(
+            package='controls',
+            executable='turn_and_move_node',
+            output='screen',
+            name='turn_and_move_node'
+        ),
+        Node(
             package='navigation',
             executable='navigator_node',
             output='screen',
