@@ -50,7 +50,7 @@ class NavigatorNode(Node):
         
         # Initialize the publisher for directions
         self.publisher_directions = self.create_publisher(Float32MultiArray, 'directions_topic', 10)
-        self.publisher_gyro = self.create_publisher(Float32, 'gyro_topic, 10')
+        self.gyro_publisher = self.create_publisher(Float32, 'gyro_topic', 10)
         self.path_planner = PathPlanner()
         self.current_gyro = 0
         self.prev_gyro = 360
