@@ -239,6 +239,7 @@ class NavigatorNode(Node):
             
             logger.info("entering turn loop")
             while True:
+                logger.info(self.current_gyro)  
                 self.current_gyro = read_yaw_angle(sensor)
                 if self.current_gyro is None:
                     self.current_gyro = 0.0
@@ -250,9 +251,9 @@ class NavigatorNode(Node):
                     continue  # Skip iteration if sensor read failed    
                 if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
                     break  # Exit loop once close to the target yaw
-                logger.info(self.current_gyro)   
+                 
             car.stop()
-                   
+            logger.info(self.current_gyro)    
             self.p.pulse_count=0 
         
             logger.info(dist)
@@ -262,7 +263,7 @@ class NavigatorNode(Node):
                 # logger.info(curr_distance) 
             car.stop()
 
-            logger.info(point)
+            logger.info(f"Point: {point}")
               
             self.curr_gyro= read_yaw_angle(sensor)
             self.curr_point = point
