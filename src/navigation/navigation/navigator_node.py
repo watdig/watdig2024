@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from navigation.path_planner import PathPlanner
 from interfaces.msg import Currentcoords
-from std_msgs.msg import Float32MultiArray, String  # For directions topic
+from std_msgs.msg import Float32MultiArray, String, Float32 # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
 
@@ -50,6 +50,7 @@ class NavigatorNode(Node):
         
         # Initialize the publisher for directions
         self.publisher_directions = self.create_publisher(Float32MultiArray, 'directions_topic', 10)
+        self.publisher_gyro = self.create_publisher(Float32, 'gyro_topic, 10')
         self.path_planner = PathPlanner()
         self.current_gyro = 0
         self.prev_gyro = 360
@@ -239,6 +240,7 @@ class NavigatorNode(Node):
             logger.info("entering turn loop")
             while True:
                 self.current_gyro = read_yaw_angle(sensor)
+                self.current_action_publisher.publish(String(data=self.current_gyro))  
                 if self.current_gyro is None:
                     continue  # Skip iteration if sensor read failed    
                 if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
@@ -252,7 +254,7 @@ class NavigatorNode(Node):
             car.drive(0)
             while (self.p.pulse_count < 4685*(dist/0.471234)):
                 curr_distance = (self.p.pulse_count/4685)*0.471234
-                logger.info(curr_distance) 
+                # logger.info(curr_distance) 
             car.stop()
 
             logger.info(point)
