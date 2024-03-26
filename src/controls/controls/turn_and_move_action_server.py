@@ -49,7 +49,7 @@ class TurnAndMoveActionServer(Node):
         
     def turn_move_service_callback(self, request, response):
         logger = logging.getLogger()
-        logger.debug()
+        logger.debug("Request Recieved for Turn and Move")
         angle = request.angle
         distance = request.distance
         

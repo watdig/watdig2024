@@ -45,6 +45,7 @@ class MotorControllerNode(Node):
         self.controller_request.angle = angle
         self.controller_request.distance = distance
         future = self.controller_client.call_async(self.controller_request)
+        rclpy.spin_until_future_complete(self, future)
         msg = future.result
         return msg.success
 
