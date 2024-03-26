@@ -203,8 +203,8 @@ class NavigatorNode(Node):
     
         logger = logging.getLogger()
         for point in self.path_planner.targets:
-            dist = distance(curr_point, point)
-            target_yaw = calculate_target_yaw(curr_angle, point, curr_point)
+            dist = distance(self.curr_point, point)
+            target_yaw = calculate_target_yaw(self.current_gyro, point, self.curr_point)
             
             if target_yaw < 0:
                 car.drive(3)  
@@ -222,7 +222,7 @@ class NavigatorNode(Node):
             car.stop()
                    
             self.p.pulse_count=0 
-                
+        
             car.drive(0)
             while (self.p.pulse_count < 4685*(dist/0.471234)):
                 curr_distance = (self.p.pulse_count/4685)*0.471234
@@ -230,8 +230,8 @@ class NavigatorNode(Node):
 
             print(point)
                 
-            curr_angle = self.gyro_request_service()
-            curr_point = point
+            self.curr_gyro= self.gyro_request_service()
+            self.curr_point = point
             
             rclpy.shutdown()
 
