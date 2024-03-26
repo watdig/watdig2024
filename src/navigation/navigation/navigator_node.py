@@ -249,6 +249,7 @@ class NavigatorNode(Node):
                    
             self.p.pulse_count=0 
         
+            logger.info(dist)
             car.drive(0)
             while (self.p.pulse_count < 4685*(dist/0.471234)):
                 curr_distance = (self.p.pulse_count/4685)*0.471234
