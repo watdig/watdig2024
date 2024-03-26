@@ -243,7 +243,7 @@ class NavigatorNode(Node):
         for point in self.path_planner.targets:
             logger.info(f"Point: {point}")
             dist = distance(self.curr_point, point)
-            target_yaw = calculate_target_yaw(self.current_gyro, point, self.curr_point)
+            target_yaw = calculate_target_yaw(point, self.curr_point)
             logger.info(f"Yaw: {target_yaw}")
             
             if target_yaw < 0:
