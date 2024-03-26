@@ -227,7 +227,6 @@ class NavigatorNode(Node):
             angle_to_target = math.atan2(target_point[1] - current_point[1], target_point[0] - current_point[0]) * 180 / math.pi
             return normalize_angle(angle_to_target - current_yaw)
     
-        
         for point in self.path_planner.targets:
             dist = distance(self.curr_point, point)
             target_yaw = calculate_target_yaw(self.current_gyro, point, self.curr_point)
@@ -254,14 +253,14 @@ class NavigatorNode(Node):
             while (self.p.pulse_count < 4685*(dist/0.471234)):
                 curr_distance = (self.p.pulse_count/4685)*0.471234
                 logger.info(curr_distance) 
-
-            print(point)
-                
-            self.curr_gyro= self.gyro_request_service()
-            self.curr_point = point
             car.stop()
-        GPIO.cleanup()
-        rclpy.shutdown()
+
+            logger.info(point)
+              
+            self.curr_gyro= read_yaw_angle(sensor)
+            self.curr_point = point
+            
+
 
 
 def main(args=None):
@@ -271,6 +270,8 @@ def main(args=None):
     rclpy.init(args=args)
     node = NavigatorNode()
     rclpy.spin(node)
+    GPIO.cleanup()
+    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
