@@ -226,11 +226,10 @@ class NavigatorNode(Node):
             while True:
                 current_yaw = self.gyro_request_service()
                 if current_yaw is None:
-                    continue  # Skip iteration if sensor read failed
-                    
+                    continue  # Skip iteration if sensor read failed    
                 if abs(normalize_angle(current_yaw - target_yaw)) < 3:  # 5 degrees tolerance
                     break  # Exit loop once close to the target yaw
-                    
+                self.get_logger().info(f"current gyro: {current_yaw}")    
             car.stop()
                    
             self.p.pulse_count=0 
