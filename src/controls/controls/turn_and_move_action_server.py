@@ -104,11 +104,11 @@ class TurnAndMoveActionServer(Node):
                 if self.current_gyro is None:
                     continue  # Skip iteration if sensor read failed
                 self.get_logger().info("turning loop")    
-                if abs(normalize_angle(self.current_gyro - angle)) < 3:  # 5 degrees tolerance
+                if abs(normalize_angle(self.current_gyro - angle)) < 5:  # 5 degrees tolerance
                     break
-                asyncio.sleep(0.1)  # Asynchronous sleep without blocking
                 self.get_logger().info(f"Current Gyro: {self.current_gyro}")
-                self.current_gyro += 1
+                self.current_gyro += 0.5
+                
         
         #self.current_action_publisher.publish(String(data="driving"))    
         
