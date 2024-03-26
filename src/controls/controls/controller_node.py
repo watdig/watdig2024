@@ -2,7 +2,6 @@ import logging
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray  
-from rclpy.action import ActionClient
 from interfaces.srv import TurnAndMove  
 from rclpy.executors import MultiThreadedExecutor
 
@@ -41,12 +40,12 @@ class MotorControllerNode(Node):
     
     def controller_request_service(self, angle, distance):
         logger = logging.getLogger()
-        logger.debug("Calling Controller Service")
+        logger.debug("Calling Turn and Move Service")
         self.controller_request.angle = angle
         self.controller_request.distance = distance
         future = self.controller_client.call_async(self.controller_request)
         rclpy.spin_until_future_complete(self, future)
-        msg = future.result
+        msg = future.result()
         return msg.success
 
 

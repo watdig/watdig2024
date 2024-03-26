@@ -105,14 +105,11 @@ class TurnAndMoveActionServer(Node):
 def main(args=None):
     rclpy.init(args=args)
     action_server = TurnAndMoveActionServer()
-    try:
-        rclpy.spin(action_server)
-    except KeyboardInterrupt:
-        action_server.cleanup()  # Explicitly call cleanup if KeyboardInterrupt is caught
-    finally:
-        # Cleanup ROS2 resources
-        action_server.destroy_node()
-        rclpy.shutdown()
+    rclpy.spin(action_server)
+    action_server.cleanup()  # Explicitly call cleanup if KeyboardInterrupt is caught
+    # Cleanup ROS2 resources
+    action_server.destroy_node()
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':
