@@ -100,6 +100,7 @@ class TurnAndMoveActionServer(Node):
         
         goal_handle.succeed()
         
+        self.get_logger().info('done')
         result.success = True
         return result
 
