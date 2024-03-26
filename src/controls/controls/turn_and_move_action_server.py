@@ -32,8 +32,7 @@ class TurnAndMoveActionServer(Node):
         self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
         self.subscription_gyro = self.create_subscription(Float32,
             'gyro_topic', self.current_gyro_callback, 10)
-        
-        # Register the signal handler for SIGINT
+
         signal.signal(signal.SIGINT, self.cleanup)
 
     def cleanup(self, signum, frame):
