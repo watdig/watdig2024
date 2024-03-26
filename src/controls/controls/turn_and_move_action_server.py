@@ -58,7 +58,7 @@ class TurnAndMoveActionServer(Node):
         self.current_action_publisher.publish(String(data="turning"))
         
         # Turn based on angle
-        if goal_handle.request.angle > 0:
+        if angle > 0:
             self.Car.turn_right()
         else:
             self.Car.turn_left()
