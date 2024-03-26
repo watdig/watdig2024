@@ -3,7 +3,6 @@ from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray  
 from rclpy.action import ActionClient
 from action_folder.action import TurnAndMove  
-from rclpy.executors import MultiThreadedExecutor
 
 class MotorControllerNode(Node):
     def __init__(self):
@@ -28,7 +27,7 @@ class MotorControllerNode(Node):
             # Wait for the current action to complete before sending a new one
             while self.action_in_progress:
                 continue
-            self.perform_action(current_angle, current_distance)
+            self.send_goal(current_angle, current_distance)
             
             # Update previous commands
             self.prev_angle = current_angle
@@ -38,7 +37,7 @@ class MotorControllerNode(Node):
     def parse_data(self, msg):
         return msg.data[0], msg.data[1] 
 
-    def perform_action(self, angle, distance):
+    def send_goal(self, angle, distance):
         # Ensure the action server is available
         self.action_client.wait_for_server()
 
@@ -74,13 +73,11 @@ class MotorControllerNode(Node):
         result = future.result().result
         self.get_logger().info(f'Result: {result.success}')
         self.action_in_progress = False 
-        rclpy.shutdown()
 
 def main(args=None):
     rclpy.init(args=args)
     motor_controller_node = MotorControllerNode()
-    executor = MultiThreadedExecutor() 
-    rclpy.spin(motor_controller_node, executor=executor)
+    rclpy.spin(motor_controller_node)
     rclpy.shutdown()
 
 if __name__ == '__main__':
