@@ -108,6 +108,7 @@ class TurnAndMoveActionServer(Node):
                     break
                 asyncio.sleep(0.1)  # Asynchronous sleep without blocking
                 self.get_logger().info(f"Current Gyro: {self.current_gyro}")
+                self.current_gyro += 1
         
         #self.current_action_publisher.publish(String(data="driving"))    
         
