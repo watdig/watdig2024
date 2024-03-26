@@ -240,6 +240,9 @@ class NavigatorNode(Node):
             logger.info("entering turn loop")
             while True:
                 self.current_gyro = read_yaw_angle(sensor)
+                if self.current_gyro is None:
+                    self.current_gyro = 0.0
+                    self.get_logger().info("SENSOR ERROR") 
                 msg = Float32()
                 msg.data = float(self.current_gyro) 
                 self.gyro_publisher.publish(msg) 
