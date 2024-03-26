@@ -1,53 +1,75 @@
 import rclpy
-import RPi.GPIO as GPIO
-import pigpio
-import logging
-import signal  # Import the signal module
+#import RPi.GPIO as GPIO
+#import pigpio
+#import logging
+#import signal  # Import the signal module
 from rclpy.action import ActionServer
 from rclpy.node import Node
-from controls.controls import Car
-from controls.encoder import reader
-from action_folder.action import TurnAndMove 
-from interfaces.msg import Currentcoords
-from std_msgs.msg import String 
-import asyncio
+#from controls.controls import Car
+#from controls.encoder import reader
+#from action_folder.action import TurnAndMove 
+#from interfaces.msg import Currentcoords
+#from std_msgs.msg import String 
+#import asyncio
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
+
+from action_folder.action import Fibonacci
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
-        super().__init__('turn_and_move')
-        
-        # Initializing Action Server
+        super().__init__('fibonacci_action_server')
         self._action_server = ActionServer(
             self,
-            TurnAndMove,
-            'turn_and_move',
+            Fibonacci,
+            'fibonacci',
             self.execute_callback)
+
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        sequence = [0, 1]
+
+        for i in range(1, goal_handle.request.order):
+            sequence.append(sequence[i] + sequence[i-1])
+            
+        goal_handle.succeed()
+        
+        result = Fibonacci.Result()
+        result.sequence = sequence
+        return result
+
+        
+        # Initializing Action Server
+        #self._action_server = ActionServer(
+        #    self,
+        #    TurnAndMove,
+        #    'turn_and_move',
+        #    self.execute_callback)
         
         # Set Pins
-        self.pin1 = 8
-        self.pi = pigpio.pi()
-        self.p = reader(self.pi, self.pin1)
-        GPIO.setmode(GPIO.BCM)
-        self.Car = Car()
-        self.current_gyro = 0.0
+        #self.pin1 = 8
+        #self.pi = pigpio.pi()
+        #self.p = reader(self.pi, self.pin1)
+        #GPIO.setmode(GPIO.BCM)
+        #self.Car = Car()
+        #self.current_gyro = 0.0
        
        
-        self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
-        self.subscription_current_location = self.create_subscription(Currentcoords,
-            'current_location_topic', self.current_location_callback, 10)
+        #self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
+        #self.subscription_current_location = self.create_subscription(Currentcoords,
+        #    'current_location_topic', self.current_location_callback, 10)
         
         # Register the signal handler for SIGINT
-        signal.signal(signal.SIGINT, self.cleanup)
+        #signal.signal(signal.SIGINT, self.cleanup)
 
-    def cleanup(self, signum, frame):
-        """Cleanup resources before shutting down."""
-        self.get_logger().info('Stopping motors and cleaning up GPIO')
-        self.Car.stop()
-        GPIO.cleanup()
+    #def cleanup(self, signum, frame):
+        #"""Cleanup resources before shutting down."""
+        #self.get_logger().info('Stopping motors and cleaning up GPIO')
+        #self.Car.stop()
+        #GPIO.cleanup()
         # It's important to also shutdown ROS2 to stop the node properly
-        rclpy.shutdown()
+        #rclpy.shutdown()
+        """
 
     def current_location_callback(self, msg):
         logger = logging.getLogger()
@@ -96,18 +118,21 @@ class TurnAndMoveActionServer(Node):
         
         result.success = True
         return result
+        
+        """
 
 def main(args=None):
     rclpy.init(args=args)
     action_server = TurnAndMoveActionServer()
-    try:
-        rclpy.spin(action_server)
-    except KeyboardInterrupt:
-        action_server.cleanup()  # Explicitly call cleanup if KeyboardInterrupt is caught
-    finally:
+    rclpy.spin(action_server)
+    #try:
+    #    rclpy.spin(action_server)
+    #except KeyboardInterrupt:
+    #    action_server.cleanup()  # Explicitly call cleanup if KeyboardInterrupt is caught
+    #finally:
         # Cleanup ROS2 resources
-        action_server.destroy_node()
-        rclpy.shutdown()
+    #    action_server.destroy_node()
+    #    rclpy.shutdown()
 
 
 if __name__ == '__main__':
