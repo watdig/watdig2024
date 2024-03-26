@@ -101,7 +101,7 @@ class TurnAndMoveActionServer(Node):
         
         self.get_logger().info('done')
         
-        result = TurnAndMove()
+        result = TurnAndMove.Result()
         result.success = True
         return result
 
