@@ -25,9 +25,9 @@ class TurnAndMoveActionServer(Node):
             'turn_and_move',
             self.execute_callback)
         
-        # self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
+        self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
 
-        # self.gyro_request = Gyroserv.Request()
+        self.gyro_request = Gyroserv.Request()
         
         # Set Pins
         self.pin1 = 8
@@ -86,7 +86,7 @@ class TurnAndMoveActionServer(Node):
                 break
             self.current_gyro = self.gyro_request_service()
         
-        # self.current_action_publisher.publish(String(data="driving"))    
+        self.current_action_publisher.publish(String(data="driving"))    
         
         self.p.pulse_count = 0
         self.Car.drive(0)
