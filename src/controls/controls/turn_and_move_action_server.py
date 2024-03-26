@@ -40,8 +40,6 @@ class TurnAndMoveActionServer(Node):
         self.get_logger().info('Stopping motors and cleaning up GPIO')
         self.Car.stop()
         GPIO.cleanup()
-        # It's important to also shutdown ROS2 to stop the node properly
-        rclpy.shutdown()
 
     def current_gyro_callback(self, msg):
         self.current_gyro = msg.data
