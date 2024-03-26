@@ -10,12 +10,18 @@ logging.basicConfig(level=logging.DEBUG)
 class MotorControllerNode(Node):
     def __init__(self):
         super().__init__('controller_node')
+        logger = logging.getLogger()
         
         self.prev_angle = None
         self.prev_distance = None
         self.action_in_progress = False  # Flag to track if an action is in progress
         
         self.controller_client = self.create_client(TurnAndMove, "turn_and_move")
+        
+        # Waiting for all services to start
+        while not self.controller_client.wait_for_service():
+            logger.info('Waiting for services-------------------------')
+        
         self.controller_request = TurnAndMove.Request()
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
