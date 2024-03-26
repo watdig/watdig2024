@@ -7,6 +7,15 @@ from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, String  # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
+
+from interfaces.srv import Gyroserv
+from navigation.car import Car
+import math
+import RPi.GPIO as GPIO
+from navigation.reader import reader
+import pigpio
+
+
 logging.basicConfig(level=logging.INFO)
 
 class NavigatorNode(Node):
@@ -50,6 +59,10 @@ class NavigatorNode(Node):
         self.obstacles_request()
         self.checkpoints_request()
         
+        
+        self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
+
+        self.gyro_request = Gyroserv.Request()
 
     def environment_request(self):
         """
@@ -137,8 +150,8 @@ class NavigatorNode(Node):
         self.current_location = [msg.easting, msg.northing]
         self.current_gyro = msg.angle
         if self.path_planner.targets: 
-            self.publish_next_direction()
-
+            self.backup()
+    
 
     def publish_next_direction(self):
         logger = logging.getLogger()
@@ -167,6 +180,60 @@ class NavigatorNode(Node):
         self.publisher_directions.publish(directions)
         """
 
+    def backup(self):
+        
+        self.pin1 = 8
+        self.pi = pigpio.pi()
+        self.p = reader(self.pi, self.pin1)
+        GPIO.setmode(GPIO.BCM)
+        self.Car = Car()
+        self.current_gyro = 0.0
+        self.curr_point = (0,0)
+        
+        car = Car()
+        def distance(point1, point2):
+            return math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+    
+        def normalize_angle(angle):
+            return angle % 360
+        
+        def calculate_target_yaw(current_yaw, target_point, current_point):
+            angle_to_target = math.atan2(target_point[1] - current_point[1], target_point[0] - current_point[0]) * 180 / math.pi
+            return normalize_angle(angle_to_target - current_yaw)
+    
+        logger = logging.getLogger()
+        for point in self.targets:
+            dist = distance(curr_point, point)
+            target_yaw = calculate_target_yaw(curr_angle, point, curr_point)
+            
+            if target_yaw < 0:
+                car.drive(3)  
+            else:
+                car.drive(2) 
+            
+            while True:
+                current_yaw = self.gyro_request_service()
+                if current_yaw is None:
+                    continue  # Skip iteration if sensor read failed
+                    
+                if abs(normalize_angle(current_yaw - target_yaw)) < 3:  # 5 degrees tolerance
+                    break  # Exit loop once close to the target yaw
+                    
+            car.stop()
+                   
+            self.p.pulse_count=0 
+                
+            car.drive(0)
+            while (self.p.pulse_count < 4685*(dist/0.471234)):
+                curr_distance = (self.p.pulse_count/4685)*0.471234
+                print(curr_distance)
+
+            print(point)
+                
+            curr_angle = self.gyro_request_service()
+            curr_point = point
+            
+            rclpy.shutdown()
 
 
 def main(args=None):
@@ -176,7 +243,6 @@ def main(args=None):
     rclpy.init(args=args)
     node = NavigatorNode()
     rclpy.spin(node)
-    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
