@@ -21,13 +21,6 @@ def generate_launch_description():
             output='screen',
             name='position_subscriber_node'
         ),
-        """Node(
-            package='sensor_integration',
-            executable='gyro_node',
-            output='screen',
-            name='gyro_node'
-        ),
-        """
         Node(
             package='controls',
             executable='controls_node',
@@ -59,3 +52,12 @@ def generate_launch_description():
             name='rosbridge_websocket_node'
         )
     ])
+
+"""
+        Node(
+            package='sensor_integration',
+            executable='gyro_node',
+            output='screen',
+            name='gyro_node'
+        ),
+"""
