@@ -183,18 +183,24 @@ const Node = () => {
   
 
   const Point = ({ size, x, y, color }) => {
-    const pointStyle = {
-      position: 'absolute',
-      left: ((x * 12) + 300) - size / 2,
-      top: (492 - (y * 12)) - size / 2,
-      width: size,
-      height: size,
-      backgroundColor: color, // You can customize the color here
-      borderRadius: size / 2,
-    };
+    // Only render the point if x and y coordinates are valid
+    if (!isNaN(x) && !isNaN(y)) {
+      const pointStyle = {
+        position: 'absolute',
+        left: ((x * 12) + 300) - size / 2,
+        top: (492 - (y * 12)) - size / 2,
+        width: size,
+        height: size,
+        backgroundColor: color, // You can customize the color here
+        borderRadius: size / 2,
+      };
   
-  return <View style={pointStyle} />;
-};
+      return <View style={pointStyle} />;
+    } else {
+      // If x or y coordinates are invalid (NaN), return null
+      return null;
+    }
+  };
 
 
 const styles = StyleSheet.create({
