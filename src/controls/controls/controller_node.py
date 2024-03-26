@@ -20,19 +20,16 @@ class MotorControllerNode(Node):
 
     def callback(self, msg):
         current_angle, current_distance = self.parse_data(msg)
-        self.get_logger().info("recieved new coordinate")
+        self.get_logger().info("Received new coordinate")
         
         # Compare with previous commands and act if different
-        if current_angle != self.prev_angle or current_distance != self.prev_distance:
-            # Wait for the current action to complete before sending a new one
-            while self.action_in_progress:
-                continue
+        if (current_angle != self.prev_angle or current_distance != self.prev_distance) and not self.action_in_progress:
             self.send_goal(current_angle, current_distance)
             
             # Update previous commands
             self.prev_angle = current_angle
             self.prev_distance = current_distance
-            self.get_logger().info("updated previous commands")
+            self.get_logger().info("Updated previous commands")
 
     def parse_data(self, msg):
         return msg.data[0], msg.data[1] 
