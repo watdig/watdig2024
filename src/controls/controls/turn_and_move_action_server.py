@@ -25,9 +25,9 @@ class TurnAndMoveActionServer(Node):
             'turn_and_move',
             self.execute_callback)
         
-        self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
+        # self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
 
-        self.gyro_request = Gyroserv.Request()
+        # self.gyro_request = Gyroserv.Request()
         
         # Set Pins
         self.pin1 = 8
@@ -58,7 +58,6 @@ class TurnAndMoveActionServer(Node):
         
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
-        feedback_msg = TurnAndMove.Feedback()
         result = TurnAndMove.Result()
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
@@ -101,12 +100,14 @@ class TurnAndMoveActionServer(Node):
         goal_handle.succeed()
         
         self.get_logger().info('done')
+        
+        result = TurnAndMove()
         result.success = True
         return result
 
     def gyro_request_service(self):
         """
-        Requests for information from the environment.csv file.
+        Requests for information from the gyro topic.
         """
         logger = logging.getLogger()
         # Requesting Server
