@@ -68,6 +68,7 @@ class TurnAndMoveActionServer(Node):
         
         # Wait for the duration of the turn, non-blocking wait
         while True:
+            self.get_logger().info(self.current_gyro)
             if self.current_gyro is None:
                 continue  
             if abs(normalize_angle(self.current_gyro - angle)) < 5:
