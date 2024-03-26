@@ -5,8 +5,8 @@ import logging
 import signal  # Import the signal module
 from rclpy.action import ActionServer
 from rclpy.node import Node
-from controls.controls import Car
-from controls.encoder import reader
+from controls import Car
+from encoder import reader
 from action_folder.action import TurnAndMove 
 from std_msgs.msg import String, Float32 
 import asyncio
