@@ -1,23 +1,24 @@
 import rclpy
-#import RPi.GPIO as GPIO
-#import pigpio
-#import logging
-#import signal  # Import the signal module
+import RPi.GPIO as GPIO
+import pigpio
+import logging
+import signal  # Import the signal module
 from rclpy.action import ActionServer
 from rclpy.node import Node
-#from controls.controls import Car
-#from controls.encoder import reader
-#from action_folder.action import TurnAndMove 
+from controls.controls import Car
+from controls.encoder import reader
+from action_folder.action import TurnAndMove 
 #from interfaces.msg import Currentcoords
 #from std_msgs.msg import String 
-#import asyncio
+import asyncio
 
-#logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
-from action_folder.action import Fibonacci
+#from action_folder.action import Fibonacci
 
 class TurnAndMoveActionServer(Node):
     def __init__(self):
+        """
         super().__init__('fibonacci_action_server')
         self._action_server = ActionServer(
             self,
@@ -37,44 +38,46 @@ class TurnAndMoveActionServer(Node):
         result = Fibonacci.Result()
         result.sequence = sequence
         return result
-
+        """
+        super().__init__('turn_move_action_server')
         
         # Initializing Action Server
-        #self._action_server = ActionServer(
-        #    self,
-        #    TurnAndMove,
-        #    'turn_and_move',
-        #    self.execute_callback)
+        self._action_server = ActionServer(
+            self,
+            TurnAndMove,
+            'turn_and_move',
+            self.execute_callback)
         
         # Set Pins
-        #self.pin1 = 8
-        #self.pi = pigpio.pi()
-        #self.p = reader(self.pi, self.pin1)
-        #GPIO.setmode(GPIO.BCM)
-        #self.Car = Car()
-        #self.current_gyro = 0.0
+        self.pin1 = 8
+        self.pi = pigpio.pi()
+        self.p = reader(self.pi, self.pin1)
+        GPIO.setmode(GPIO.BCM)
+        self.Car = Car()
+        self.current_gyro = 0.0
        
-       
-        #self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
-        #self.subscription_current_location = self.create_subscription(Currentcoords,
-        #    'current_location_topic', self.current_location_callback, 10)
+        """
+        self.current_action_publisher = self.create_publisher(String, 'current_action', 10)
+        self.subscription_current_location = self.create_subscription(Currentcoords,
+            'current_location_topic', self.current_location_callback, 10)
         
         # Register the signal handler for SIGINT
-        #signal.signal(signal.SIGINT, self.cleanup)
+        signal.signal(signal.SIGINT, self.cleanup)
+        
 
     #def cleanup(self, signum, frame):
-        #"""Cleanup resources before shutting down."""
+        #Cleanup resources before shutting down
         #self.get_logger().info('Stopping motors and cleaning up GPIO')
         #self.Car.stop()
         #GPIO.cleanup()
         # It's important to also shutdown ROS2 to stop the node properly
         #rclpy.shutdown()
-        """
 
     def current_location_callback(self, msg):
         logger = logging.getLogger()
         logger.info("turn_and_move_action_server Gyro Value is: %f", msg.angle)
         self.current_gyro = msg.angle
+        """
         
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
@@ -84,7 +87,7 @@ class TurnAndMoveActionServer(Node):
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
         
-        self.current_action_publisher.publish(String(data="turning"))
+        #self.current_action_publisher.publish(String(data="turning"))
         
         # Turn based on angle
         if goal_handle.request.angle > 0:
@@ -106,7 +109,7 @@ class TurnAndMoveActionServer(Node):
                 asyncio.sleep(0.1)  # Asynchronous sleep without blocking
                 self.get_logger().info(f"Current Gyro: {self.current_gyro}")
         
-        self.current_action_publisher.publish(String(data="driving"))    
+        #self.current_action_publisher.publish(String(data="driving"))    
         
         self.p.pulse_count = 0
         self.Car.drive(0)
@@ -114,12 +117,11 @@ class TurnAndMoveActionServer(Node):
             asyncio.sleep(0.1)  
 
         self.Car.stop()
-        GPIO.cleanup()  
+        #GPIO.cleanup()  
         
         result.success = True
         return result
         
-        """
 
 def main(args=None):
     rclpy.init(args=args)
