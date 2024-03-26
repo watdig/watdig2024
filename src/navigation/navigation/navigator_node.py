@@ -224,9 +224,21 @@ class NavigatorNode(Node):
         def normalize_angle(angle):
             return angle % 360
         
-        def calculate_target_yaw(current_yaw, target_point, current_point):
-            angle_to_target = math.atan2(target_point[1] - current_point[1], target_point[0] - current_point[0]) * 180 / math.pi
-            return 90 - normalize_angle(angle_to_target - current_yaw)
+        def calculate_target_yaw(target, position):
+            dx = target[0] - position[0]
+            dy = target[1] - position[1]
+
+            angle_radians = math.atan2(dy, dx)
+            angle_degrees = math.degrees(angle_radians) 
+
+            # Adjust the angle so that 0 degrees is at the gyroscope's 90 degrees
+            # and correct the direction to match the gyroscope's orientation
+            if angle_degrees > 90:
+                angle_degrees = 360 - (angle_degrees - 90)
+            else:
+                angle_degrees = 90 - angle_degrees
+
+            return angle_degrees
     
         for point in self.path_planner.targets:
             logger.info(f"Point: {point}")
