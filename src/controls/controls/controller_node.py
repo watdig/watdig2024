@@ -16,7 +16,7 @@ class MotorControllerNode(Node):
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
         # Action client for TurnAndMove action
-        self.action_client = ActionClient(self, TurnAndMove, 'turn_and_move')
+        self._action_client = ActionClient(self, TurnAndMove, 'turn_and_move')
 
     def callback(self, msg):
         current_angle, current_distance = self.parse_data(msg)
@@ -49,27 +49,30 @@ class MotorControllerNode(Node):
         # Send the new goal
         self.future = self.action_client.send_goal_async(goal_msg)
         
-        self.get_logger().info("entering callback")
-        self.future.add_done_callback(self.goal_response_callback)
-        self.get_logger().info("sent new goal")
+        self._action_client.wait_for_server()
+
+        self._send_goal_future = self._action_client.send_goal_async(goal_msg)
+
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
 
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
-            self.action_in_progress = False  # Reset the flag if goal is rejected
             return
 
         self.get_logger().info('Goal accepted :)')
 
-        self.result_future = goal_handle.get_result_async()
-        self.result_future.add_done_callback(self.get_result_callback)
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
 
     def get_result_callback(self, future):
         result = future.result().result
         self.get_logger().info(f'Result: {result.success}')
         self.action_in_progress = False 
+        return
 
 def main(args=None):
     rclpy.init(args=args)
