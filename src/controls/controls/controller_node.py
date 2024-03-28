@@ -36,7 +36,7 @@ class MotorControllerNode(Node):
 
     def send_goal(self, angle, distance):
         # Ensure the action server is available
-        self.action_client.wait_for_server()
+        self._action_client.wait_for_server()
 
         self.get_logger().info("perform action initiated")
 
@@ -78,7 +78,6 @@ def main(args=None):
     rclpy.init(args=args)
     motor_controller_node = MotorControllerNode()
     rclpy.spin(motor_controller_node)
-    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
