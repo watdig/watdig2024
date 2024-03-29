@@ -12,7 +12,7 @@ class MotorControllerNode(Node):
         self.prev_distance = None
         self.action_in_progress = False  # Flag to track if an action is in progress
         
-        # Subscriber to the topic publishing angle and distance commands
+        # Subscriber for angle and distance commands
         self.subscription = self.create_subscription(Float32MultiArray, "directions_topic", self.callback, 10)
         
         # Action client for TurnAndMove action
@@ -36,18 +36,14 @@ class MotorControllerNode(Node):
 
     def send_goal(self, angle, distance):
         # Ensure the action server is available
-        self._action_client.wait_for_server()
-
-        self.get_logger().info("perform action initiated")
+        self.get_logger().info("send goal initiated")
 
         self.action_in_progress = True  # Set the flag when an action starts
+        
         # Create and send a new goal to the action server
         goal_msg = TurnAndMove.Goal()
         goal_msg.angle = angle
         goal_msg.distance = distance
-        
-        # Send the new goal
-        self.future = self.action_client.send_goal_async(goal_msg)
         
         self._action_client.wait_for_server()
 
@@ -72,11 +68,12 @@ class MotorControllerNode(Node):
         result = future.result().result
         self.get_logger().info(f'Result: {result.success}')
         self.action_in_progress = False 
-        return
 
 def main(args=None):
     rclpy.init(args=args)
+    
     motor_controller_node = MotorControllerNode()
+    
     rclpy.spin(motor_controller_node)
 
 if __name__ == '__main__':

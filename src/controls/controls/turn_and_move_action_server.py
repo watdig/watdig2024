@@ -18,6 +18,8 @@ class TurnAndMoveActionServer(Node):
     def __init__(self):
         super().__init__('turn_and_move')
         
+        self.get_logger().info("server initialized")
+        
         # Initializing Action Server
         self._action_server = ActionServer(
             self,
@@ -50,7 +52,7 @@ class TurnAndMoveActionServer(Node):
         self.get_logger().info('Stopping motors and cleaning up GPIO')
         self.Car.stop()
         GPIO.cleanup()
-        # It's important to also shutdown ROS2 to stop the node properly
+
         rclpy.shutdown()
 
     def current_gyro_callback(self, msg):
@@ -58,7 +60,8 @@ class TurnAndMoveActionServer(Node):
         
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing goal...')
-        result = TurnAndMove.Result()
+        
+        # collecting information from goal
         angle = goal_handle.request.angle
         distance = goal_handle.request.distance  
         
@@ -66,9 +69,12 @@ class TurnAndMoveActionServer(Node):
 
         
         self.current_action_publisher.publish(String(data="turning"))
+        self.current_gyro = self.gyro_request_service()
+        
+        turn_dir = abs(angle - self.current_gyro) 
         
         # Turn based on angle
-        if goal_handle.request.angle > 0:
+        if turn_dir > 180:
             self.Car.turn_right()
         else:
             self.Car.turn_left()
@@ -81,12 +87,12 @@ class TurnAndMoveActionServer(Node):
         while True:
             if self.current_gyro is None:
                 continue  
-            if abs(normalize_angle(self.current_gyro - (angle-180)) < 5:
+            if abs(normalize_angle(self.current_gyro - (angle-180))) < 5:
                 self.get_logger().info('stop turning')
                 break
             self.current_gyro = self.gyro_request_service()
         
-        self.current_action_publisher.publish(String(data="driving"))    
+        # self.current_action_publisher.publish(String(data="driving"))    
         
         self.p.pulse_count = 0
         self.Car.drive(0)
@@ -124,11 +130,6 @@ def main(args=None):
         rclpy.spin(action_server)
     except KeyboardInterrupt:
         action_server.cleanup()  # Explicitly call cleanup if KeyboardInterrupt is caught
-    finally:
-        # Cleanup ROS2 resources
-        action_server.destroy_node()
-        rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
