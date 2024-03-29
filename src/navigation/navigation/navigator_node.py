@@ -155,6 +155,7 @@ class NavigatorNode(Node):
 
     
     def current_location_callback(self, msg):
+        logger = logging.getLogger()
         """
         Subscription Node that subscribes to the Localization node. Calls the publish_next_direction method.
         """
