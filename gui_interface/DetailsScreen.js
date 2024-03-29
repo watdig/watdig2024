@@ -6,7 +6,6 @@ import { Ros, Topic } from 'roslib';
 //import axios from 'axios-1.6.8';
 
 
-
 function DetailsScreen() {
   const [startButtonText, setStartButtonText] = useState('START');
   const [shutdownButtonText, setShutdownButtonText] = useState('SHUTDOWN');
@@ -15,34 +14,43 @@ function DetailsScreen() {
   const [containerColor, setContainerColor] = useState('green');
 
   useEffect(() => {
-    // Initialize ROS connection
+    // Create a ROS instance
     const ros = new Ros({
-      url: 'ws://172.20.10.14:9090' // Replace with your ROS server address
+      url: 'ws://172.20.10.14:9090'
     });
 
-    // Subscribe to ROS topic
-    const listener = new Topic({
-      ros: ros,
-      name: '/current_location_topic', // Replace with your ROS topic
-      messageType: 'interfaces/Currentcoords'
+    // Connect to ROS
+    ros.on('connection', () => {
+      console.log('Connected to ROS!');
+      // Subscribe to the topic
+      const topic = new Topic({
+        ros: ros,
+        name: '/gyro_node',
+        messageType: 'std msgs.msg'
+      });
+
+      topic.subscribe((message) => {
+        console.log('Received message:', message.data);
+        // Change the container color to red when a message is received
+        setContainerColor('red');
+      });
     });
 
-    listener.subscribe((message) => {
-      // Assuming message contains a 'status' property
-      const { status } = message;
-    
-      // Determine container color based on the status
-      setContainerColor(status === 'ON' ? 'red' : 'green');
+    ros.on('error', (error) => {
+      console.error('Error connecting to ROS:', error);
     });
 
-    // Cleanup function
+    ros.on('close', () => {
+      console.log('Disconnected from ROS.');
+      // Reset the container color to green when disconnected from ROS
+      setContainerColor('green');
+    });
+
+    // Cleanup function to disconnect from ROS when the component unmounts
     return () => {
-      listener.unsubscribe();
       ros.close();
     };
-  }, []); // Run effect only once on component mount
-
-
+  }, []); // Empty dependency array to ensure t
   const onPressStartHandler = async () => {
     setStartButtonText('STARTING...');
 
@@ -100,7 +108,7 @@ function DetailsScreen() {
             <CoordinateTest />
           </View>
           <View style={[styles.statusContainer, { backgroundColor: containerColor }]}>
-            <Text style={styles.statusText}>Machine Status</Text>
+              <Text style={styles.statusText}>Machine Status</Text>
           </View>
         </View>
       </ScrollView>
