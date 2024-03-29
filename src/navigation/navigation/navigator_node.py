@@ -206,6 +206,7 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         # Requesting Server
         self.current_location_request.messagereq = "loc"
+        self.get_logger().info("current location service activated")
         future = self.current_location_client.call_async(self.current_location_request)
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
@@ -309,19 +310,19 @@ class NavigatorNode(Node):
                 car.stop()
 
                 self.curr_gyro= read_yaw_angle(sensor)
-                self.curr_point = point
 
-                # logger.info("calling current location service")
+                logger.info("calling current location service")
 
-                # data = self.current_location_service()
-                # arr = (data.easting, data.westing)
+                data = self.current_location_service()
+                arr = (data.easting, data.westing)
 
-                # logger.info("recieved current location service")
+                logger.info("recieved current location service")
 
-                #  if is_goal_reached(arr, point):
-                #     self.curr_point = point
-                #     i+=1
-                # else:
+                if is_goal_reached(arr, point):
+                    self.curr_point = point
+                    t+=1
+                else:
+                    self.curr_point = arr
                 
         except KeyboardInterrupt:
             car.stop()
