@@ -71,9 +71,15 @@ class NavigatorNode(Node):
 
         self.current_location_client = self.create_client(Currentloc, 'location_service')
 
+        self.current_northing_client = self.create_client(Currentloc, 'northing_service')
+
         self.gyro_request = Gyroserv.Request()
 
         self.current_location_request = Currentloc.Request()
+
+        self.current_northing_request = Currentloc.Request()
+
+
 
     def environment_request(self):
         """
@@ -233,6 +239,29 @@ class NavigatorNode(Node):
             logger.error(f"Error calling current location service: {e}")
         return None 
     
+    def current_northing_service(self):
+        """
+        Requests for information from the gyro topic.
+        """
+        logger = logging.getLogger()
+        # Requesting Server
+        self.current_northing_request.messagereq = "loc"  
+        future = self.current_northing_client.call_async(self.current_northing_request)  
+        try:
+            rclpy.spin_until_future_complete(self, future, timeout_sec=2)  
+            if future.done():
+                response = future.result()
+                if response: 
+                    logger.info("returned response")
+                    return response
+                else:
+                    logger.error("No response received from service.")
+            else:
+                logger.error("Service call timed out.")
+        except Exception as e:
+            logger.error(f"Error calling current northing service: {e}")
+        return None
+    
     def backup(self):
         logger = logging.getLogger()
         self.pin1 = 8
@@ -337,8 +366,9 @@ class NavigatorNode(Node):
                 logger.info("calling current location service")
 
                 msg = self.current_location_service()
+                msg2 = self.current_northing_service()
                 if msg:  
-                    arr = (msg.heading, 0.0)
+                    arr = (msg.heading, msg2.heading)
                     logger.info("received current location service")
                     if is_goal_reached(arr, point):
                         self.curr_point = point

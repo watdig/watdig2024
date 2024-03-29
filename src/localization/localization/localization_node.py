@@ -17,7 +17,7 @@ class LocalizationNode(Node):
         self.current_location_publisher = self.create_publisher(Currentcoords, 'current_location_topic', 10)
         self.gyro_service = self.create_service(Gyroserv, 'gyro_service', self.gyro_service_callback)
         self.current_location_service = self.create_service(Currentloc, 'location_service', self.location_service_callback)
-
+        self.current_northing_service = self.create_service(Currentloc, 'northing_service', self.current_northing_callback)
         
         # UWB Anchor Points
         self.points_group_1 = {1: (0, 0), 2: (4, 0)}
@@ -59,7 +59,15 @@ class LocalizationNode(Node):
             self.curr_loc = (0,0) 
             self.get_logger().info("SENSOR ERROR") 
         response.heading = self.curr_loc[0]
-        self.get_logger().info(f"curr easting is: {response.easting}")
+        self.get_logger().info(f"curr easting is: {response.heading}")
+        return response
+    
+    def current_northing_callback(self, request, response):
+        if self.curr_loc is None:
+            self.curr_loc = (0,0) 
+            self.get_logger().info("SENSOR ERROR") 
+        response.heading = self.curr_loc[1]
+        self.get_logger().info(f"curr northing is: {response.heading}")
         return response
     
     def gyro_service_callback(self, request, response):
