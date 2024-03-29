@@ -57,6 +57,8 @@ class NavigatorNode(Node):
         self.prev_gyro = 360
         self.current_location = (0,0)
         self.turning = 'stopped'
+
+        self.gyro_timeout_duration = 5
         
         # Calling Request Functions
         self.environment_request()
@@ -279,7 +281,7 @@ class NavigatorNode(Node):
                 if time.time() - self.last_gyro_received_time > self.gyro_timeout_duration:
                     self.get_logger().info("No gyro values received for over 5 seconds. Ending the script.")
                     rclpy.shutdown()
-                    
+
                 if target_yaw < 0:
                     car.drive(3)  
                 else:
