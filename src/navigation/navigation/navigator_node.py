@@ -313,17 +313,18 @@ class NavigatorNode(Node):
 
                 logger.info("calling current location service")
 
-                data = self.current_location_service()
-                arr = (data.easting, data.westing)
+                # data = self.current_location_service()
+                # arr = (data.easting, data.westing)
 
                 logger.info("recieved current location service")
 
-                if is_goal_reached(arr, point):
-                    self.curr_point = point
-                    i+=1
-                else:
-                    self.curr_point = arr
+               #  if is_goal_reached(arr, point):
+               #     self.curr_point = point
+               #     i+=1
+               # else:
+                self.curr_point = point[i]
                 self.curr_gyro= read_yaw_angle(sensor)
+                i+=1
                 
         except KeyboardInterrupt:
             car.stop()
