@@ -169,6 +169,7 @@ class NavigatorNode(Node):
         self.current_gyro = msg.angle
         if self.path_planner.targets: 
             self.backup()
+            # self.publish_next_direction()   // add this line back in when action server fixed
     
         self.last_gyro_received_time = time.time()
         #logger.info('Last gyro received: %s', self.last_gyro_received_time)
@@ -223,11 +224,11 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         # Requesting Server
         self.current_location_request.messagereq = "loc"  
-        future = self.current_location_client.call_async(self.current_location_request)  
+        self.future = self.current_location_client.call_async(self.current_location_request)  
         try:
-            rclpy.spin_until_future_complete(self, future, timeout_sec=2)  
-            if future.done():
-                response = future.result()
+            rclpy.spin_until_future_complete(self, self.future, timeout_sec=4)  
+            if self.future.done():
+                response = self.future.result()
                 if response: 
                     logger.info("returned response")
                     return response
@@ -246,11 +247,11 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         # Requesting Server
         self.current_northing_request.messagereq = "loc"  
-        future = self.current_northing_client.call_async(self.current_northing_request)  
+        self.future = self.current_northing_client.call_async(self.current_northing_request)  
         try:
-            rclpy.spin_until_future_complete(self, future, timeout_sec=2)  
-            if future.done():
-                response = future.result()
+            rclpy.spin_until_future_complete(self, self.future, timeout_sec=4)  
+            if self.future.done():
+                response = self.future.result()
                 if response: 
                     logger.info("returned response")
                     return response

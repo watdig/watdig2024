@@ -56,7 +56,7 @@ class LocalizationNode(Node):
     
     def location_service_callback(self, request, response):
         if self.curr_loc is None:
-            self.curr_loc = (0,0) 
+            self.curr_loc = (1.0, 1.0)
             self.get_logger().info("SENSOR ERROR") 
         response.heading = self.curr_loc[0]
         self.get_logger().info(f"curr easting is: {response.heading}")
@@ -64,7 +64,7 @@ class LocalizationNode(Node):
     
     def current_northing_callback(self, request, response):
         if self.curr_loc is None:
-            self.curr_loc = (0,0) 
+            self.curr_loc = (1.0, 1.0)
             self.get_logger().info("SENSOR ERROR") 
         response.heading = self.curr_loc[1]
         self.get_logger().info(f"curr northing is: {response.heading}")
