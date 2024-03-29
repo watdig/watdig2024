@@ -336,9 +336,9 @@ class NavigatorNode(Node):
 
                 logger.info("calling current location service")
 
-                data = self.current_location_service()
-                if data:  
-                    arr = (data.easting, data.westing)
+                msg = self.current_location_service()
+                if msg:  
+                    arr = (msg.heading, 0.0)
                     logger.info("received current location service")
                     if is_goal_reached(arr, point):
                         self.curr_point = point

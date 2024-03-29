@@ -58,8 +58,7 @@ class LocalizationNode(Node):
         if self.curr_loc is None:
             self.curr_loc = (0,0) 
             self.get_logger().info("SENSOR ERROR") 
-        response.easting = self.curr_loc[0]
-        response.westing = self.curr_loc[1]
+        response.heading = self.curr_loc[0]
         self.get_logger().info(f"curr easting is: {response.easting}")
         return response
     
