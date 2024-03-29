@@ -12,31 +12,64 @@ function DetailsScreen() {
   const [startButtonColor, setStartButtonColor] = useState('green');
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
   const [containerColor, setContainerColor] = useState('green');
-  
+  const [container2Color, setContainer2Color] = useState('green');
 
   useEffect(() => {
     const ros = new Roslib.Ros({
       url: 'ws://172.20.10.14:9090'
     });
 
-    const dynamicPointSubscriber = new Roslib.Topic({
+    const gyroClient = new Roslib.Service({
       ros: ros,
-      name: '/current_location_topic', // Change this to your actual topic name
-      messageType: 'interfaces/Currentcoords' // Change this to your actual message type
+      name: '/gyro_serv',
+      serviceType: 'interfaces/Gyroserv'
     });
 
-    dynamicPointSubscriber.subscribe((message) => {
-      if (message) {
+
+    const environmentClient = new Roslib.Service({
+      ros: ros,
+      name: '/environment_csv_service',
+      serviceType: 'interfacesarray/Environmentarray'
+    });
+
+    const gyroRequest = new Roslib.ServiceRequest();
+    const environmentRequest = new Roslib.ServiceRequest({
+      csv: 'environment' // Specify the CSV file name
+    });
+
+    const handleGyroResponse = (response) => {
+      if (response)
+      {
+        setContainer2Color('green');
+      }
+      else
+      {
+        setContainer2Color('red');
+      }
+    };
+
+    const handleEnvironmentResponse = (response) => {
+      if (response)
+      {
         setContainerColor('red');
-      } else {
+      }
+      else
+      {
         setContainerColor('green');
       }
-    });
+    };
+
+    environmentClient.callService(environmentRequest, handleEnvironmentResponse);
+    gyroClient.callService(environmentRequest, handleEnvironmentResponse);
 
     return () => {
       ros.close();
+      setContainerColor('green');
+      setContainer2Color('red');
     };
   }, []);
+
+
 
 
   const onPressStartHandler = async () => {
