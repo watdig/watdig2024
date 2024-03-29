@@ -24,7 +24,7 @@ function DetailsScreen() {
     const listener = new Topic({
       ros: ros,
       name: '/current_location_topic', // Replace with your ROS topic
-      messageType: 'Interfaces/Currentcoords'
+      messageType: 'interfaces/Currentcoords'
     });
 
     listener.subscribe((message) => {
