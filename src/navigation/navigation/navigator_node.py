@@ -59,7 +59,7 @@ class NavigatorNode(Node):
         self.turning = 'stopped'
 
         self.gyro_timeout_duration = 5
-        logger.info('Gyro timeout duration:', self.gyro_timeout_duration)
+        #logger.info('Gyro timeout duration: %s', self.gyro_timeout_duration)
         
         # Calling Request Functions
         self.environment_request()
@@ -165,7 +165,11 @@ class NavigatorNode(Node):
             self.backup()
     
         self.last_gyro_received_time = time.time()
-        logger.info('Last gyro received:', self.last_gyro_received_time)
+        #logger.info('Last gyro received: %s', self.last_gyro_received_time)
+
+        if time.time() - self.last_gyro_received_time > self.gyro_timeout_duration:
+            self.get_logger().info("No gyro values received for over 5 seconds. Ending the script.")
+            rclpy.shutdown()
 
     def publish_next_direction(self):
         logger = logging.getLogger()
@@ -280,10 +284,6 @@ class NavigatorNode(Node):
                 dist = distance(self.curr_point, point)
                 target_yaw = calculate_target_yaw(point, self.curr_point)
                 logger.info(f"Yaw: {target_yaw}")
-                
-                if time.time() - self.last_gyro_received_time > self.gyro_timeout_duration:
-                    self.get_logger().info("No gyro values received for over 5 seconds. Ending the script.")
-                    rclpy.shutdown()
 
                 if target_yaw < 0:
                     car.drive(3)  
