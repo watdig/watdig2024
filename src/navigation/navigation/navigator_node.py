@@ -206,7 +206,7 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         # Requesting Server
         self.current_location_request.messagereq = "loc"
-        future = self.gyro_client.call_async(self.gyro_request)
+        future = self.current_location_client.call_async(self.current_location_request)
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
         return msg.data
@@ -268,7 +268,9 @@ class NavigatorNode(Node):
             return distance < radius
 
         try:
-            for point in self.path_planner.targets:
+            t = 1
+            while t < len(self.path_planner.targets):
+                point = self.path_planner.targets[t]
                 logger.info(f"Point: {point}")
                 dist = distance(self.curr_point, point)
                 target_yaw = calculate_target_yaw(point, self.curr_point)
