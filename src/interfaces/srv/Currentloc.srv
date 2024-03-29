@@ -1,3 +1,4 @@
 string messagereq
 ---
-Float32MultiArray location
+float32 easting
+float32 westing

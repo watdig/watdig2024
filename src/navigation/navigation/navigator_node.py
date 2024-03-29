@@ -312,7 +312,7 @@ class NavigatorNode(Node):
                 car.stop()
 
                 data = self.current_location_service()
-                arr = (data[0], data[1])
+                arr = (data.easting, data.westing)
 
                 if is_goal_reached(arr, point):
                     self.curr_point = point
