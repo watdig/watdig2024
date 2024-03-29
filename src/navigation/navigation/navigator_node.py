@@ -59,7 +59,7 @@ class NavigatorNode(Node):
         self.turning = 'stopped'
 
         self.gyro_timeout_duration = 5
-        logger.info('Gyro timeout duration:', self.gyro_timeout_duration)
+        logger.info('Gyro timeout duration: %s', self.gyro_timeout_duration)
         
         # Calling Request Functions
         self.environment_request()
@@ -165,7 +165,7 @@ class NavigatorNode(Node):
             self.backup()
     
         self.last_gyro_received_time = time.time()
-        logger.info('Last gyro received:', self.last_gyro_received_time)
+        logger.info('Last gyro received: %s', self.last_gyro_received_time)
 
     def publish_next_direction(self):
         logger = logging.getLogger()
