@@ -24,6 +24,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.14.0",
     "react-native-web": "~0.19.6",
+    "react-native-websocket": "^1.0.2",
     "roslib": "^1.4.1",
     "ssh2": "^1.15.0"
   },

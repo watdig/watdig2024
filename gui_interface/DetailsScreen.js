@@ -1,21 +1,51 @@
 import React, {useState, useEffect} from 'react';
-import { Button, View, StyleSheet } from 'react-native';
+import { Button, View, StyleSheet, Text } from 'react-native';
 import CoordinateTest from './CoordinateTest';
 import { ScrollView } from 'react-native-gesture-handler';
-import axios from 'axios-1.6.8';
+import { Ros, Topic } from 'roslib';
+//import axios from 'axios-1.6.8';
+
+
 
 function DetailsScreen() {
   const [startButtonText, setStartButtonText] = useState('START');
   const [shutdownButtonText, setShutdownButtonText] = useState('SHUTDOWN');
   const [startButtonColor, setStartButtonColor] = useState('green');
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
-  
+  const [containerColor, setContainerColor] = useState('green');
+
+  useEffect(() => {
+    // Initialize ROS connection
+    const ros = new Ros({
+      url: 'ws://172.20.10.14:9090' // Replace with your ROS server address
+    });
+
+    // Subscribe to ROS topic
+    const listener = new Topic({
+      ros: ros,
+      name: '/current_location_topic', // Replace with your ROS topic
+      messageType: 'Interfaces/Currentcoords'
+    });
+
+    listener.subscribe((message) => {
+      // Handle incoming messages
+      // For simplicity, let's assume the message contains 'ON' or 'OFF'
+      const isOn = message.data === 'ON';
+      setContainerColor(isOn ? 'red' : 'green');
+    });
+
+    // Cleanup function
+    return () => {
+      listener.unsubscribe();
+      ros.close();
+    };
+  }, []); // Run effect only once on component mount
 
 
   const onPressStartHandler = async () => {
     setStartButtonText('STARTING...');
 
-    try {
+    /* try {
       // Make a POST request to the server endpoint to start the script
       const response = await axios.post('http://172.20.10.7\:3000/start-script');
       console.log(response.data); // Log the response from the server
@@ -27,13 +57,14 @@ function DetailsScreen() {
     }
     setStartButtonText('STARTED')
     setStartButtonColor('green');
-  };
+*/
+  }; 
 
   const onPressShutdownHandler = async () => {
     setShutdownButtonText('SHUTTING DOWN...');
     setShutdownButtonColor('red');
 
-    try {
+    /* try {
       // Make a POST request to the server endpoint to start the script
       const response = await axios.post('http://172.20.10.7\:3000/end-script');
       console.log(response.data); // Log the response from the server
@@ -42,7 +73,7 @@ function DetailsScreen() {
       console.error('Error:', error.response ? error.response.data : error.message);
       setStartButtonText('SHUTDOWN');
       setStartButtonColor(null);
-    }
+    } */
   };
 
 
@@ -67,6 +98,9 @@ function DetailsScreen() {
           <View>
             <CoordinateTest />
           </View>
+          <View style={[styles.statusContainer, { backgroundColor: containerColor }]}>
+            <Text style={styles.statusText}>Machine Status</Text>
+          </View>
         </View>
       </ScrollView>
     </ScrollView>
@@ -80,6 +114,17 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  statusContainer: {
+    backgroundColor: 'green',
+    padding: 10,
+    marginTop: 20,
+    borderRadius: 5,
+    alignSelf: 'center'
+  },
+  statusText: {
+    color: 'white',
+    fontWeight: 'bold',
   }
 });
 
