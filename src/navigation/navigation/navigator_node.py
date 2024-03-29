@@ -7,8 +7,8 @@ from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, String, Float32 # For directions topic
 from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarray
 
-
 from interfaces.srv import Gyroserv
+from interfaces.srv import Currentloc
 from navigation.car import Car
 import math
 import RPi.GPIO as GPIO
@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 
 class NavigatorNode(Node):
     """
-    Navigatioj Node that calls the csv_parse for data. Populates the PathPlanner Class.
+    Navigation Node that calls the csv_parse for data. Populates the PathPlanner Class.
     """
     def __init__(self):
         super().__init__('navigator_node')
@@ -65,7 +65,11 @@ class NavigatorNode(Node):
         
         self.gyro_client = self.create_client(Gyroserv, 'gyro_service')
 
+        self.current_location_client = self.create_client(Currentloc, 'location_service')
+
         self.gyro_request = Gyroserv.Request()
+
+        self.current_location_request = Currentloc.Request()
 
     def environment_request(self):
         """
@@ -195,6 +199,18 @@ class NavigatorNode(Node):
         msg = future.result()
         return msg.angle
     
+    def current_location_service(self):
+        """
+        Requests for information from the gyro topic.
+        """
+        logger = logging.getLogger()
+        # Requesting Server
+        self.current_location_request.messagereq = "loc"
+        future = self.gyro_client.call_async(self.gyro_request)
+        rclpy.spin_until_future_complete(self, future)
+        msg = future.result()
+        return msg.data
+    
     def backup(self):
         logger = logging.getLogger()
         self.pin1 = 8
@@ -239,17 +255,34 @@ class NavigatorNode(Node):
                 angle_degrees = 90 - angle_degrees
 
             return angle_degrees
+        
+        def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
+            radius = 0.5
+
+            distance_squared = (self.current_goal[0] - current_position[0]) ** 2 + (
+                self.current_goal[1] - current_position[1]
+            ) ** 2
+
+            distance = math.sqrt(distance_squared)
+
+            return distance < radius
+
         try:
-            for point in self.path_planner.targets:
+            i = 1
+            while i < self.path_planner.num_nodes:
+                point = self.path_planner.targets[i]
                 logger.info(f"Point: {point}")
                 dist = distance(self.curr_point, point)
                 target_yaw = calculate_target_yaw(point, self.curr_point)
                 logger.info(f"Yaw: {target_yaw}")
                 
-                if target_yaw < 0:
-                    car.drive(3)  
+                turn = abs(self.current_gyro - target_yaw)
+
+
+                if turn < 180:
+                    car.turn_right()  
                 else:
-                    car.drive(2) 
+                    car.turn_left() 
                 
                 logger.info("entering turn loop")
                 while True:
@@ -263,7 +296,7 @@ class NavigatorNode(Node):
                     self.gyro_publisher.publish(msg) 
                     if self.current_gyro is None:
                         continue  # Skip iteration if sensor read failed    
-                    if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
+                    if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 3 degrees tolerance
                         break  # Exit loop once close to the target yaw
                     
                 car.stop()
@@ -278,8 +311,16 @@ class NavigatorNode(Node):
                     # logger.info(curr_distance) 
                 car.stop()
 
+                data = self.current_location_service()
+                arr = (data[0], data[1])
+
+                if is_goal_reached(arr, point):
+                    self.curr_point = point
+                    i+=1
+                else:
+                    self.curr_point = arr
                 self.curr_gyro= read_yaw_angle(sensor)
-                self.curr_point = point
+                
         except KeyboardInterrupt:
             car.stop()
             GPIO.cleanup()

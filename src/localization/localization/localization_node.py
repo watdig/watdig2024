@@ -5,6 +5,7 @@ from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
 import numpy as np
+from interfaces.srv import Currentloc
 
 logging.basicConfig(level=logging.INFO)
 
@@ -14,11 +15,13 @@ class LocalizationNode(Node):
         self.get_logger().set_level(rclpy.logging.LoggingSeverity.INFO)
         # Publishers
         self.current_location_publisher = self.create_publisher(Currentcoords, 'current_location_topic', 10)
+        self.gyro_service = self.create_service(Currentloc, 'location_service', self.location_service_callback)
+
         
         # UWB Anchor Points
         self.points_group_1 = {1: (0, 0), 2: (7, 0)}
         self.points_group_2 = {3: (0, 7), 4: (7, 7)}
-        
+        self.curr_loc = None
         # Placeholder for UWB distances
         self.uwb_distances_dict = {}
         
@@ -49,7 +52,14 @@ class LocalizationNode(Node):
         logger = logging.getLogger()
         self.gyro = msg.data
         logger.info("Localization Node Received from gyro_topic: %f", self.gyro)
-        
+    
+    def location_service_callback(self, request, response):
+        if self.curr_loc is None:
+            self.curr_loc = (0,0) 
+            self.get_logger().info("SENSOR ERROR") 
+        response.data[0] = self.curr_loc[0]
+        response.data[1] = self.curr_loc[1]
+        return response
     
     def compute_and_publish_location(self):
         # Check if we have all needed distances
@@ -64,6 +74,7 @@ class LocalizationNode(Node):
             
             # Calculate the average of the solutions
             final_solution = (np.array(solution1) + np.array(solution2)) / 2
+            self.curr_loc = final_solution
             self.publish_location(final_solution)
         else:
             self.get_logger().info('Waiting for distances from all UWB sensors.')
