@@ -239,48 +239,50 @@ class NavigatorNode(Node):
                 angle_degrees = 90 - angle_degrees
 
             return angle_degrees
-    
-        for point in self.path_planner.targets:
-            logger.info(f"Point: {point}")
-            dist = distance(self.curr_point, point)
-            target_yaw = calculate_target_yaw(point, self.curr_point)
-            logger.info(f"Yaw: {target_yaw}")
+        try:
+            for point in self.path_planner.targets:
+                logger.info(f"Point: {point}")
+                dist = distance(self.curr_point, point)
+                target_yaw = calculate_target_yaw(point, self.curr_point)
+                logger.info(f"Yaw: {target_yaw}")
+                
+                if target_yaw < 0:
+                    car.drive(3)  
+                else:
+                    car.drive(2) 
+                
+                logger.info("entering turn loop")
+                while True:
+                    logger.info(self.current_gyro)  
+                    self.current_gyro = read_yaw_angle(sensor)
+                    if self.current_gyro is None:
+                        self.current_gyro = 0.0
+                        self.get_logger().info("SENSOR ERROR") 
+                    msg = Float32()
+                    msg.data = float(self.current_gyro) 
+                    self.gyro_publisher.publish(msg) 
+                    if self.current_gyro is None:
+                        continue  # Skip iteration if sensor read failed    
+                    if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
+                        break  # Exit loop once close to the target yaw
+                    
+                car.stop()
+                logger.info(self.current_gyro)    
+                self.p.pulse_count=0 
             
-            if target_yaw < 0:
-                car.drive(3)  
-            else:
-                car.drive(2) 
-            
-            logger.info("entering turn loop")
-            while True:
-                logger.info(self.current_gyro)  
-                self.current_gyro = read_yaw_angle(sensor)
-                if self.current_gyro is None:
-                    self.current_gyro = 0.0
-                    self.get_logger().info("SENSOR ERROR") 
-                msg = Float32()
-                msg.data = float(self.current_gyro) 
-                self.gyro_publisher.publish(msg) 
-                if self.current_gyro is None:
-                    continue  # Skip iteration if sensor read failed    
-                if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
-                    break  # Exit loop once close to the target yaw
-                 
-            car.stop()
-            logger.info(self.current_gyro)    
-            self.p.pulse_count=0 
-        
-            logger.info(dist)
-            car.drive(0)
-            while (self.p.pulse_count < 4685*(dist/0.471234)):
-                curr_distance = (self.p.pulse_count/4685)*0.471234
-                self.current_gyro = read_yaw_angle(sensor)
-                # logger.info(curr_distance) 
-            car.stop()
+                logger.info(dist)
+                car.drive(0)
+                while (self.p.pulse_count < 4685*(dist/0.471234)):
+                    curr_distance = (self.p.pulse_count/4685)*0.471234
+                    self.current_gyro = read_yaw_angle(sensor)
+                    # logger.info(curr_distance) 
+                car.stop()
 
-            self.curr_gyro= read_yaw_angle(sensor)
-            self.curr_point = point
-            
+                self.curr_gyro= read_yaw_angle(sensor)
+                self.curr_point = point
+        except KeyboardInterrupt:
+            car.stop()
+            GPIO.cleanup()
 
 
 
