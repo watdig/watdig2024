@@ -25,7 +25,7 @@ function DetailsScreen() {
     });
 
     dynamicPointSubscriber.subscribe((message) => {
-      if(message.exists)
+      if(message)
       {
         setContainerColor('red');
       }
