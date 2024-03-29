@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { Button, View, StyleSheet, Text } from 'react-native';
 import CoordinateTest from './CoordinateTest';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Ros, Topic } from 'roslib';
+import Roslib from 'roslib';
 //import axios from 'axios-1.6.8';
 
 
@@ -12,45 +12,36 @@ function DetailsScreen() {
   const [startButtonColor, setStartButtonColor] = useState('green');
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
   const [containerColor, setContainerColor] = useState('green');
-
   useEffect(() => {
-    // Create a ROS instance
-    const ros = new Ros({
+
+    const ros = new Roslib.Ros({
       url: 'ws://172.20.10.14:9090'
     });
 
-    // Connect to ROS
-    ros.on('connection', () => {
-      console.log('Connected to ROS!');
-      // Subscribe to the topic
-      const topic = new Topic({
-        ros: ros,
-        name: '/gyro_node',
-        messageType: 'std msgs.msg'
-      });
+    const dynamicPointSubscriber = new Roslib.Topic({
+      ros: ros,
+      name: '/current_location_topic', // Change this to your actual topic name
+      messageType: 'interfaces/Currentcoords' // Change this to your actual message type
+    });
 
-      topic.subscribe((message) => {
-        console.log('Received message:', message.data);
-        // Change the container color to red when a message is received
+    dynamicPointSubscriber.subscribe((message) => {
+      if(message.exists)
+      {
         setContainerColor('red');
-      });
+      }
+      else
+      {
+        setContainerColor('green')
+      }
     });
 
-    ros.on('error', (error) => {
-      console.error('Error connecting to ROS:', error);
-    });
-
-    ros.on('close', () => {
-      console.log('Disconnected from ROS.');
-      // Reset the container color to green when disconnected from ROS
-      setContainerColor('green');
-    });
-
-    // Cleanup function to disconnect from ROS when the component unmounts
     return () => {
       ros.close();
+      setContainerColor('green')
     };
-  }, []); // Empty dependency array to ensure t
+  }, []);
+
+
   const onPressStartHandler = async () => {
     setStartButtonText('STARTING...');
 
@@ -107,8 +98,10 @@ function DetailsScreen() {
           <View>
             <CoordinateTest />
           </View>
+          <View>
           <View style={[styles.statusContainer, { backgroundColor: containerColor }]}>
               <Text style={styles.statusText}>Machine Status</Text>
+          </View>
           </View>
         </View>
       </ScrollView>
