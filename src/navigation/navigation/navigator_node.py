@@ -311,8 +311,12 @@ class NavigatorNode(Node):
                     # logger.info(curr_distance) 
                 car.stop()
 
+                logger.info("calling current location service")
+
                 data = self.current_location_service()
                 arr = (data.easting, data.westing)
+
+                logger.info("recieved current location service")
 
                 if is_goal_reached(arr, point):
                     self.curr_point = point
