@@ -217,7 +217,8 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         # Requesting Server
         self.current_location_request.messagereq = "loc"
-        future = self.gyro_client.call_async(self.gyro_request)
+        self.get_logger().info("current location service activated")
+        future = self.current_location_client.call_async(self.current_location_request)
         rclpy.spin_until_future_complete(self, future)
         msg = future.result()
         return msg.data
@@ -279,7 +280,9 @@ class NavigatorNode(Node):
             return distance < radius
 
         try:
-            for point in self.path_planner.targets:
+            t = 1
+            while t < len(self.path_planner.targets):
+                point = self.path_planner.targets[t]
                 logger.info(f"Point: {point}")
                 dist = distance(self.curr_point, point)
                 target_yaw = calculate_target_yaw(point, self.curr_point)
@@ -318,19 +321,19 @@ class NavigatorNode(Node):
                 car.stop()
 
                 self.curr_gyro= read_yaw_angle(sensor)
-                self.curr_point = point
 
-                # logger.info("calling current location service")
+                logger.info("calling current location service")
 
-                # data = self.current_location_service()
-                # arr = (data.easting, data.westing)
+                data = self.current_location_service()
+                arr = (data.easting, data.westing)
 
-                # logger.info("recieved current location service")
+                logger.info("recieved current location service")
 
-                #  if is_goal_reached(arr, point):
-                #     self.curr_point = point
-                #     i+=1
-                # else:
+                if is_goal_reached(arr, point):
+                    self.curr_point = point
+                    t+=1
+                else:
+                    self.curr_point = arr
                 
         except KeyboardInterrupt:
             car.stop()

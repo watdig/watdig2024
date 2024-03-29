@@ -5,7 +5,7 @@ from interfaces.msg import Currentcoords
 from std_msgs.msg import Float32MultiArray, Float32
 from scipy.optimize import minimize
 import numpy as np
-from interfaces.srv import Currentloc
+from interfaces.srv import Currentloc, Gyroserv
 
 logging.basicConfig(level=logging.INFO)
 
@@ -15,7 +15,8 @@ class LocalizationNode(Node):
         self.get_logger().set_level(rclpy.logging.LoggingSeverity.INFO)
         # Publishers
         self.current_location_publisher = self.create_publisher(Currentcoords, 'current_location_topic', 10)
-        self.gyro_service = self.create_service(Currentloc, 'location_service', self.location_service_callback)
+        self.gyro_service = self.create_service(Gyroserv, 'gyro_service', self.gyro_service_callback)
+        self.current_location_service = self.create_service(Currentloc, 'location_service', self.location_service_callback)
 
         
         # UWB Anchor Points
@@ -57,9 +58,17 @@ class LocalizationNode(Node):
         if self.curr_loc is None:
             self.curr_loc = (0,0) 
             self.get_logger().info("SENSOR ERROR") 
-        self.get_logger().info(f"curr easting is: {response.easting}")
         response.easting = self.curr_loc[0]
         response.westing = self.curr_loc[1]
+        self.get_logger().info(f"curr easting is: {response.easting}")
+        return response
+    
+    def gyro_service_callback(self, request, response):
+        yaw = self.gyro  
+        if yaw is None:
+            yaw = 0.0
+            self.get_logger().info("SENSOR ERROR") 
+        response.angle = yaw  
         return response
     
     def compute_and_publish_location(self):
