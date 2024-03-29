@@ -19,53 +19,16 @@ function DetailsScreen() {
       url: 'ws://172.20.10.14:9090'
     });
 
-    const gyroClient = new Roslib.Service({
-      ros: ros,
-      name: '/gyro_serv',
-      serviceType: 'interfaces/Gyroserv'
+    ros.on('connection', () => {
+      setContainerColor('red');
     });
 
-
-    const environmentClient = new Roslib.Service({
-      ros: ros,
-      name: '/environment_csv_service',
-      serviceType: 'interfacesarray/Environmentarray'
+    ros.on('error', () => {
+      setContainerColor('green');
     });
-
-    const gyroRequest = new Roslib.ServiceRequest();
-    const environmentRequest = new Roslib.ServiceRequest({
-      csv: 'environment' // Specify the CSV file name
-    });
-
-    const handleGyroResponse = (response) => {
-      if (response)
-      {
-        setContainer2Color('green');
-      }
-      else
-      {
-        setContainer2Color('red');
-      }
-    };
-
-    const handleEnvironmentResponse = (response) => {
-      if (response)
-      {
-        setContainerColor('red');
-      }
-      else
-      {
-        setContainerColor('green');
-      }
-    };
-
-    environmentClient.callService(environmentRequest, handleEnvironmentResponse);
-    gyroClient.callService(environmentRequest, handleEnvironmentResponse);
 
     return () => {
       ros.close();
-      setContainerColor('green');
-      setContainer2Color('red');
     };
   }, []);
 
