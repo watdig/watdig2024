@@ -1,5 +1,9 @@
 name,easting,northing,elevation,boundingRadius
-obstacle1,0.9,1.2,0.0,0.3
-obstacle2,2.4,1.8,0.0,0.3
-obstacle3,2.4,2.7,0.0,0.3
-obstacle4,0.9,3.0,0.0,0.3
+obstacle1,3.2,8.9,0.0,0.75
+obstacle2,7.2,9.8,0.0,0.75
+obstacle3,9.55,11.25,0.0,0.75
+obstacle4,4.3,14.1,0.0,0.75
+obstacle5,0.85,15.1,0.0,0.75
+obstacle6,5.8,17.3,0.0,0.75
+obstacle7,1.7,17.1,0.0,0.75
+obstacle8,0.85,19.65,0.0,0.75

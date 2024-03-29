@@ -71,9 +71,15 @@ class NavigatorNode(Node):
 
         self.current_location_client = self.create_client(Currentloc, 'location_service')
 
+        self.current_northing_client = self.create_client(Currentloc, 'northing_service')
+
         self.gyro_request = Gyroserv.Request()
 
         self.current_location_request = Currentloc.Request()
+
+        self.current_northing_request = Currentloc.Request()
+
+
 
     def environment_request(self):
         """
@@ -163,6 +169,7 @@ class NavigatorNode(Node):
         self.current_gyro = msg.angle
         if self.path_planner.targets: 
             self.backup()
+            # self.publish_next_direction()   // add this line back in when action server fixed
     
         self.last_gyro_received_time = time.time()
         #logger.info('Last gyro received: %s', self.last_gyro_received_time)
@@ -216,12 +223,45 @@ class NavigatorNode(Node):
         """
         logger = logging.getLogger()
         # Requesting Server
-        self.current_location_request.messagereq = "loc"
-        self.get_logger().info("current location service activated")
-        future = self.current_location_client.call_async(self.current_location_request)
-        rclpy.spin_until_future_complete(self, future)
-        msg = future.result()
-        return msg.data
+        self.current_location_request.messagereq = "loc"  
+        self.future = self.current_location_client.call_async(self.current_location_request)  
+        try:
+            rclpy.spin_until_future_complete(self, self.future, timeout_sec=4)  
+            if self.future.done():
+                response = self.future.result()
+                if response: 
+                    logger.info("returned response")
+                    return response
+                else:
+                    logger.error("No response received from service.")
+            else:
+                logger.error("Service call timed out.")
+        except Exception as e:
+            logger.error(f"Error calling current location service: {e}")
+        return None 
+    
+    def current_northing_service(self):
+        """
+        Requests for information from the gyro topic.
+        """
+        logger = logging.getLogger()
+        # Requesting Server
+        self.current_northing_request.messagereq = "loc"  
+        self.future = self.current_northing_client.call_async(self.current_northing_request)  
+        try:
+            rclpy.spin_until_future_complete(self, self.future, timeout_sec=4)  
+            if self.future.done():
+                response = self.future.result()
+                if response: 
+                    logger.info("returned response")
+                    return response
+                else:
+                    logger.error("No response received from service.")
+            else:
+                logger.error("Service call timed out.")
+        except Exception as e:
+            logger.error(f"Error calling current northing service: {e}")
+        return None
     
     def backup(self):
         logger = logging.getLogger()
@@ -259,8 +299,6 @@ class NavigatorNode(Node):
             angle_radians = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle_radians) 
 
-            # Adjust the angle so that 0 degrees is at the gyroscope's 90 degrees
-            # and correct the direction to match the gyroscope's orientation
             if angle_degrees > 90:
                 angle_degrees = 360 - (angle_degrees - 90)
             else:
@@ -315,6 +353,8 @@ class NavigatorNode(Node):
                 logger.info(dist)
                 car.drive(0)
                 while (self.p.pulse_count < 4685*(dist/0.471234)):
+                    if self.p.pulse_count is None:
+                        break
                     curr_distance = (self.p.pulse_count/4685)*0.471234
                     self.current_gyro = read_yaw_angle(sensor)
                     # logger.info(curr_distance) 
@@ -324,17 +364,21 @@ class NavigatorNode(Node):
 
                 logger.info("calling current location service")
 
-                data = self.current_location_service()
-                arr = (data.easting, data.westing)
-
-                logger.info("recieved current location service")
-
-                if is_goal_reached(arr, point):
-                    self.curr_point = point
-                    t+=1
+                msg = self.current_location_service()
+                msg2 = self.current_northing_service()
+                if msg:  
+                    arr = (msg.heading, msg2.heading)
+                    logger.info("received current location service")
+                    if is_goal_reached(arr, point):
+                        self.curr_point = point
+                        t += 1
+                    else:
+                        self.curr_point = arr
                 else:
-                    self.curr_point = arr
-                
+                    logger.error("Failed to receive data from current location service.")
+                    t+=1
+                    self.curr_point = point
+                               
         except KeyboardInterrupt:
             car.stop()
             GPIO.cleanup()
