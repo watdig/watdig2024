@@ -81,7 +81,7 @@ class TurnAndMoveActionServer(Node):
         while True:
             if self.current_gyro is None:
                 continue  
-            if abs(normalize_angle(self.current_gyro - (angle-180)) < 5:
+            if abs(normalize_angle(self.current_gyro - angle)) < 5:
                 self.get_logger().info('stop turning')
                 break
             self.current_gyro = self.gyro_request_service()
