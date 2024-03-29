@@ -19,8 +19,8 @@ class LocalizationNode(Node):
 
         
         # UWB Anchor Points
-        self.points_group_1 = {1: (0, 0), 2: (7, 0)}
-        self.points_group_2 = {3: (0, 7), 4: (7, 7)}
+        self.points_group_1 = {1: (0, 0), 2: (1.8, 0)}
+        self.points_group_2 = {3: (0, 1.9), 4: (1.8, 1.9)}
         self.curr_loc = None
         # Placeholder for UWB distances
         self.uwb_distances_dict = {}
