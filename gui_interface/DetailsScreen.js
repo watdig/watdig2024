@@ -12,9 +12,9 @@ function DetailsScreen() {
   const [startButtonColor, setStartButtonColor] = useState('green');
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
   const [containerColor, setContainerColor] = useState('green');
-  const [subscribed, setSubscribed] = useState(false);
-  useEffect(() => {
+  
 
+  useEffect(() => {
     const ros = new Roslib.Ros({
       url: 'ws://172.20.10.14:9090'
     });
@@ -26,21 +26,15 @@ function DetailsScreen() {
     });
 
     dynamicPointSubscriber.subscribe((message) => {
-      if(message)
-      {
+      if (message) {
         setContainerColor('red');
+      } else {
+        setContainerColor('green');
       }
-      else
-      {
-        setContainerColor('green')
-      }
-      setSubscribed(true);
     });
 
     return () => {
       ros.close();
-      setContainerColor('green')
-      setSubscribed(false);
     };
   }, []);
 
