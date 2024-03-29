@@ -309,7 +309,6 @@ class NavigatorNode(Node):
                     if self.current_gyro is None:
                         self.current_gyro = 0.0
                         self.get_logger().info("SENSOR ERROR") 
-                        break
                     msg = Float32()
                     msg.data = float(self.current_gyro) 
                     self.gyro_publisher.publish(msg) 
