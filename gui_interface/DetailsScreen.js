@@ -12,6 +12,7 @@ function DetailsScreen() {
   const [startButtonColor, setStartButtonColor] = useState('green');
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
   const [containerColor, setContainerColor] = useState('green');
+  const [subscribed, setSubscribed] = useState(false);
   useEffect(() => {
 
     const ros = new Roslib.Ros({
@@ -33,11 +34,13 @@ function DetailsScreen() {
       {
         setContainerColor('green')
       }
+      setSubscribed(true);
     });
 
     return () => {
       ros.close();
       setContainerColor('green')
+      setSubscribed(false);
     };
   }, []);
 
