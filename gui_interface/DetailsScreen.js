@@ -28,10 +28,11 @@ function DetailsScreen() {
     });
 
     listener.subscribe((message) => {
-      // Handle incoming messages
-      // For simplicity, let's assume the message contains 'ON' or 'OFF'
-      const isOn = message.data === 'ON';
-      setContainerColor(isOn ? 'red' : 'green');
+      // Assuming message contains a 'status' property
+      const { status } = message;
+    
+      // Determine container color based on the status
+      setContainerColor(status === 'ON' ? 'red' : 'green');
     });
 
     // Cleanup function
