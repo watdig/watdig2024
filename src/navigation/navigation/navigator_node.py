@@ -298,8 +298,6 @@ class NavigatorNode(Node):
             angle_radians = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle_radians) 
 
-            # Adjust the angle so that 0 degrees is at the gyroscope's 90 degrees
-            # and correct the direction to match the gyroscope's orientation
             if angle_degrees > 90:
                 angle_degrees = 360 - (angle_degrees - 90)
             else:
