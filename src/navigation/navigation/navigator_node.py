@@ -219,10 +219,11 @@ class NavigatorNode(Node):
         self.current_location_request.messagereq = "loc"  
         future = self.current_location_client.call_async(self.current_location_request)  
         try:
-            rclpy.spin_until_future_complete(self, future, timeout_sec=5)  
+            rclpy.spin_until_future_complete(self, future, timeout_sec=2)  
             if future.done():
                 response = future.result()
                 if response: 
+                    logger.info("returned response")
                     return response
                 else:
                     logger.error("No response received from service.")
