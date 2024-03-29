@@ -217,7 +217,7 @@ class NavigatorNode(Node):
         logger = logging.getLogger()
         # Requesting Server
         self.current_location_request.messagereq = "loc"  
-        future = self.gyro_client.call_async(self.current_location_request)  
+        future = self.current_location.call_async(self.current_location_request)  
         try:
             rclpy.spin_until_future_complete(self, future, timeout_sec=5)  
             if future.done():
