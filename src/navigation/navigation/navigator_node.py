@@ -268,21 +268,16 @@ class NavigatorNode(Node):
             return distance < radius
 
         try:
-            i = 1
-            while i < self.path_planner.num_nodes:
-                point = self.path_planner.targets[i]
+            for point in self.path_planner.targets:
                 logger.info(f"Point: {point}")
                 dist = distance(self.curr_point, point)
                 target_yaw = calculate_target_yaw(point, self.curr_point)
                 logger.info(f"Yaw: {target_yaw}")
                 
-                turn = abs(self.current_gyro - target_yaw)
-
-
-                if turn < 180:
-                    car.turn_right()  
+                if target_yaw < 0:
+                    car.drive(3)  
                 else:
-                    car.turn_left() 
+                    car.drive(2) 
                 
                 logger.info("entering turn loop")
                 while True:
@@ -296,7 +291,7 @@ class NavigatorNode(Node):
                     self.gyro_publisher.publish(msg) 
                     if self.current_gyro is None:
                         continue  # Skip iteration if sensor read failed    
-                    if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 3 degrees tolerance
+                    if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
                         break  # Exit loop once close to the target yaw
                     
                 car.stop()
@@ -311,20 +306,20 @@ class NavigatorNode(Node):
                     # logger.info(curr_distance) 
                 car.stop()
 
-                logger.info("calling current location service")
+                self.curr_gyro= read_yaw_angle(sensor)
+                self.curr_point = point
+
+                # logger.info("calling current location service")
 
                 # data = self.current_location_service()
                 # arr = (data.easting, data.westing)
 
-                logger.info("recieved current location service")
+                # logger.info("recieved current location service")
 
-               #  if is_goal_reached(arr, point):
-               #     self.curr_point = point
-               #     i+=1
-               # else:
-                self.curr_point = point[i]
-                self.curr_gyro= read_yaw_angle(sensor)
-                i+=1
+                #  if is_goal_reached(arr, point):
+                #     self.curr_point = point
+                #     i+=1
+                # else:
                 
         except KeyboardInterrupt:
             car.stop()
