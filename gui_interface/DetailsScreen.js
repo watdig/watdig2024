@@ -100,7 +100,7 @@ function DetailsScreen() {
               title={startButtonText}
               onPress={onPressStartHandler}
               color={startButtonColor}
-            />
+            />``
           </View>
           <View>
             <Button
