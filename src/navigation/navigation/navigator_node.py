@@ -58,9 +58,23 @@ class NavigatorNode(Node):
         self.current_location = (0,0)
         self.turning = 'stopped'
 
+        #init backup parameters:
+        self.pin1 = 8
+        self.pi = pigpio.pi()
+        self.p = reader(self.pi, self.pin1)
+        GPIO.setmode(GPIO.BCM)
+        self.Car = Car()
+        self.current_gyro = 0.0
+        self.curr_point = (0,0)
         self.gyro_timeout_duration = 5
-        #logger.info('Gyro timeout duration: %s', self.gyro_timeout_duration)
+        self.i2c = board.I2C()  
+        self.sensor = adafruit_bno055.BNO055_I2C(self.i2c) 
         
+        self.car = Car()
+        self.index = 0
+        self.point = (0,0)
+        self.get_logger().info("all params initialized")
+
         # Calling Request Functions
         self.environment_request()
         self.obstacles_request()
@@ -154,6 +168,7 @@ class NavigatorNode(Node):
         """
         if self.path_planner.environment and self.path_planner.checkpoints and self.path_planner.obstacles:
             self.path_planner.global_prm()
+        self.point = self.path_planner.targets[self.index]
 
 
     def is_turning_callback(self, msg):
@@ -171,12 +186,6 @@ class NavigatorNode(Node):
             self.backup()
             # self.publish_next_direction()   // add this line back in when action server fixed
     
-        self.last_gyro_received_time = time.time()
-        #logger.info('Last gyro received: %s', self.last_gyro_received_time)
-
-        if time.time() - self.last_gyro_received_time > self.gyro_timeout_duration:
-            self.get_logger().info("No gyro values received for over 5 seconds. Ending the script.")
-            rclpy.shutdown()
 
     def publish_next_direction(self):
         logger = logging.getLogger()
@@ -265,20 +274,11 @@ class NavigatorNode(Node):
     
     def backup(self):
         logger = logging.getLogger()
-        self.pin1 = 8
-        self.pi = pigpio.pi()
-        self.p = reader(self.pi, self.pin1)
-        GPIO.setmode(GPIO.BCM)
-        self.Car = Car()
-        self.current_gyro = 0.0
-        self.curr_point = (0,0)
+        
         logger.info(self.path_planner.angle)
         
-        car = Car()
         logger.info("car initialized")
-        
-        i2c = board.I2C()  
-        sensor = adafruit_bno055.BNO055_I2C(i2c) 
+    
 
         def read_yaw_angle(sensor):
             euler = sensor.euler[0]
@@ -309,8 +309,8 @@ class NavigatorNode(Node):
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
             radius = 0.5
 
-            distance_squared = (self.current_goal[0] - current_position[0]) ** 2 + (
-                self.current_goal[1] - current_position[1]
+            distance_squared = (current_goal[0] - current_position[0]) ** 2 + (
+                current_goal[1] - current_position[1]
             ) ** 2
 
             distance = math.sqrt(distance_squared)
@@ -318,70 +318,78 @@ class NavigatorNode(Node):
             return distance < radius
 
         try:
-            t = 1
-            while t < len(self.path_planner.targets):
-                point = self.path_planner.targets[t]
-                logger.info(f"Point: {point}")
-                dist = distance(self.curr_point, point)
-                target_yaw = calculate_target_yaw(point, self.curr_point)
-                logger.info(f"Yaw: {target_yaw}")
+            if is_goal_reached(self.current_location, self.point):
+                self.curr_point = self.point
+                self.index += 1
+            else:
+                self.curr_point = self.current_location
 
-                if target_yaw < 0:
-                    car.drive(3)  
-                else:
-                    car.drive(2) 
-                
-                logger.info("entering turn loop")
-                while True:
-                    logger.info(self.current_gyro)  
-                    self.current_gyro = read_yaw_angle(sensor)
-                    if self.current_gyro is None:
-                        self.current_gyro = 0.0
-                        self.get_logger().info("SENSOR ERROR") 
-                    msg = Float32()
-                    msg.data = float(self.current_gyro) 
-                    self.gyro_publisher.publish(msg) 
-                    if self.current_gyro is None:
-                        continue  # Skip iteration if sensor read failed    
-                    if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
-                        break  # Exit loop once close to the target yaw
-                    
-                car.stop()
-                logger.info(self.current_gyro)    
-                self.p.pulse_count=0 
+            self.point = self.path_planner.targets[self.index]
+            logger.info(f"Point: {self.point}")
+            dist = distance(self.curr_point, self.point)
+            target_yaw = calculate_target_yaw(self.point, self.curr_point)
+            logger.info(f"Yaw: {target_yaw}")
             
-                logger.info(dist)
-                car.drive(0)
-                while (self.p.pulse_count < 4685*(dist/0.471234)):
-                    if self.p.pulse_count is None:
-                        break
-                    curr_distance = (self.p.pulse_count/4685)*0.471234
-                    self.current_gyro = read_yaw_angle(sensor)
-                    # logger.info(curr_distance) 
-                car.stop()
+            if target_yaw < 0:
+                self.car.drive(3)  
+            else:
+                self.car.drive(2) 
+                
+            logger.info("entering turn loop")
+            while True:
+                logger.info(self.current_gyro)  
+                self.current_gyro = read_yaw_angle(self.sensor)
+                if self.current_gyro is None:
+                    self.current_gyro = 0.0
+                    self.get_logger().info("SENSOR ERROR") 
+                    continue
+                msg = Float32()
+                msg.data = float(self.current_gyro) 
+                self.gyro_publisher.publish(msg)   
+                if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
+                    break  # Exit loop once close to the target yaw
+                    
+            self.car.stop()
+            logger.info(self.current_gyro)    
+            self.p.pulse_count=0 
+            
+            logger.info(dist)
+            self.car.drive(0)
+            while (self.p.pulse_count < 4685*(dist/0.471234)):
+                if self.p.pulse_count is None:
+                    break
+                curr_distance = (self.p.pulse_count/4685)*0.471234
+                self.current_gyro = read_yaw_angle(self.sensor)
+                # logger.info(curr_distance) 
+            self.car.stop()
+            
+            self.curr_gyro= read_yaw_angle(self.sensor)
 
-                self.curr_gyro= read_yaw_angle(sensor)
+            self.get_logger().info(f"target reached: {self.point}")
 
-                logger.info("calling current location service")
-
-                msg = self.current_location_service()
-                msg2 = self.current_northing_service()
-                if msg:  
-                    arr = (msg.heading, msg2.heading)
-                    logger.info("received current location service")
+            """   
+            logger.info("calling current location service")
+            msg = self.current_location_service()
+            msg2 = self.current_northing_service()
+            if msg:  
+                arr = (msg.heading, msg2.heading)
+                logger.info("received current location service")
                     if is_goal_reached(arr, point):
                         self.curr_point = point
                         t += 1
-                    else:
-                        self.curr_point = arr
                 else:
-                    logger.error("Failed to receive data from current location service.")
-                    t+=1
-                    self.curr_point = point
-                               
+                    self.curr_point = arr
+            else:
+                logger.error("Failed to receive data from current location service.")
+                t+=1
+                self.curr_point = point
+            """ 
+            return
+
         except KeyboardInterrupt:
-            car.stop()
+            self.car.stop()
             GPIO.cleanup()
+            rclpy.shutdown()
 
 
 
