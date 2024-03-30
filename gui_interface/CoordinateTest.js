@@ -43,12 +43,6 @@ const CoordinateTest = () => {
       serviceType: 'interfacesarray/Obstaclesarray'
     });
 
-    const dynamicPointSubscriber = new Roslib.Topic({
-      ros: ros,
-      name: '/current_location_topic', // Change this to your actual topic name
-      messageType: 'interfaces/Currentcoords' // Change this to your actual message type
-    });
-
     // Define service request messages
     const environmentRequest = new Roslib.ServiceRequest({
       csv: 'environment' // Specify the CSV file name
@@ -76,10 +70,7 @@ const CoordinateTest = () => {
       setPoints1(response.array);
     };
 
-    dynamicPointSubscriber.subscribe((message) => {
-      // Update the position of the dynamic point
-      setDynamicPoint({ x: message.easting, y: message.northing });
-    });
+
 
     // Call services to fetch data
     environmentClient.callService(environmentRequest, handleEnvironmentResponse);
@@ -129,7 +120,6 @@ const CoordinateTest = () => {
         {points3.map((point3, index) => (
           <Point key={`point3-${index}`} size={8} x={point3.easting} y={point3.northing} color="purple" />
         ))}
-        {dynamicPoint && <Point size={10} x={dynamicPoint.easting} y={dynamicPoint.northing} color="blue" />}
       </View>  
   );
 };
