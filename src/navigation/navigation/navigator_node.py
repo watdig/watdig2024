@@ -365,7 +365,7 @@ class NavigatorNode(Node):
             
             self.curr_gyro= read_yaw_angle(self.sensor)
 
-            self.get_logger().info(f"target reached: {point}")
+            self.get_logger().info(f"target reached: {self.point}")
 
             """   
             logger.info("calling current location service")
