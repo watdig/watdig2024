@@ -12,12 +12,31 @@ function DetailsScreen() {
   const [startButtonColor, setStartButtonColor] = useState('green');
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
   const [containerColor, setContainerColor] = useState('green');
-  const [container2Color, setContainer2Color] = useState('green');
+  const [container2Color, setContainer2Color] = useState('red');
+  const [gyroValue, setGyroValue] = useState(null);
 
   useEffect(() => {
     const ros = new Roslib.Ros({
       url: 'ws://172.20.10.14:9090'
     });
+
+    const gyroClient = new Roslib.Service({
+      ros: ros,
+      name: '/gyro_service',
+      serviceType: 'interfaces/Gyroserv'
+    });
+
+    const gyroRequest = new Roslib.ServiceRequest();
+
+      const handleGyroResponse = (response) => {
+        setGyroValue(response.value);
+        setContainer2Color('green'); // Update container color when service call is successful
+    };
+
+    gyroClient.callService(gyroRequest, handleGyroResponse);
+
+    // Set container color to green when component is unmounted
+
 
     ros.on('connection', () => {
       setContainerColor('red');
@@ -25,10 +44,12 @@ function DetailsScreen() {
 
     ros.on('error', () => {
       setContainerColor('green');
+      setContainer2Color('red');
     });
 
     return () => {
       ros.close();
+      
     };
   }, []);
 
@@ -95,6 +116,10 @@ function DetailsScreen() {
           <View style={[styles.statusContainer, { backgroundColor: containerColor }]}>
               <Text style={styles.statusText}>Machine Status</Text>
           </View>
+          <View style={[styles.statusContainer, { backgroundColor: container2Color }]}>
+            <Text style={styles.statusText}>Gyro Status</Text>
+            <Text style={styles.statusText}>{gyroValue}</Text>
+      </View>
           </View>
         </View>
       </ScrollView>
