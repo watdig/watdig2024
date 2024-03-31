@@ -8,7 +8,7 @@ class FrontUWB(Node):
     def __init__(self):
         super().__init__('front_uwb_node')
         self.front_uwb_publisher = self.create_publisher(Float32MultiArray, 'front_uwb_topic', 10)
-        self.serial_port = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.1)        
+        # self.serial_port = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.1)        
         self.create_timer(0.1, self.publish_uwb) 
 
     def read_from_serial(self):
@@ -26,8 +26,8 @@ class FrontUWB(Node):
             
                             
     def publish_uwb(self):
-        dictionary2 = {1: 0.0}
-        dictionary = self.read_from_serial()
+        dictionary2 = {1: 0.0, 2: 0.0}
+        # dictionary = self.read_from_serial()
         #  uncomment the line above if you want to run with the uwbs
         dictionary = {}
         msg = Float32MultiArray()
@@ -36,8 +36,8 @@ class FrontUWB(Node):
             self.front_uwb_publisher.publish(msg)
             # self.get_logger().info(f'Published uwbs: {msg.data}')
         else:
-            msg.data = [dictionary2[1]]
-            self.get_logger().warn('dictionary is empty')
+            msg.data = [dictionary2[1], dictionary2[2]]
+            # self.get_logger().warn('dictionary is empty')
 
 def main(args=None):
     rclpy.init(args=args)
