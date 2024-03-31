@@ -289,7 +289,7 @@ class NavigatorNode(Node):
 
         def distance(point1, point2):
             # linear distance modifier (can be modified between runs)
-            modifier = 1.0
+            modifier = 1.06
             dist = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
             return dist * modifier
 
