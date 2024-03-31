@@ -175,4 +175,59 @@ class PathPlanner:
             logger.info('Node Number %d: %s', count, target)
             count += 1
 
+
         return True
+    
+        # Build the graph
+        graph = nx.Graph()
+        for sample in samples:
+            neighbors = tree.query_ball_point(sample, NEIGHBOR_RADIUS)
+            for neighbor_idx in neighbors:
+                neighbor = samples[neighbor_idx]
+                if is_path_free(sample, neighbor):
+                    graph.add_edge(
+                        sample,
+                        neighbor,
+                        weight=np.linalg.norm(np.array(sample) - np.array(neighbor)),
+                    )
+
+        # Find the shortest path through the checkpoints
+        path = []
+        try:
+            path.append(tuple(start.coords)[0])
+            for checkpoint in self.checkpoints:
+                path_segment = nx.shortest_path(graph, path[-1], tuple(checkpoint.coords)[0], weight="weight")
+                path.extend(path_segment[1:])  # Exclude the first point to avoid duplication
+            path.extend(nx.shortest_path(graph, path[-1], tuple(finish.coords)[0], weight="weight")[1:])
+        except nx.NetworkXNoPath:
+            print("No path could be found.")
+            path = []  # Clear the path if no complete path could be found
+
+        # Setting targets and maxlen array
+        self.targets = path
+        self.num_nodes = len(path)
+        
+        self.target_pos.set_goal(path[1])
+        self.index = 2
+        logger.info(self.target_pos.current_goal)
+        
+        # Logging information
+        logger.info('Number of Nodes: %d', self.num_nodes)
+        count = 1
+        for target in self.targets:
+            logger.info('Node Number %d: %s', count, target)
+            count += 1
+
+        # Visualize PRM route
+        plt.figure(figsize=(8, 6))
+        plt.title("Probabilistic Roadmap Route")
+        plt.xlabel("X-coordinate")
+        plt.ylabel("Y-coordinate")
+        nx.draw(graph, with_labels=True, font_weight='bold')
+        plt.scatter(*zip(*self.targets), color='red', label='PRM Route')
+        plt.scatter(*start.coords[0], color='green', label='Start')
+        plt.scatter(*finish.coords[0], color='blue', label='Finish')
+        plt.legend()
+        plt.show()
+
+        return graph
