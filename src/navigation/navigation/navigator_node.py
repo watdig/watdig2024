@@ -308,7 +308,7 @@ class NavigatorNode(Node):
             else:
                 angle_degrees = 90 - angle_degrees
 
-            logger.info('ANGLE WE ARE LOOKING FOR %f', angle_degrees)
+            logger.info('ANGLE OF TURN %f', angle_degrees)
             return angle_degrees
         
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
@@ -339,13 +339,13 @@ class NavigatorNode(Node):
             self.point = self.path_planner.targets[self.index]
             logger.info(f"Point: {self.point}")
             dist = distance(self.curr_point, self.point)
-            target_yaw = (calculate_target_yaw(self.point, self.curr_point))%360
+            target_yaw = calculate_target_yaw(self.point, self.curr_point)
             logger.info(f"Yaw: {target_yaw}")
             
-            if target_yaw < 180:
-                self.car.drive(3)  
+            if target_yaw < 0:
+                self.car.drive(3) #right 
             else:
-                self.car.drive(2) 
+                self.car.drive(2) #left
                 
             logger.info("entering turn loop")
             while True:
