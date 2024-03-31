@@ -318,7 +318,7 @@ class NavigatorNode(Node):
                 angle_degrees = 90 - angle_degrees"""
 
             logger.info('ANGLE OF TURN %f', angle_degrees)
-            return angle_degrees
+            return angle_degrees, turn_direction
         
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
             radius = 0.5
@@ -348,7 +348,7 @@ class NavigatorNode(Node):
             self.point = self.path_planner.targets[self.index]
             logger.info(f"Point: {self.point}")
             dist = distance(self.curr_point, self.point)
-            target_yaw, direction = calculate_target_yaw(self.point, self.curr_point, self.curr_gyro)
+            target_yaw, direction = calculate_target_yaw(self.point, self.curr_point, self.current_gyro)
             logger.info(f"Yaw: {target_yaw}")
             
             if target_yaw < 0:
@@ -384,7 +384,7 @@ class NavigatorNode(Node):
                 # logger.info(curr_distance) 
             self.car.stop()
 
-            self.curr_gyro= read_yaw_angle(self.sensor)
+            self.current_gyro= read_yaw_angle(self.sensor)
 
             self.get_logger().info(f"target reached: {self.point}")
 
