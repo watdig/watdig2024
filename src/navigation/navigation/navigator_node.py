@@ -155,7 +155,6 @@ class NavigatorNode(Node):
                 midpoint_x = (temp[i][0] + temp[i+1][0]) / 2
                 midpoint_y = (temp[i][1] + temp[i+1][1]) / 2
                 self.path_planner.checkpoints.append(Point(midpoint_x, midpoint_y))
-                # self.path_planner.checkpoints.append(Point(temp[i][0], temp[i][1]))
             
             
         logger = logging.getLogger()
@@ -291,7 +290,7 @@ class NavigatorNode(Node):
         
         def distance(point1, point2):
             #linear distance modifier (can modify between runs)
-            modifier = 0.01
+            modifier = 1.0
             dist = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
             return dist*modifier
 
