@@ -57,7 +57,8 @@ class NavigatorNode(Node):
         self.prev_gyro = 360
         self.current_location = (0,0)
         self.turning = 'stopped'
- 
+        
+        
         #init backup parameters:
         self.pin1 = 8
         self.pi = pigpio.pi()
@@ -74,7 +75,7 @@ class NavigatorNode(Node):
         self.index = 0
         self.point = (0,0)
         self.get_logger().info("all params initialized")
-
+        
 
         # Calling Request Functions
         self.environment_request()
