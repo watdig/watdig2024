@@ -290,14 +290,15 @@ class NavigatorNode(Node):
         
         def distance(point1, point2):
             #linear distance modifier (can modify between runs)
-            modifier = 1.0
+            modifier = 0.01
             dist = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
             return dist*modifier
-    
+
         def normalize_angle(angle):
             return angle % 360
         
         def calculate_target_yaw(target, position):
+            logger = logging.getLogger()
             dx = target[0] - position[0]
             dy = target[1] - position[1]
 
@@ -309,6 +310,7 @@ class NavigatorNode(Node):
             else:
                 angle_degrees = 90 - angle_degrees
 
+            logger.info('ANGLE OF TURN %f', angle_degrees)
             return angle_degrees
         
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
@@ -343,9 +345,9 @@ class NavigatorNode(Node):
             logger.info(f"Yaw: {target_yaw}")
             
             if target_yaw < 0:
-                self.car.drive(3)  
+                self.car.drive(3) #right 
             else:
-                self.car.drive(2) 
+                self.car.drive(2) #left
                 
             logger.info("entering turn loop")
             while True:
