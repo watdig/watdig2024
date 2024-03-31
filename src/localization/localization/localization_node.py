@@ -20,8 +20,8 @@ class LocalizationNode(Node):
         self.current_northing_service = self.create_service(Currentloc, 'northing_service', self.current_northing_callback)
         
         # UWB Anchor Points
-        self.points_group_1 = {1: (0, 0), 2: (4, 0)}
-        self.points_group_2 = {3: (0, 4), 4: (4, 4)}
+        self.points_group_1 = {1: (0, 0), 2: (14.7, 0)}
+        self.points_group_2 = {3: (0, 23.1), 4: (14.7, 23.1)}
         self.curr_loc = None
         # Placeholder for UWB distances
         self.uwb_distances_dict = {}
