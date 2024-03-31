@@ -287,6 +287,7 @@ class NavigatorNode(Node):
             return None
         
         def distance(point1, point2):
+            #linear distance modifier (can modify between runs)
             modifier = 1.0
             dist = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
             return dist*modifier
@@ -321,7 +322,7 @@ class NavigatorNode(Node):
 
         try:
             loc_error = [-1000.0, -1000.0]
-
+            
             if self.current_location == loc_error:
                 if is_goal_reached(self.current_location, self.point):
                     self.curr_point = self.point
