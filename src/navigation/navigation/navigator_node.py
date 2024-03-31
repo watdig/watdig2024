@@ -307,16 +307,16 @@ class NavigatorNode(Node):
             if angle_degrees < 0:
                 angle_degrees += 360 
             
+            if angle_degrees > 90:
+                angle_degrees = 360 - (angle_degrees - 90)
+            else:
+                angle_degrees = 90 - angle_degrees
+            
             angle_difference = angle_degrees - current_orientation
             angle_difference = (angle_difference + 180) % 360 - 180
 
             turn_direction = "left" if angle_difference > 0 else "right"
-            """            
-            if angle_degrees > 90:
-                angle_degrees = 360 - (angle_degrees - 90)
-            else:
-                angle_degrees = 90 - angle_degrees"""
-
+            
             logger.info('ANGLE OF TURN %f', angle_degrees)
             return angle_degrees, turn_direction
         
