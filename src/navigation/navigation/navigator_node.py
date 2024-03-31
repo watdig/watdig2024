@@ -303,16 +303,14 @@ class NavigatorNode(Node):
 
             angle_radians = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle_radians) 
-
-            if angle_degrees < 0:
-                angle_degrees += 360 
             
             if angle_degrees > 90:
                 angle_degrees = 360 - (angle_degrees - 90)
             else:
                 angle_degrees = 90 - angle_degrees
             
-            turn_direction = None
+
+            """turn_direction = None
             if current_orientation > 180:
                 if (angle_degrees - current_orientation) < 0:
                     turn_direction = "right"
@@ -322,10 +320,15 @@ class NavigatorNode(Node):
                 if (angle_degrees - current_orientation) < 0:
                     turn_direction = "left"
                 else:
-                    turn_direction = "right"
+                    turn_direction = 'right'"""
             
-            # angle_difference = angle_degrees - current_orientation
-            # angle_difference = (angle_difference + 180) % 360 - 180
+            angle_difference = angle_degrees - current_orientation
+            if angle_difference < 0:
+                angle_difference += 360
+            if angle_difference > 180:
+                turn_direction = "left"
+            else:
+                turn_direction = "right"
 
             # turn_direction = "left" if angle_difference > 0 else "right"
 
@@ -363,7 +366,7 @@ class NavigatorNode(Node):
             target_yaw, direction = calculate_target_yaw(self.point, self.curr_point, self.current_gyro)
             logger.info(f"Yaw: {target_yaw}")
             
-            if target_yaw < 0:
+            if direction == "right":
                 self.car.drive(3) #right 
             else:
                 self.car.drive(2) #left
