@@ -375,7 +375,7 @@ class NavigatorNode(Node):
             self.p.pulse_count=0 
 
             logger.info(dist)
-            self.car.drive_forward()  # Drive forward
+            self.car.forward()  # Drive forward
             while (self.p.pulse_count < 4685*(dist/0.471234)):
                 if self.p.pulse_count is None:
                     break
