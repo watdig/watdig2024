@@ -182,7 +182,7 @@ class NavigatorNode(Node):
         """
         self.current_location = [msg.easting, msg.northing]
         self.current_gyro = msg.angle
-        if self.path_planner.targets: 
+        if self.path_planner.targets and self.index < self.path_planner.num_nodes: 
             self.backup()
             # self.publish_next_direction()   // add this line back in when action server fixed
     
