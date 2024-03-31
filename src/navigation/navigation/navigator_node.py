@@ -111,7 +111,7 @@ class NavigatorNode(Node):
             logger.info('Environment Name %s', environment.name)
 
         for environment in msg.array:
-            self.path_planner.environment[environment.name] = Point(environment.easting, environment.northing)
+            self.path_planner.environment[environment.name] = (environment.easting, environment.northing)
          
 
     def obstacles_request(self):
