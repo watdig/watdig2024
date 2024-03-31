@@ -342,7 +342,7 @@ class NavigatorNode(Node):
             target_yaw = calculate_target_yaw(self.point, self.curr_point)
             logger.info(f"Yaw: {target_yaw}")
             
-            if target_yaw < 0:
+            if target_yaw < 180:
                 self.car.drive(3)  
             else:
                 self.car.drive(2) 
