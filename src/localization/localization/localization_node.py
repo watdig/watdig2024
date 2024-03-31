@@ -45,6 +45,7 @@ class LocalizationNode(Node):
                 
     def uwb_distances_callback(self, msg):
         if len(msg.data) == 4:
+        #changes
             distances = [distance for distance in msg.data]
             for i in range(len(distances)): 
                 self.uwb_distances_dict[i+1] = distances[i]
