@@ -16,24 +16,6 @@ def generate_launch_description():
             name='navigator_node'
         ),
         Node(
-            package='communication',
-            executable='position_subscriber',
-            output='screen',
-            name='position_subscriber_node'
-        ),
-        Node(
-            package='controls',
-            executable='controls_node',
-            output='screen',
-            name='controls_node'
-        ),
-        Node(
-            package='controls',
-            executable='action_server',
-            output='screen',
-            name='action_server_node'
-        ),
-        Node(
             package='localization',
             executable='localization_node',
             output='screen',
@@ -59,5 +41,24 @@ def generate_launch_description():
             executable='gyro_node',
             output='screen',
             name='gyro_node'
+        ),
+
+                Node(
+            package='communication',
+            executable='position_subscriber',
+            output='screen',
+            name='position_subscriber_node'
+        ),
+                Node(
+            package='controls',
+            executable='action_server',
+            output='screen',
+            name='action_server_node'
+        ),
+                Node(
+            package='controls',
+            executable='controls_node',
+            output='screen',
+            name='controls_node'
         ),
 """
