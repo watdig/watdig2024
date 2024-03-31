@@ -89,8 +89,12 @@ class PathPlanner:
         Initializes the PRM.
         """
         logger = logging.getLogger()
-        start = Point(self.environment["origin"])
-        finish = Point(self.environment["finish"])
+        start = Point(self.environment["ORIGIN"])
+
+        midpoint_x = (self.environment["FINISH1"][0] + self.environment["FINISH2"][0]) / 2
+        midpoint_y = (self.environment["FINISH1"][1] + self.environment["FINISH2"][1]) / 2
+
+        finish = Point(midpoint_x, midpoint_y)
         
 
         print(len(self.obstacles))
@@ -102,11 +106,18 @@ class PathPlanner:
 
 
         # Parameters
-        NUM_SAMPLES = 50
+        NUM_SAMPLES = 100
         NEIGHBOR_RADIUS = 10
 
+        collection  = []
+        for k, v in self.environment.items():
+            if "EDGE" in k:
+                collection.append(v)
+        
+        print(len(collection))
+
         # Define the boundary of the environment (example values)
-        boundary = Polygon([self.environment["corner01"], self.environment["corner02"], self.environment["corner03"], self.environment["corner04"]])
+        boundary = Polygon(collection)
 
         # Function to check if a point is in the free space
         def is_free(x, y):
@@ -160,19 +171,61 @@ class PathPlanner:
             print("No path could be found.")
             path = []  # Clear the path if no complete path could be found
 
-        # Setting targets and maxlen array
-        self.targets = path
-        self.num_nodes = len(path)
-        
-        self.target_pos.set_goal(path[1])
-        self.index = 2
-        logger.info(self.target_pos.current_goal)
-        
-        # Logging information
-        logger.info('Number of Nodes: %d', self.num_nodes)
-        count = 1
-        for target in self.targets:
-            logger.info('Node Number %d: %s', count, target)
-            count += 1
+        if path: 
+            # Setting targets and maxlen array
+            self.targets = path
+            self.num_nodes = len(path)
+            
+            self.target_pos.set_goal(path[1])
+            self.index = 2
+            logger.info(self.target_pos.current_goal)
+            
+            # Logging information
+            logger.info('Number of Nodes: %d', self.num_nodes)
+            count = 1
+            for target in self.targets:
+                logger.info('Node Number %d: %s', count, target)
+                count += 1
+
+
+
+        # Plotting
+        fig, ax = plt.subplots()
+
+        # Plot the environment boundary
+        x, y = boundary.exterior.xy
+        ax.plot(x, y, 'b')
+
+        # Plot obstacles
+        for obstacle in self.obstacles:
+            x, y = obstacle.exterior.xy
+            ax.fill(x, y, 'r')
+
+        # Plot checkpoints
+        for checkpoint in self.checkpoints:
+            plt.plot(checkpoint.x, checkpoint.y, 'yo')
+
+        # Plot start and finish
+        plt.plot(start.x, start.y, 'go')
+        plt.plot(finish.x, finish.y, 'mo')
+
+        # Plot the PRM graph
+        for (node1, node2) in graph.edges():
+            x1, y1 = node1
+            x2, y2 = node2
+            plt.plot([x1, x2], [y1, y2], 'k-', lw=0.5)
+
+        # Plot the shortest path if found
+        if path:
+            x_path, y_path = zip(*path)
+            ax.plot(x_path, y_path, 'c-', lw=2, label='Optimal Path')
+
+        # Show plot
+        plt.axis('equal')
+        plt.legend()
+        plt.show()
+
+
+
 
         return True

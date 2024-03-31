@@ -84,27 +84,24 @@ class CsvParse(Node):
         if csv_file_name == 'environment':
             for df_record in records_list:
                 env_msg = Environment()
-                env_msg.name = df_record['name']
-                env_msg.easting = df_record['easting']
-                env_msg.northing = df_record['northing']
-                env_msg.elevation = df_record['elevation']
+                env_msg.name = df_record['NAME']
+                env_msg.easting = df_record['EASTING']
+                env_msg.northing = df_record['NORTHING']
                 array.append(env_msg)
         elif csv_file_name == 'checkpoints':
             for df_record in records_list:
                 check_msg = Checkpoints()
-                check_msg.name = df_record['name']
-                check_msg.easting = df_record['easting']
-                check_msg.northing = df_record['northing']
-                check_msg.elevation = df_record['elevation']
+                check_msg.name = df_record['NAME']
+                check_msg.easting = df_record['EASTING']
+                check_msg.northing = df_record['NORTHING']
                 array.append(check_msg)
         else:
             for df_record in records_list:
                 obs_msg = Obstacles()
-                obs_msg.name = df_record['name']
-                obs_msg.easting = df_record['easting']
-                obs_msg.northing = df_record['northing']
-                obs_msg.elevation = df_record['elevation']
-                obs_msg.bounding_radius = df_record['boundingRadius']
+                obs_msg.name = df_record['NAME']
+                obs_msg.easting = df_record['EASTING']
+                obs_msg.northing = df_record['NORTHING']
+                obs_msg.bounding_radius = df_record['RADIUS']
                 array.append(obs_msg)
         return array
 

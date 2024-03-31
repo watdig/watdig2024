@@ -57,7 +57,7 @@ class NavigatorNode(Node):
         self.prev_gyro = 360
         self.current_location = (0,0)
         self.turning = 'stopped'
-
+ 
         #init backup parameters:
         self.pin1 = 8
         self.pi = pigpio.pi()
@@ -74,6 +74,7 @@ class NavigatorNode(Node):
         self.index = 0
         self.point = (0,0)
         self.get_logger().info("all params initialized")
+
 
         # Calling Request Functions
         self.environment_request()
@@ -111,7 +112,7 @@ class NavigatorNode(Node):
             logger.info('Environment Name %s', environment.name)
 
         for environment in msg.array:
-            self.path_planner.environment[environment.name] = Point(environment.easting, environment.northing)
+            self.path_planner.environment[environment.name] = (environment.easting, environment.northing)
          
 
     def obstacles_request(self):
@@ -153,6 +154,7 @@ class NavigatorNode(Node):
                 midpoint_x = (temp[i][0] + temp[i+1][0]) / 2
                 midpoint_y = (temp[i][1] + temp[i+1][1]) / 2
                 self.path_planner.checkpoints.append(Point(midpoint_x, midpoint_y))
+                # self.path_planner.checkpoints.append(Point(temp[i][0], temp[i][1]))
             
             
         logger = logging.getLogger()
