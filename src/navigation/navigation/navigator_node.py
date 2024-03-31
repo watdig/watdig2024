@@ -297,7 +297,7 @@ class NavigatorNode(Node):
         def normalize_angle(angle):
             return angle % 360
         
-        def calculate_target_yaw(target, position):
+        def calculate_target_yaw(target, position, current_orientation):
             logger = logging.getLogger()
             dx = target[0] - position[0]
             dy = target[1] - position[1]
@@ -305,13 +305,21 @@ class NavigatorNode(Node):
             angle_radians = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle_radians) 
 
+            if angle_degrees < 0:
+                angle_degrees += 360 
+            
+            angle_difference = angle_degrees - current_orientation
+            angle_difference = (angle_difference + 180) % 360 - 180
+
+            turn_direction = "left" if angle_difference > 0 else "right"
+            """            
             if angle_degrees > 90:
                 angle_degrees = 360 - (angle_degrees - 90)
             else:
-                angle_degrees = 90 - angle_degrees
+                angle_degrees = 90 - angle_degrees"""
 
             logger.info('ANGLE OF TURN %f', angle_degrees)
-            return angle_degrees
+            return angle_degrees, turn_direction
         
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
             radius = 0.5
@@ -341,13 +349,13 @@ class NavigatorNode(Node):
             self.point = self.path_planner.targets[self.index]
             logger.info(f"Point: {self.point}")
             dist = distance(self.curr_point, self.point)
-            target_yaw = calculate_target_yaw(self.point, self.curr_point)
+            target_yaw, direction = calculate_target_yaw(self.point, self.curr_point, self.curr_gyro)
             logger.info(f"Yaw: {target_yaw}")
             
-            if target_yaw < 0:
-                self.car.drive(3) #right 
+            if direction == "right":
+                self.car.turn_right() #right 
             else:
-                self.car.drive(2) #left
+                self.car.turn_left() #left
                 
             logger.info("entering turn loop")
             while True:
