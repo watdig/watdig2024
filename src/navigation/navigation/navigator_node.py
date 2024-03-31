@@ -302,12 +302,28 @@ class NavigatorNode(Node):
             angle_radians = math.atan2(dy, dx)
             angle_degrees = math.degrees(angle_radians) 
 
+            
+            # Calculate the difference between the current angle and the target angle
+            angle_difference = angle_degrees - self.current_gyro
+    
+            # Ensure the angle difference is within the range [-180, 180]
+            angle_difference = (angle_difference + 180) % 360 - 180
+    
+            if angle_difference > 0:
+                # Turn right if the angle difference is positive (target is to the right)
+                return angle_difference
+            else:
+                # Turn left if the angle difference is non-positive (target is to the left or behind)
+                return -angle_difference
+
+            '''
             if angle_degrees > 90:
                 angle_degrees = 360 - (angle_degrees - 90)
             else:
                 angle_degrees = 90 - angle_degrees
 
             return angle_degrees
+            '''
         
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
             radius = 0.5
