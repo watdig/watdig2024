@@ -367,7 +367,7 @@ class NavigatorNode(Node):
                 msg = Float32()
                 msg.data = float(self.current_gyro) 
                 self.gyro_publisher.publish(msg)   
-                if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
+                if abs(normalize_angle(self.current_gyro - target_yaw)) < 1.5:  # 5 degrees tolerance
                     break  # Exit loop once close to the target yaw
 
             self.car.stop()
