@@ -27,7 +27,7 @@ class FrontUWB(Node):
                             
     def publish_uwb(self):
         dictionary2 = {1: 0.0}
-        # dictionary = self.read_from_serial()
+        dictionary = self.read_from_serial()
         #  uncomment the line above if you want to run with the uwbs
         dictionary = {}
         msg = Float32MultiArray()
