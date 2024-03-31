@@ -287,7 +287,9 @@ class NavigatorNode(Node):
             return None
         
         def distance(point1, point2):
-            return math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+            modifier = 1.0
+            dist = math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2)
+            return dist*modifier
     
         def normalize_angle(angle):
             return angle % 360
@@ -318,6 +320,7 @@ class NavigatorNode(Node):
             return distance < radius
 
         try:
+            
             if is_goal_reached(self.current_location, self.point):
                 self.curr_point = self.point
                 self.index += 1
