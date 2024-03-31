@@ -276,9 +276,9 @@ class NavigatorNode(Node):
     
     def backup(self):
         logger = logging.getLogger()
-    
+
         logger.info(self.path_planner.angle)
-    
+
         logger.info("car initialized")
 
         def read_yaw_angle(sensor):
@@ -286,7 +286,7 @@ class NavigatorNode(Node):
             if euler is not None:
                 return euler 
             return None
-    
+
         def distance(point1, point2):
             # linear distance modifier (can be modified between runs)
             modifier = 1.0
@@ -311,7 +311,7 @@ class NavigatorNode(Node):
 
             logger.info('ANGLE OF TURN %f', angle_degrees)
             return angle_degrees
-    
+
         def is_goal_reached(current_position, current_goal):
             radius = 0.5
 
@@ -325,7 +325,7 @@ class NavigatorNode(Node):
 
         try:
             loc_error = [-1000.0, -1000.0]
-        
+
             if self.current_location == loc_error:
                 if is_goal_reached(self.current_location, self.point):
                     self.curr_point = self.point
@@ -342,12 +342,15 @@ class NavigatorNode(Node):
             dist = distance(self.curr_point, self.point)
             target_yaw = calculate_target_yaw(self.point, self.curr_point)
             logger.info(f"Yaw: {target_yaw}")
-        
+
+            # Determine the direction to turn based on the calculated target_yaw
             if target_yaw < 0:
+                logger.info("Turning right")
                 self.car.turn_right()  # Turn right
             else:
+                logger.info("Turning left")
                 self.car.turn_left()  # Turn left
-            
+
             logger.info("entering turn loop")
             while True:
                 logger.info(self.current_gyro)  
@@ -361,11 +364,11 @@ class NavigatorNode(Node):
                 self.gyro_publisher.publish(msg)   
                 if abs(normalize_angle(self.current_gyro - target_yaw)) < 3:  # 5 degrees tolerance
                     break  # Exit loop once close to the target yaw
-                
+
             self.car.stop()
             logger.info(self.current_gyro)    
             self.p.pulse_count=0 
-        
+
             logger.info(dist)
             self.car.drive_forward()  # Drive forward
             while (self.p.pulse_count < 4685*(dist/0.471234)):
@@ -375,7 +378,7 @@ class NavigatorNode(Node):
                 self.current_gyro = read_yaw_angle(self.sensor)
                 # logger.info(curr_distance) 
             self.car.stop()
-        
+
             self.curr_gyro= read_yaw_angle(self.sensor)
 
             self.get_logger().info(f"target reached: {self.point}")
@@ -403,6 +406,7 @@ class NavigatorNode(Node):
             self.car.stop()
             GPIO.cleanup()
             rclpy.shutdown()
+
 
 
 
