@@ -25,14 +25,16 @@ class FrontUWB(Node):
             
                             
     def publish_uwb(self):
+        dictionary2 = {1: 0.0}
         dictionary = self.read_from_serial()
+        msg = Float32MultiArray()
         if dictionary:
-            msg = Float32MultiArray()
             msg.data = [dictionary.get(1, 0.0), dictionary.get(2, 0.0), dictionary.get(3, 0.0), dictionary.get(4, 0.0)]
             self.front_uwb_publisher.publish(msg)
             # self.get_logger().info(f'Published uwbs: {msg.data}')
         else:
-            self.get_logger().info('dictioanry is empty')
+            msg.data = [dictionary2[1]]
+            self.get_logger().warn('dictionary is empty')
 
 def main(args=None):
     rclpy.init(args=args)
