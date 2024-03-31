@@ -296,6 +296,7 @@ class NavigatorNode(Node):
             return angle % 360
         
         def calculate_target_yaw(target, position):
+            logger = logging.getLogger()
             dx = target[0] - position[0]
             dy = target[1] - position[1]
 
@@ -307,6 +308,7 @@ class NavigatorNode(Node):
             else:
                 angle_degrees = 90 - angle_degrees
 
+            logger.info(angle_degrees)
             return angle_degrees
         
         def is_goal_reached(current_position: list[float, float], current_goal: list[float,float]) -> bool:
