@@ -320,12 +320,18 @@ class NavigatorNode(Node):
             return distance < radius
 
         try:
-            
-            if is_goal_reached(self.current_location, self.point):
-                self.curr_point = self.point
-                self.index += 1
+            loc_error = [-1000.0, -1000.0]
+
+            if self.current_location == loc_error:
+                if is_goal_reached(self.current_location, self.point):
+                    self.curr_point = self.point
+                    self.index += 1
+                else:
+                    self.curr_point = self.current_location
             else:
-                self.curr_point = self.current_location
+                self.get_logger().warn("SKIPPING UWB CHECK, LOCATION ERROR")
+                self.curr_point = self.point
+                self.index += 1 
 
             self.point = self.path_planner.targets[self.index]
             logger.info(f"Point: {self.point}")

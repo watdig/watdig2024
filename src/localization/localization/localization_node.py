@@ -44,10 +44,18 @@ class LocalizationNode(Node):
             10)
                 
     def uwb_distances_callback(self, msg):
-        distances = [distance for distance in msg.data]
-        for i in range(len(distances)): 
-            self.uwb_distances_dict[i+1] = distances[i]
-        self.compute_and_publish_location()
+        if len(msg.data) == 4:
+            distances = [distance for distance in msg.data]
+            for i in range(len(distances)): 
+                self.uwb_distances_dict[i+1] = distances[i]
+            self.compute_and_publish_location()
+        else:
+            current_location = Currentcoords()
+            current_location.easting, current_location.northing = -1000.0, -1000.0
+            current_location.angle = self.gyro 
+            self.current_location_publisher.publish(current_location)
+            self.get_logger().warn("UWB FAILURE")
+
 
     def gyro_callback(self, msg):
         logger = logging.getLogger()
