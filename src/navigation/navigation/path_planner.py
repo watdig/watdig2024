@@ -235,7 +235,7 @@ class PathPlanner:
                 count += 1
 
 
-        
+        """
         # Plotting
         fig, ax = plt.subplots()
 
@@ -271,7 +271,7 @@ class PathPlanner:
         plt.axis('equal')
         plt.legend()
         plt.show()
-        
+        """
 
 
 

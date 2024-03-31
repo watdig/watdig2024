@@ -10,13 +10,13 @@ from interfacesarray.srv import Checkpointsarray, Environmentarray, Obstaclesarr
 
 from interfaces.srv import Gyroserv
 from interfaces.srv import Currentloc
-# from navigation.car import Car
 import math
-# import RPi.GPIO as GPIO
-# from navigation.reader import reader
-# import pigpio
-# import board
-# import adafruit_bno055
+from navigation.car import Car
+import RPi.GPIO as GPIO
+from navigation.reader import reader
+import pigpio
+import board
+import adafruit_bno055
 
 
 logging.basicConfig(level=logging.INFO)
@@ -59,22 +59,22 @@ class NavigatorNode(Node):
         self.turning = 'stopped'
         
         
-        # #init backup parameters:
-        # self.pin1 = 8
-        # self.pi = pigpio.pi()
-        # self.p = reader(self.pi, self.pin1)
-        # GPIO.setmode(GPIO.BCM)
-        # self.Car = Car()
-        # self.current_gyro = 0.0
-        # self.curr_point = (0,0)
-        # self.gyro_timeout_duration = 5
-        # self.i2c = board.I2C()  
-        # self.sensor = adafruit_bno055.BNO055_I2C(self.i2c) 
+        # init backup parameters:
+        self.pin1 = 8
+        self.pi = pigpio.pi()
+        self.p = reader(self.pi, self.pin1)
+        GPIO.setmode(GPIO.BCM)
+        self.Car = Car()
+        self.current_gyro = 0.0
+        self.curr_point = (0,0)
+        self.gyro_timeout_duration = 5
+        self.i2c = board.I2C()  
+        self.sensor = adafruit_bno055.BNO055_I2C(self.i2c) 
         
-        # self.car = Car()
-        # self.index = 0
-        # self.point = (0,0)
-        # self.get_logger().info("all params initialized")
+        self.car = Car()
+        self.index = 0
+        self.point = (0,0)
+        self.get_logger().info("all params initialized")
         
 
         # Calling Request Functions
