@@ -3,7 +3,7 @@ from navigation.goal_manager import GoalManager
 import numpy as np
 import networkx as nx
 import math
-from scipy.spatial import KDTree
+from scipy.spatial import KDTree, distance
 from shapely.geometry import Point, LineString, Polygon
 import matplotlib.pyplot as plt
 
@@ -161,6 +161,52 @@ class PathPlanner:
 
         # Find the shortest path through the checkpoints
         path = []
+        
+        # tsm implementation
+
+        def find_closest_point(point, points):
+            """Find the index of the closest point to the given point."""
+            distances = [distance.euclidean(point, p) for p in points]
+            return np.argmin(distances)
+
+        def reorder_checkpoints(start, checkpoints, finish):
+            """Reorder checkpoints to approximate an efficient path."""
+            points = [start] + checkpoints + [finish]
+            ordered_points = [start]
+            remaining_points = checkpoints.copy()
+            
+            current_point = start
+            while remaining_points:
+                next_index = find_closest_point(current_point, remaining_points)
+                current_point = remaining_points.pop(next_index)
+                ordered_points.append(current_point)
+            
+            ordered_points.append(finish)
+            return ordered_points
+
+        # Convert checkpoints to tuples for consistency with your graph nodes
+        checkpoints_tuples = [tuple(checkpoint.coords)[0] for checkpoint in self.checkpoints]
+        ordered_checkpoints = reorder_checkpoints(tuple(start.coords)[0], checkpoints_tuples, tuple(finish.coords)[0])
+
+        # Find the path through the ordered checkpoints
+        path = []
+        try:
+            for i in range(len(ordered_checkpoints) - 1):
+                start_point = ordered_checkpoints[i]
+                end_point = ordered_checkpoints[i + 1]
+                path_segment = nx.shortest_path(graph, start_point, end_point, weight="weight")
+                if i > 0:
+                    path.extend(path_segment[1:])  # Avoid duplicating waypoints
+                else:
+                    path.extend(path_segment)
+        except nx.NetworkXNoPath:
+            print("No path could be found.")
+            path = []  # Clear the path if no complete path could be found
+
+
+
+
+        """
         try:
             path.append(tuple(start.coords)[0])
             for checkpoint in self.checkpoints:
@@ -170,6 +216,7 @@ class PathPlanner:
         except nx.NetworkXNoPath:
             print("No path could be found.")
             path = []  # Clear the path if no complete path could be found
+        """
 
         if path: 
             # Setting targets and maxlen array
@@ -188,7 +235,7 @@ class PathPlanner:
                 count += 1
 
 
-
+        """
         # Plotting
         fig, ax = plt.subplots()
 
@@ -224,7 +271,7 @@ class PathPlanner:
         plt.axis('equal')
         plt.legend()
         plt.show()
-
+        """
 
 
 
