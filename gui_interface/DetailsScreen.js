@@ -13,12 +13,35 @@ function DetailsScreen() {
   const [shutdownButtonColor, setShutdownButtonColor] = useState('grey');
   const [containerColor, setContainerColor] = useState('green');
   const [container2Color, setContainer2Color] = useState('red');
-  const [gyroValue, setGyroValue] = useState(null);
+  const [gyroValue, setGyroValue] = useState(0);
 
   useEffect(() => {
     const ros = new Roslib.Ros({
       url: 'ws://172.20.10.14:9090'
     });
+
+
+    const gyroSubscriber = new Roslib.Topic({
+      ros: ros,
+      name: '/gyro_topic',
+      messageType: 'std_msgs/Float32'
+    });
+
+   
+
+  let messageCounter = 0;
+  let latestGyroValue = null;
+
+  const handleGyroMessage = (message) => {
+    messageCounter++;
+    if (messageCounter === 300) {
+      setGyroValue(message.data);
+      messageCounter = 0; // Reset the counter
+    } 
+  };
+
+    gyroSubscriber.subscribe(handleGyroMessage);
+
 
     const gyroClient = new Roslib.Service({
       ros: ros,
@@ -29,30 +52,31 @@ function DetailsScreen() {
     const gyroRequest = new Roslib.ServiceRequest();
 
       const handleGyroResponse = (response) => {
-        setGyroValue(response.value);
         setContainer2Color('green'); // Update container color when service call is successful
     };
 
     gyroClient.callService(gyroRequest, handleGyroResponse);
 
     // Set container color to green when component is unmounted
-
-
-    ros.on('connection', () => {
+    const handleConnection = () => {
       setContainerColor('red');
-    });
-
-    ros.on('error', () => {
+    };
+  
+    const handleError = () => {
       setContainerColor('green');
       setContainer2Color('red');
-    });
-
+    };
+  
+    ros.on('connection', handleConnection);
+    ros.on('error', handleError);
+  
     return () => {
-      ros.close();
-      
+      gyroSubscriber.unsubscribe(handleGyroMessage); // Remove the subscriber
+      ros.off('connection', handleConnection); // Remove the connection listener
+      ros.off('error', handleError); // Remove the error listener
+      ros.close(); // Close the ROS connection
     };
   }, []);
-
 
 
 
@@ -100,7 +124,7 @@ function DetailsScreen() {
               title={startButtonText}
               onPress={onPressStartHandler}
               color={startButtonColor}
-            />``
+            />
           </View>
           <View>
             <Button
@@ -112,14 +136,12 @@ function DetailsScreen() {
           <View>
             <CoordinateTest />
           </View>
-          <View>
           <View style={[styles.statusContainer, { backgroundColor: containerColor }]}>
-              <Text style={styles.statusText}>Machine Status</Text>
+            <Text style={styles.statusText}>Machine Status</Text>
           </View>
           <View style={[styles.statusContainer, { backgroundColor: container2Color }]}>
             <Text style={styles.statusText}>Gyro Status</Text>
-            <Text style={styles.statusText}>{gyroValue}</Text>
-      </View>
+            {gyroValue !== null && <Text style={styles.statusText}>{gyroValue}</Text>}
           </View>
         </View>
       </ScrollView>
@@ -145,6 +167,8 @@ const styles = StyleSheet.create({
   statusText: {
     color: 'white',
     fontWeight: 'bold',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
 

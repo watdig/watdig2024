@@ -6,7 +6,7 @@ const CoordinateTest = () => {
   const [points1, setPoints1] = useState([]);
   const [points2, setPoints2] = useState([]);
   const [points3, setPoints3] = useState([]);
-  const [dynamicPoint, setDynamicPoint] = useState(null);
+
 
   const renderGrid = () => {
     const grid = [];
