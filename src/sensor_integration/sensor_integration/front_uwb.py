@@ -19,6 +19,7 @@ class FrontUWB(Node):
             if data:
                 data = data.split(",")
                 anchor_id = int(data[0])
+                self.get_logger().info(f"anchor_id: {anchor_id}")
                 distance = float(data[1])
                 uwb_distances_dict[anchor_id] = distance
         return uwb_distances_dict
