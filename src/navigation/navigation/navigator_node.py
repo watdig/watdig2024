@@ -129,7 +129,7 @@ class NavigatorNode(Node):
         
         for obstacle in msg.array:
             self.path_planner.obstacles.append(Point(obstacle.easting, obstacle.northing).buffer(obstacle.bounding_radius))
-
+            self.path_planner.obstacles.append(Point(obstacle.easting, obstacle.northing).buffer(obstacle.bounding_radius*1.3))
         for obstacle in msg.array:
             logger.info('Obstacle Name %s', obstacle.name)
 
